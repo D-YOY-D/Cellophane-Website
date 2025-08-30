@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane - Add Notes to Any Website</title>
+    <meta name="description" content="Cellophane is a browser extension that lets you add notes, reactions, and comments to any website. Create a transparent content layer over the web.">
+    <meta property="og:title" content="Cellophane - Web Content Layer">
+    <meta property="og:description" content="Add notes to any website. No more limits!">
+    <meta property="og:image" content="https://cellophane.ai/og-image.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            padding: 30px 0;
+            text-align: center;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 24px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .hero-description {
+            font-size: 20px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.3);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 60px 0;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .feature p {
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .demo-section {
+            text-align: center;
+            padding: 60px 0;
+            background: rgba(0,0,0,0.1);
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        
+        .demo-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin-top: 60px;
+        }
+        
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            opacity: 0.8;
+        }
+        
+        footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        
+        .beta-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 36px; }
+            .tagline { font-size: 18px; }
+            .hero-description { font-size: 16px; }
+            .features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">C</div>
+                <div>
+                    <h1>Cellophane<span class="beta-badge">BETA</span></h1>
+                </div>
+            </div>
+            <p class="tagline">No More Limits!</p>
+        </header>
+        
+        <div class="hero">
+            <p class="hero-description">
+                Transform any website into a collaborative space. Add notes, reactions, and comments 
+                that float above any webpage. Connect with others through a transparent content layer 
+                that doesn't interfere with the original site.
+            </p>
+            
+            <a href="#install" class="cta-button" id="install-btn">
+                🚀 Install Chrome Extension
+            </a>
+            
+            <p style="margin-top: 20px; opacity: 0.7;">
+                Free during beta • Works on any website • No registration required
+            </p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <h3>Add Notes Anywhere</h3>
+                <p>Leave comments on any webpage - articles, videos, social media, or documents.</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Control Your Privacy</h3>
+                <p>Choose who sees your notes: Public, Private, Friends, or Followers only.</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <h3>Connect & Collaborate</h3>
+                <p>See what others are saying and react with emojis to build conversations.</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <h3>Cross-Platform Sync</h3>
+                <p>Your notes follow you across devices when you're signed in.</p>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2 style="margin-bottom: 20px;">See It In Action</h2>
+            <p style="margin-bottom: 30px; opacity: 0.9;">
+                Cellophane creates a transparent layer over any website where you can freely express yourself
+            </p>
+            <!-- Add screenshot here -->
+            <div style="background: rgba(255,255,255,0.1); padding: 100px 20px; border-radius: 10px;">
+                [Demo Video/Screenshot Coming Soon]
+            </div>
+        </div>
+        
+        <footer>
+            <p style="margin-bottom: 20px;">
+                © 2025 Cellophane. Created by Nati Turkya. All Rights Reserved.
+            </p>
+            <div>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+                <a href="mailto:support@cellophane.ai">Contact</a>
+                <a href="https://twitter.com/cellophane_ai" target="_blank">Twitter</a>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Install button logic
+        document.getElementById('install-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Chrome extension ID will go here after publishing
+            const extensionId = 'YOUR_EXTENSION_ID';
+            
+            // For now, show coming soon message
+            alert('Extension will be available in Chrome Web Store soon! We\'ll notify you when it\'s ready.');
+            
+            // Later: window.open(`https://chrome.google.com/webstore/detail/${extensionId}`);
+        });
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXX');
+    </script>
+</body>
+</html>
