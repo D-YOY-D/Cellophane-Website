@@ -1,0 +1,184 @@
+<!-- Add this CSS to your <head> section -->
+<style>
+.cookie-consent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(30, 30, 50, 0.98);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    z-index: 10000;
+    display: none;
+    animation: slideUp 0.3s ease-out;
+}
+
+.cookie-consent.show {
+    display: block;
+}
+
+.cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.cookie-text {
+    flex: 1;
+    color: white;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.cookie-text a {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+.cookie-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.cookie-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cookie-accept {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.cookie-reject {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.cookie-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .cookie-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .cookie-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<!-- Add this HTML right after your <body> tag -->
+<div id="cookieConsent" class="cookie-consent">
+    <div class="cookie-content">
+        <div class="cookie-text">
+            We use cookies to improve your experience on Cellophane. By continuing to browse, you agree to our use of cookies for analytics and functionality. 
+            Learn more in our <a href="/privacy.html">Privacy Policy</a>.
+        </div>
+        <div class="cookie-buttons">
+            <button class="cookie-btn cookie-reject" onclick="rejectCookies()">Reject</button>
+            <button class="cookie-btn cookie-accept" onclick="acceptCookies()">Accept All</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add this JavaScript before closing </body> tag -->
+<script>
+// Cookie consent management
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+}
+
+function acceptCookies() {
+    setCookie('cookieConsent', 'accepted', 365);
+    document.getElementById('cookieConsent').classList.remove('show');
+    loadGoogleAnalytics();
+}
+
+function rejectCookies() {
+    setCookie('cookieConsent', 'rejected', 365);
+    document.getElementById('cookieConsent').classList.remove('show');
+}
+
+// Check consent status on page load
+window.addEventListener('DOMContentLoaded', function() {
+    const consent = getCookie('cookieConsent');
+    if (!consent) {
+        // Show banner if no consent decision
+        document.getElementById('cookieConsent').classList.add('show');
+    } else if (consent === 'accepted') {
+        // Load GA if already accepted
+        loadGoogleAnalytics();
+    }
+});
+
+// Google Analytics loader (only loads if consent given)
+function loadGoogleAnalytics() {
+    // Your actual GA4 measurement ID
+    const GA_MEASUREMENT_ID = 'G-Q35Z41X6EE';
+    
+    // Create and load the GA script
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+    
+    // Initialize GA with GDPR-compliant settings
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    
+    // Configure with privacy settings
+    gtag('config', GA_MEASUREMENT_ID, {
+        'anonymize_ip': true,  // GDPR compliance - anonymize IP
+        'cookie_flags': 'SameSite=None;Secure',
+        'allow_google_signals': false,  // Disable advertising features by default
+        'allow_ad_personalization_signals': false  // Disable ad personalization
+    });
+    
+    // Log for debugging (remove in production)
+    console.log('Google Analytics loaded with ID:', GA_MEASUREMENT_ID);
+}
+
+// Optional: Track custom events after consent
+function trackEvent(category, action, label = null, value = null) {
+    if (getCookie('cookieConsent') === 'accepted' && typeof gtag !== 'undefined') {
+        gtag('event', action, {
+            'event_category': category,
+            'event_label': label,
+            'value': value
+        });
+    }
+}
+
+// Example usage for tracking extension install button click:
+// trackEvent('Extension', 'click', 'Install Button');
+</script>
