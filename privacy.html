@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane™ - Privacy Policy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #00D4FF 0%, #7B64FF 25%, #FF6B9D 50%, #FFC837 75%, #00D4FF 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            animation: fadeInUp 1s ease-out;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid rgba(123,100,255,0.2);
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .emoji-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00D4FF 0%, #7B64FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .last-updated {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #999;
+        }
+        
+        h2 {
+            color: #333;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            color: #555;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-emoji {
+            font-size: 32px;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+        }
+        
+        p {
+            margin-bottom: 18px;
+            color: #444;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        ul {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            color: #444;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .promise-box {
+            background: linear-gradient(135deg, rgba(123,100,255,0.1) 0%, rgba(0,212,255,0.1) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            border: 2px solid rgba(123,100,255,0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .promise-box h3 {
+            color: #7B64FF;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+        
+        .promise-box p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .quick-facts {
+            background: rgba(255,199,55,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255,199,55,0.3);
+            animation: fadeIn 1.2s ease-out;
+        }
+        
+        .quick-facts h3 {
+            color: #FF9D00;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .quick-facts ul {
+            margin-left: 25px;
+        }
+        
+        .quick-facts li {
+            font-weight: 500;
+        }
+        
+        .info-box {
+            background: rgba(0,212,255,0.1);
+            border-left: 4px solid #00D4FF;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+        
+        .simple-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .simple-table th {
+            background: linear-gradient(135deg, #7B64FF 0%, #00D4FF 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .simple-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .simple-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .simple-table tr:hover td {
+            background: #f8f9fa;
+        }
+        
+        .rights-box {
+            background: rgba(255,107,157,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid rgba(255,107,157,0.3);
+        }
+        
+        .rights-box h3 {
+            color: #FF6B9D;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .cookie-info {
+            background: rgba(123,100,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(123,100,255,0.2);
+            text-align: center;
+            color: #666;
+        }
+        
+        .footer a {
+            color: #7B64FF;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .footer a:hover {
+            color: #00D4FF;
+            transform: translateY(-2px);
+        }
+        
+        strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .emoji-logo {
+                font-size: 48px;
+            }
+            
+            .simple-table {
+                font-size: 14px;
+            }
+            
+            .simple-table th, .simple-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="emoji-logo">🔒</div>
+            <h1>Privacy Policy</h1>
+            <div class="subtitle">Your privacy, simplified</div>
+            <div class="last-updated">Last Updated: January 1, 2025</div>
+        </div>
+        
+        <div class="promise-box">
+            <h3>🤝 Our Promise</h3>
+            <p><strong>We will NEVER sell your personal information to anyone.</strong></p>
+            <p>Your data is yours. Period.</p>
+        </div>
+        
+        <div class="quick-facts">
+            <h3>⚡ Quick Facts</h3>
+            <ul>
+                <li>We only collect what we need to run the service</li>
+                <li>You can delete your data anytime</li>
+                <li>We use encryption to protect your information</li>
+                <li>We don't track you across the web</li>
+                <li>No ads based on your personal data</li>
+            </ul>
+        </div>
+        
+        <h2><span class="section-emoji">📋</span>What We Collect</h2>
+        
+        <h3>When you sign up:</h3>
+        <ul>
+            <li>Email address (to log you in)</li>
+            <li>Username (so others know who you are)</li>
+            <li>Password (encrypted - we can't see it)</li>
+        </ul>
+        
+        <h3>When you use Cellophane:</h3>
+        <ul>
+            <li>Your comments and notes</li>
+            <li>Privacy settings for each note</li>
+            <li>Basic usage info (like which features you use)</li>
+        </ul>
+        
+        <h3>Automatic collection:</h3>
+        <ul>
+            <li>Browser type (to ensure compatibility)</li>
+            <li>General location (country - not your exact address)</li>
+            <li>Error logs (to fix bugs)</li>
+        </ul>
+        
+        <h2><span class="section-emoji">🎯</span>How We Use Your Information</h2>
+        
+        <table class="simple-table">
+            <tr>
+                <th>We use it to...</th>
+                <th>Why?</th>
+            </tr>
+            <tr>
+                <td>Show your notes where you left them</td>
+                <td>Core feature</td>
+            </tr>
+            <tr>
+                <td>Sync across your devices</td>
+                <td>Convenience</td>
+            </tr>
+            <tr>
+                <td>Send important updates</td>
+                <td>Keep you informed</td>
+            </tr>
+            <tr>
+                <td>Fix bugs and improve features</td>
+                <td>Better experience</td>
+            </tr>
+            <tr>
+                <td>Keep the service secure</td>
+                <td>Protect everyone</td>
+            </tr>
+        </table>
+        
+        <h2><span class="section-emoji">🤝</span>Who We Share With</h2>
+        
+        <div class="info-box">
+            <strong>Simple answer:</strong> We don't sell or rent your data to anyone. Ever.
+        </div>
+        
+        <p>We only share your information when:</p>
+        <ul>
+            <li><strong>You tell us to</strong> (like making a note public)</li>
+            <li><strong>It's required by law</strong> (with valid legal requests)</li>
+            <li><strong>To protect safety</strong> (preventing harm or fraud)</li>
+        </ul>
+        
+        <h2><span class="section-emoji">🔐</span>How We Protect Your Data</h2>
+        <ul>
+            <li>✅ Encryption for all data transfers</li>
+            <li>✅ Secure servers with regular updates</li>
+            <li>✅ Limited access (only essential staff)</li>
+            <li>✅ Regular security checks</li>
+            <li>✅ Password protection best practices</li>
+        </ul>
+        
+        <h2><span class="section-emoji">🎮</span>Your Control Panel</h2>
+        
+        <div class="rights-box">
+            <h3>You can always:</h3>
+            <ul>
+                <li><strong>View</strong> all your data</li>
+                <li><strong>Download</strong> a copy of everything</li>
+                <li><strong>Delete</strong> specific items or everything</li>
+                <li><strong>Change</strong> privacy settings anytime</li>
+                <li><strong>Close</strong> your account completely</li>
+            </ul>
+        </div>
+        
+        <h2><span class="section-emoji">🍪</span>About Cookies</h2>
+        
+        <div class="cookie-info">
+            <p>We use cookies (small text files) for:</p>
+            <ul>
+                <li>Keeping you logged in</li>
+                <li>Remembering your preferences</li>
+                <li>Basic analytics (if you allow)</li>
+            </ul>
+            <p><strong>You can disable cookies anytime in your browser settings.</strong></p>
+        </div>
+        
+        <h2><span class="section-emoji">👶</span>Kids' Privacy</h2>
+        <ul>
+            <li>You must be 13+ to use Cellophane</li>
+            <li>We don't knowingly collect data from kids under 13</li>
+            <li>Parents: contact us if you have concerns</li>
+        </ul>
+        
+        <h2><span class="section-emoji">🌍</span>International Users</h2>
+        
+        <p><strong>EU Users (GDPR):</strong></p>
+        <ul>
+            <li>You have extra privacy rights</li>
+            <li>You can request data portability</li>
+            <li>You can object to certain processing</li>
+        </ul>
+        
+        <p><strong>California Users (CCPA):</strong></p>
+        <ul>
+            <li>You can know what we collect</li>
+            <li>You can request deletion</li>
+            <li>We don't sell your data (so nothing to opt-out from!)</li>
+        </ul>
+        
+        <h2><span class="section-emoji">🤖</span>AI and Your Data</h2>
+        <div class="info-box">
+            <p>We use AI to improve Cellophane, but:</p>
+            <ul>
+                <li>Your content trains AI only if you opt-in</li>
+                <li>You can change this setting anytime</li>
+                <li>Personal info is never used for AI training</li>
+            </ul>
+        </div>
+        
+        <h2><span class="section-emoji">📅</span>How Long We Keep Data</h2>
+        
+        <table class="simple-table">
+            <tr>
+                <th>Type of Data</th>
+                <th>How Long?</th>
+            </tr>
+            <tr>
+                <td>Your account info</td>
+                <td>While you're active + 30 days</td>
+            </tr>
+            <tr>
+                <td>Your notes</td>
+                <td>Until you delete them</td>
+            </tr>
+            <tr>
+                <td>Error logs</td>
+                <td>90 days</td>
+            </tr>
+            <tr>
+                <td>Deleted content</td>
+                <td>30 days backup, then gone forever</td>
+            </tr>
+        </table>
+        
+        <h2><span class="section-emoji">🔄</span>Policy Updates</h2>
+        <p>If we change this policy:</p>
+        <ul>
+            <li>We'll email you about important changes</li>
+            <li>We'll show a notice in the app</li>
+            <li>You can always find the latest version here</li>
+        </ul>
+        
+        <h2><span class="section-emoji">💬</span>Questions?</h2>
+        <p>We're here to help! Contact us:</p>
+        <ul>
+            <li><strong>Privacy questions:</strong> privacy@cellophane.ai</li>
+            <li><strong>General support:</strong> support@cellophane.ai</li>
+            <li><strong>Response time:</strong> Usually within 48 hours</li>
+        </ul>
+        
+        <div class="promise-box" style="margin-top: 40px;">
+            <p><strong>Remember:</strong> Your privacy is our priority. We're building Cellophane for you, not advertisers.</p>
+            <p>Thank you for trusting us! 💜</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Cellophane™. All rights reserved.</p>
+            <div style="margin-top: 15px;">
+                <a href="/">Home</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/help">Help Center</a>
+                <a href="/transparency">Transparency Report</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
