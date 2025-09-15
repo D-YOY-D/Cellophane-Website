@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane™ - Help Center</title>
+    <meta name="description" content="Help Center for Cellophane™ - Get answers to common questions and support">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip to content link - WCAG 2.4.1 */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100000;
+            border-radius: 0 0 4px 0;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            * {
+                border-color: currentColor !important;
+            }
+        }
+        
+        /* Reduced motion support - WCAG 2.3.3 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Decorative gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0,212,255,0.05) 0%, 
+                rgba(123,100,255,0.05) 25%, 
+                rgba(255,107,157,0.05) 50%, 
+                rgba(255,199,55,0.05) 75%, 
+                rgba(0,212,255,0.05) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Clear focus indicators - WCAG 2.4.7 */
+        *:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        .emoji-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        h2 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-emoji {
+            font-size: 32px;
+            display: inline-block;
+        }
+        
+        p {
+            margin-bottom: 18px;
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        /* Quick links */
+        .quick-links {
+            background: #e3f2fd;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #1976d2;
+        }
+        
+        .quick-links h3 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .quick-link {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .quick-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #1976d2;
+        }
+        
+        .quick-link .emoji {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        /* FAQ Section */
+        .faq-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .faq-answer {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* Contact cards */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .contact-card {
+            background: #f3e5f5;
+            border: 1px solid #9c27b0;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .contact-card h4 {
+            color: #6a1b9a;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .contact-card p {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .contact-card a {
+            color: #6a1b9a;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 2px solid #6a1b9a;
+        }
+        
+        .contact-card a:hover {
+            color: #4a148c;
+            border-color: #4a148c;
+        }
+        
+        /* Status box */
+        .status-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .status-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Troubleshooting table */
+        .troubleshooting-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .troubleshooting-table th {
+            background: #ff9800;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .troubleshooting-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .troubleshooting-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .footer nav {
+            margin-top: 15px;
+        }
+        
+        .footer a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+            padding: 5px;
+        }
+        
+        .footer a:hover {
+            color: #0052a3;
+            transform: translateY(-2px);
+        }
+        
+        .footer a:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        strong {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* Links with proper contrast */
+        a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            color: #0052a3;
+        }
+        
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .emoji-logo {
+                font-size: 48px;
+            }
+            
+            .links-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header>
+            <div class="header">
+                <span class="emoji-logo" role="img" aria-label="Help">❓</span>
+                <h1>Help Center</h1>
+                <div class="subtitle">Everything you need to know about Cellophane</div>
+            </div>
+        </header>
+        
+        <main id="main-content">
+            <section class="quick-links" aria-labelledby="quicklinks-heading">
+                <h3 id="quicklinks-heading">Quick Links</h3>
+                <div class="links-grid">
+                    <a href="#getting-started" class="quick-link">
+                        <span class="emoji">🚀</span>
+                        Getting Started
+                    </a>
+                    <a href="#features" class="quick-link">
+                        <span class="emoji">⭐</span>
+                        Features
+                    </a>
+                    <a href="#privacy" class="quick-link">
+                        <span class="emoji">🔒</span>
+                        Privacy & Security
+                    </a>
+                    <a href="#troubleshooting" class="quick-link">
+                        <span class="emoji">🔧</span>
+                        Troubleshooting
+                    </a>
+                    <a href="#account" class="quick-link">
+                        <span class="emoji">👤</span>
+                        Account Settings
+                    </a>
+                    <a href="#contact" class="quick-link">
+                        <span class="emoji">💬</span>
+                        Contact Support
+                    </a>
+                </div>
+            </section>
+            
+            <section class="status-box" aria-labelledby="status-heading">
+                <h3 id="status-heading"><span class="status-indicator"></span>System Status</h3>
+                <p>All systems operational. Current version: BETA 1.0</p>
+            </section>
+            
+            <section aria-labelledby="getting-started">
+                <h2 id="getting-started"><span class="section-emoji" aria-hidden="true">🚀</span>Getting Started</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I install Cellophane?</div>
+                    <div class="faq-answer">
+                        <ol style="margin-left: 20px;">
+                            <li>Visit the Chrome Web Store (link coming soon)</li>
+                            <li>Click "Add to Chrome"</li>
+                            <li>Confirm the installation when prompted</li>
+                            <li>The Cellophane icon will appear in your browser toolbar</li>
+                            <li>Click the icon to activate on any webpage</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Do I need an account?</div>
+                    <div class="faq-answer">
+                        You can use basic features without an account, but creating a free account enables:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Saving your annotations</li>
+                            <li>Syncing across devices</li>
+                            <li>Privacy controls</li>
+                            <li>Creating and joining groups</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is Cellophane free?</div>
+                    <div class="faq-answer">
+                        Yes! Cellophane is currently free during our beta period. We're focused on building the best product possible with your feedback.
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="features">
+                <h2 id="features"><span class="section-emoji" aria-hidden="true">⭐</span>Features</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I add a comment?</div>
+                    <div class="faq-answer">
+                        <ol style="margin-left: 20px;">
+                            <li>Click the Cellophane icon to activate the extension</li>
+                            <li>Write your comment in the Cellophane panel</li>
+                            <li>You can add an image, video (up to 20MB), or audio recording (up to 1 minute)</li>
+                            <li>Choose privacy settings (Private, Groups, or Public)</li>
+                            <li>Click "Post" to save</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What are privacy settings?</div>
+                    <div class="faq-answer">
+                        You control who sees each comment:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>Private:</strong> Only you can see it</li>
+                            <li><strong>Groups:</strong> Only members of groups you created or belong to can see and write</li>
+                            <li><strong>Public:</strong> Anyone using Cellophane can see it</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I edit or delete comments?</div>
+                    <div class="faq-answer">
+                        Yes! Click on any of your comments to see options to edit or delete. Deleted comments are removed immediately from public view.
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="privacy">
+                <h2 id="privacy"><span class="section-emoji" aria-hidden="true">🔒</span>Privacy & Security</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is my data safe?</div>
+                    <div class="faq-answer">
+                        Absolutely. We use bank-level encryption (AES-256) for all data. We never sell your personal information. Read our full <a href="/privacy.html">Privacy Policy</a> for details.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How is my content used for AI?</div>
+                    <div class="faq-answer">
+                        Your content may be anonymized and aggregated to improve our AI features. We remove all identifying information before any AI processing. You can opt-out at any time by emailing <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a>.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can websites block Cellophane?</div>
+                    <div class="faq-answer">
+                        Website owners can request to opt-out of Cellophane functionality on their sites. We respect these requests while working to find collaborative solutions.
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="troubleshooting">
+                <h2 id="troubleshooting"><span class="section-emoji" aria-hidden="true">🔧</span>Troubleshooting</h2>
+                
+                <table class="troubleshooting-table">
+                    <tr>
+                        <th>Problem</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>Extension not working</td>
+                        <td>
+                            1. Check if the site is supported<br>
+                            2. Refresh the page<br>
+                            3. Disable/re-enable the extension<br>
+                            4. Clear browser cache
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Comments not syncing</td>
+                        <td>
+                            1. Check internet connection<br>
+                            2. Log out and back in<br>
+                            3. Ensure you're using the same account<br>
+                            4. Contact support if issue persists
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Can't see other users' comments</td>
+                        <td>
+                            1. Make sure Cellophane is activated<br>
+                            2. Check your filter settings<br>
+                            3. Verify the comments are public or you're in the same group<br>
+                            4. Refresh the page
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Account locked</td>
+                        <td>
+                            This may happen due to suspicious activity or terms violations. 
+                            Email <a href="mailto:appeals@cellophane.ai">appeals@cellophane.ai</a> with your username.
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            
+            <section aria-labelledby="account">
+                <h2 id="account"><span class="section-emoji" aria-hidden="true">👤</span>Account Settings</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I change my password?</div>
+                    <div class="faq-answer">
+                        Go to Settings → Security → Change Password. You'll need to enter your current password and choose a new one.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I delete my account?</div>
+                    <div class="faq-answer">
+                        Go to Settings → Account → Delete Account. This will permanently delete your account and all associated data within 30 days. This action cannot be undone.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I export my data?</div>
+                    <div class="faq-answer">
+                        Go to Settings → Privacy → Export Data. You'll receive a JSON file with all your comments, settings, and account information.
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="moderation">
+                <h2 id="moderation"><span class="section-emoji" aria-hidden="true">🛡️</span>Content Moderation</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Why was my content removed?</div>
+                    <div class="faq-answer">
+                        Content is removed for violating our <a href="/community-guidelines.html">Community Guidelines</a>. Common reasons include:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Spam or commercial content</li>
+                            <li>Harassment or hate speech</li>
+                            <li>Misinformation</li>
+                            <li>Copyright infringement</li>
+                        </ul>
+                        You should receive an email explaining the specific reason.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How do I appeal a moderation decision?</div>
+                    <div class="faq-answer">
+                        Email <a href="mailto:appeals@cellophane.ai">appeals@cellophane.ai</a> within 30 days with:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Your case number (from the notification email)</li>
+                            <li>Why you believe the decision was incorrect</li>
+                            <li>Any supporting context</li>
+                        </ul>
+                        Appeals are reviewed within 72 hours.
+                    </div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="contact">
+                <h2 id="contact"><span class="section-emoji" aria-hidden="true">💬</span>Contact Support</h2>
+                
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <h4>General Support</h4>
+                        <p>For general questions and technical issues</p>
+                        <a href="mailto:support@cellophane.ai">support@cellophane.ai</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4>Privacy Concerns</h4>
+                        <p>For privacy questions and data requests</p>
+                        <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4>Report Content</h4>
+                        <p>To report inappropriate content</p>
+                        <a href="mailto:report@cellophane.ai">report@cellophane.ai</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4>Appeals</h4>
+                        <p>To appeal moderation decisions</p>
+                        <a href="mailto:appeals@cellophane.ai">appeals@cellophane.ai</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4>Business Inquiries</h4>
+                        <p>For partnerships and press</p>
+                        <a href="mailto:business@cellophane.ai">business@cellophane.ai</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4>Legal</h4>
+                        <p>For legal matters and DMCA</p>
+                        <a href="mailto:legal@cellophane.ai">legal@cellophane.ai</a>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <p><strong>Response Times:</strong></p>
+                    <p>General Support: 24-48 hours</p>
+                    <p>Privacy Requests: 72 hours</p>
+                    <p>Content Reports: 24 hours</p>
+                    <p>Appeals: 72 hours</p>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <div class="footer">
+                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <nav aria-label="Footer navigation">
+                    <a href="/">Home</a>
+                    <a href="/terms.html">Terms of Service</a>
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/community-guidelines.html">Community Guidelines</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
