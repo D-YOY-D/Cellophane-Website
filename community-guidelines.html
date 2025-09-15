@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane™ - Community Guidelines</title>
+    <meta name="description" content="Community Guidelines for Cellophane™ - Creating meaningful discussions across the web">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip to content link - WCAG 2.4.1 */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100000;
+            border-radius: 0 0 4px 0;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            * {
+                border-color: currentColor !important;
+            }
+        }
+        
+        /* Reduced motion support - WCAG 2.3.3 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Decorative gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0,212,255,0.05) 0%, 
+                rgba(123,100,255,0.05) 25%, 
+                rgba(255,107,157,0.05) 50%, 
+                rgba(255,199,55,0.05) 75%, 
+                rgba(0,212,255,0.05) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Clear focus indicators - WCAG 2.4.7 */
+        *:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        .emoji-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .last-updated {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        h2 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-emoji {
+            font-size: 32px;
+            display: inline-block;
+        }
+        
+        p {
+            margin-bottom: 18px;
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        ul {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        /* Mission box */
+        .mission-box {
+            background: #e8f5e9;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #4caf50;
+            text-align: center;
+        }
+        
+        .mission-box h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .mission-box p {
+            font-size: 18px;
+            color: #1b5e20;
+        }
+        
+        /* Do's and Don'ts boxes */
+        .do-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+        
+        .do-box h3 {
+            color: #0d47a1;
+            margin-bottom: 15px;
+        }
+        
+        .dont-box {
+            background: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+        
+        .dont-box h3 {
+            color: #b71c1c;
+            margin-bottom: 15px;
+        }
+        
+        /* Examples box */
+        .example-box {
+            background: #f3e5f5;
+            border: 1px solid #9c27b0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-box h4 {
+            color: #6a1b9a;
+            margin-bottom: 10px;
+        }
+        
+        /* Report box */
+        .report-box {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .report-box h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+        
+        .report-button {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .report-button:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+        }
+        
+        .report-button:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        /* Enforcement table */
+        .enforcement-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .enforcement-table th {
+            background: #1976d2;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .enforcement-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .enforcement-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .footer nav {
+            margin-top: 15px;
+        }
+        
+        .footer a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+            padding: 5px;
+        }
+        
+        .footer a:hover {
+            color: #0052a3;
+            transform: translateY(-2px);
+        }
+        
+        .footer a:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        strong {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* Links with proper contrast */
+        a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            color: #0052a3;
+        }
+        
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .emoji-logo {
+                font-size: 48px;
+            }
+            
+            .footer a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header>
+            <div class="header">
+                <span class="emoji-logo" role="img" aria-label="Community">🏛️</span>
+                <h1>Community Guidelines</h1>
+                <div class="subtitle">Building meaningful discussions together</div>
+                <div class="last-updated">
+                    <time datetime="2025-01-01">Last Updated: January 1, 2025</time>
+                </div>
+            </div>
+        </header>
+        
+        <main id="main-content">
+            <section class="mission-box" aria-labelledby="mission-heading">
+                <h3 id="mission-heading">Our Mission</h3>
+                <p>Cellophane enables professional, respectful commentary across the web. We're committed to fostering meaningful discussions while maintaining a safe environment for all users.</p>
+            </section>
+            
+            <section aria-labelledby="principles-heading">
+                <h2 id="principles-heading"><span class="section-emoji" aria-hidden="true">⭐</span>Core Principles</h2>
+                <ul>
+                    <li><strong>Respect:</strong> Treat everyone with dignity and consideration</li>
+                    <li><strong>Authenticity:</strong> Be genuine and honest in your interactions</li>
+                    <li><strong>Constructive:</strong> Add value to discussions</li>
+                    <li><strong>Safety:</strong> Help maintain a secure environment for all</li>
+                    <li><strong>Professional:</strong> Keep discussions appropriate and focused</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="encouraged-heading">
+                <h2 id="encouraged-heading"><span class="section-emoji" aria-hidden="true">✅</span>What We Encourage</h2>
+                
+                <div class="do-box">
+                    <h3>DO: Create Quality Content</h3>
+                    <ul>
+                        <li>Share insightful commentary and analysis</li>
+                        <li>Provide helpful context and additional information</li>
+                        <li>Ask thoughtful questions that advance discussions</li>
+                        <li>Offer constructive feedback and suggestions</li>
+                        <li>Cite sources when sharing facts or statistics</li>
+                    </ul>
+                </div>
+                
+                <div class="do-box">
+                    <h3>DO: Be Respectful</h3>
+                    <ul>
+                        <li>Disagree politely and focus on ideas, not people</li>
+                        <li>Acknowledge different perspectives</li>
+                        <li>Use appropriate language for all audiences</li>
+                        <li>Respect others' privacy and boundaries</li>
+                        <li>Give credit where it's due</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section aria-labelledby="prohibited-heading">
+                <h2 id="prohibited-heading"><span class="section-emoji" aria-hidden="true">🚫</span>Prohibited Content</h2>
+                
+                <div class="dont-box">
+                    <h3>DON'T: Post Harmful Content</h3>
+                    <ul>
+                        <li><strong>Hate Speech:</strong> Content targeting individuals or groups based on race, ethnicity, religion, gender, sexual orientation, disability, or other protected characteristics</li>
+                        <li><strong>Harassment & Bullying:</strong> Threats, intimidation, stalking, or coordinated harassment</li>
+                        <li><strong>Violence:</strong> Threats of violence, promotion of self-harm, or graphic violent content</li>
+                        <li><strong>Sexual Content:</strong> Pornography, sexual solicitation, or non-consensual intimate content</li>
+                        <li><strong>Child Safety:</strong> Any content that exploits or endangers minors</li>
+                    </ul>
+                </div>
+                
+                <div class="dont-box">
+                    <h3>DON'T: Engage in Deceptive Practices</h3>
+                    <ul>
+                        <li><strong>Misinformation:</strong> Deliberately false or misleading information</li>
+                        <li><strong>Impersonation:</strong> Pretending to be someone else</li>
+                        <li><strong>Spam:</strong> Repetitive, unsolicited, or commercial content</li>
+                        <li><strong>Manipulation:</strong> Artificially inflating engagement or gaming the system</li>
+                        <li><strong>Phishing:</strong> Attempts to steal personal information</li>
+                    </ul>
+                </div>
+                
+                <div class="dont-box">
+                    <h3>DON'T: Violate Laws or Rights</h3>
+                    <ul>
+                        <li><strong>Illegal Content:</strong> Anything that violates local or international laws</li>
+                        <li><strong>Copyright Infringement:</strong> Unauthorized use of copyrighted material</li>
+                        <li><strong>Privacy Violations:</strong> Sharing private information without consent</li>
+                        <li><strong>Regulated Goods:</strong> Promotion of illegal substances or services</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section aria-labelledby="examples-heading">
+                <h2 id="examples-heading"><span class="section-emoji" aria-hidden="true">💡</span>Examples & Clarifications</h2>
+                
+                <div class="example-box">
+                    <h4>Acceptable Criticism</h4>
+                    <p>✅ "I disagree with this article's conclusion because the data doesn't support it."</p>
+                    <p>❌ "The author is an idiot who doesn't know anything."</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Professional Language</h4>
+                    <p>✅ "This is frustrating and poorly designed."</p>
+                    <p>❌ [String of profanity and personal attacks]</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Sharing Information</h4>
+                    <p>✅ "According to [source], this claim has been disputed."</p>
+                    <p>❌ Spreading conspiracy theories or unverified rumors</p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="enforcement-heading">
+                <h2 id="enforcement-heading"><span class="section-emoji" aria-hidden="true">⚖️</span>Enforcement</h2>
+                
+                <p>We use a combination of automated detection and human review to enforce these guidelines:</p>
+                
+                <table class="enforcement-table">
+                    <tr>
+                        <th>Violation Level</th>
+                        <th>Examples</th>
+                        <th>Consequence</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Minor</strong></td>
+                        <td>Mild profanity, off-topic posts</td>
+                        <td>Warning + Content removal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Moderate</strong></td>
+                        <td>Spam, repeated violations</td>
+                        <td>Temporary suspension (3-7 days)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Severe</strong></td>
+                        <td>Hate speech, harassment</td>
+                        <td>Extended suspension (30 days)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Critical</strong></td>
+                        <td>Illegal content, child safety</td>
+                        <td>Permanent ban + Report to authorities</td>
+                    </tr>
+                </table>
+                
+                <h3>Appeals Process</h3>
+                <ul>
+                    <li>You can appeal any moderation decision within 30 days</li>
+                    <li>Appeals are reviewed by our moderation team within 72 hours</li>
+                    <li>Email <a href="mailto:appeals@cellophane.ai">appeals@cellophane.ai</a> with your case number</li>
+                    <li>Include any context or evidence supporting your appeal</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="reporting-heading">
+                <h2 id="reporting-heading"><span class="section-emoji" aria-hidden="true">🚨</span>Reporting Violations</h2>
+                
+                <div class="report-box">
+                    <h3>Help Keep Our Community Safe</h3>
+                    <p>If you see content that violates these guidelines, please report it immediately. Your reports are confidential and help us maintain a positive environment.</p>
+                    <a href="mailto:report@cellophane.ai" class="report-button">Report Content</a>
+                    <p style="margin-top: 15px; font-size: 14px;">You can also use the report button (flag icon) on any comment</p>
+                </div>
+                
+                <h3>What Happens When You Report</h3>
+                <ul>
+                    <li>Reports are reviewed within 24-48 hours</li>
+                    <li>You'll receive confirmation that we received your report</li>
+                    <li>We'll notify you of the outcome if you requested updates</li>
+                    <li>Reporter identities are kept confidential</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="updates-heading">
+                <h2 id="updates-heading"><span class="section-emoji" aria-hidden="true">🔄</span>Guidelines Updates</h2>
+                <p>These guidelines may evolve as our community grows. We'll notify users of significant changes through:</p>
+                <ul>
+                    <li>In-app notifications</li>
+                    <li>Email to registered users</li>
+                    <li>Announcements on our website</li>
+                </ul>
+                <p>Changes typically take effect 7 days after announcement unless urgent safety issues require immediate action.</p>
+            </section>
+            
+            <section aria-labelledby="contact-heading">
+                <h2 id="contact-heading"><span class="section-emoji" aria-hidden="true">💬</span>Questions?</h2>
+                <p>If you have questions about these guidelines or need clarification:</p>
+                <address>
+                    <ul style="list-style: none; margin-left: 0;">
+                        <li>General Questions: <a href="mailto:community@cellophane.ai">community@cellophane.ai</a></li>
+                        <li>Report Content: <a href="mailto:report@cellophane.ai">report@cellophane.ai</a></li>
+                        <li>Appeals: <a href="mailto:appeals@cellophane.ai">appeals@cellophane.ai</a></li>
+                        <li>Response Time: Within 24-48 hours</li>
+                    </ul>
+                </address>
+            </section>
+        </main>
+        
+        <footer>
+            <div class="footer">
+                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <nav aria-label="Footer navigation">
+                    <a href="/">Home</a>
+                    <a href="/terms.html">Terms of Service</a>
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/help.html">Help Center</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
