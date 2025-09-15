@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane™ - Terms of Service</title>
+    <meta name="description" content="Terms of Service for Cellophane™ - Professional commentary layer for the web">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip to content link - WCAG 2.4.1 */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100000;
+            border-radius: 0 0 4px 0;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            * {
+                border-color: currentColor !important;
+            }
+        }
+        
+        /* Reduced motion support - WCAG 2.3.3 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Decorative gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0,212,255,0.05) 0%, 
+                rgba(123,100,255,0.05) 25%, 
+                rgba(255,107,157,0.05) 50%, 
+                rgba(255,199,55,0.05) 75%, 
+                rgba(0,212,255,0.05) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Clear focus indicators - WCAG 2.4.7 */
+        *:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        .emoji-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .last-updated {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        h2 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        .section-emoji {
+            font-size: 32px;
+            display: inline-block;
+        }
+        
+        p {
+            margin-bottom: 18px;
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        ul {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        /* TL;DR Box with proper contrast */
+        .tldr {
+            background: #e3f2fd;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #1976d2;
+        }
+        
+        .tldr h3 {
+            color: #0d47a1;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .tldr ul {
+            margin-left: 25px;
+        }
+        
+        .tldr li {
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+        
+        /* Important box for community guidelines */
+        .guidelines-box {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .guidelines-box h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+        
+        /* Friendly box with proper contrast */
+        .friendly-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+        
+        .friendly-box strong {
+            color: #2e7d32;
+        }
+        
+        /* Simple highlight with proper contrast */
+        .simple-highlight {
+            background: #fce4ec;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid #c2185b;
+        }
+        
+        .simple-highlight strong {
+            color: #880e4f;
+        }
+        
+        /* AI disclosure box */
+        .ai-disclosure {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .ai-disclosure h3 {
+            color: #6a1b9a;
+            margin-bottom: 15px;
+        }
+        
+        /* Agreement box with proper contrast */
+        .agreement-box {
+            background: #e8f5e9;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            border: 2px solid #2e7d32;
+            color: #1b5e20;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .footer nav {
+            margin-top: 15px;
+        }
+        
+        .footer a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+            padding: 5px;
+        }
+        
+        .footer a:hover {
+            color: #0052a3;
+            transform: translateY(-2px);
+        }
+        
+        .footer a:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        strong {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* Links with proper contrast */
+        a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            color: #0052a3;
+        }
+        
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .emoji-logo {
+                font-size: 48px;
+            }
+            
+            .footer a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header>
+            <div class="header">
+                <span class="emoji-logo" role="img" aria-label="Chat bubble">💬</span>
+                <h1>Terms of Service</h1>
+                <div class="subtitle">Professional commentary for the web</div>
+                <div class="last-updated">
+                    <time datetime="2025-01-01">Effective: January 1, 2025</time>
+                </div>
+            </div>
+        </header>
+        
+        <main id="main-content">
+            <section class="tldr" aria-labelledby="summary-heading">
+                <h3 id="summary-heading">📌 Quick Summary</h3>
+                <ul>
+                    <li>Be at least 13 years old</li>
+                    <li>Follow our Community Guidelines</li>
+                    <li>Your content is yours, but we moderate for safety</li>
+                    <li>We use anonymized data to improve AI</li>
+                    <li>You can opt-out of data aggregation</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="welcome-heading">
+                <h2 id="welcome-heading"><span class="section-emoji" aria-hidden="true">👋</span>Welcome!</h2>
+                <p>Cellophane enables meaningful discussions on any webpage. By using our service, you agree to these terms and our commitment to maintaining a professional, respectful platform.</p>
+            </section>
+            
+            <section aria-labelledby="eligibility-heading">
+                <h2 id="eligibility-heading"><span class="section-emoji" aria-hidden="true">✅</span>Who Can Use Cellophane</h2>
+                <ul>
+                    <li>You must be at least 13 years old</li>
+                    <li>If you're under 18, please get your parent's permission</li>
+                    <li>You need to follow the laws of your country</li>
+                    <li>You must agree to follow our Community Guidelines</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="community-heading">
+                <h2 id="community-heading"><span class="section-emoji" aria-hidden="true">🏛️</span>Community Guidelines</h2>
+                
+                <div class="guidelines-box">
+                    <h3>Our Platform Standards</h3>
+                    <p>Cellophane is committed to fostering meaningful, professional discussions. We actively moderate content to ensure a safe and productive environment for all users.</p>
+                </div>
+                
+                <p><strong>Prohibited Content:</strong></p>
+                <ul>
+                    <li><strong>Spam:</strong> Repetitive, unsolicited, or commercial content</li>
+                    <li><strong>Hate Speech:</strong> Content targeting individuals or groups based on protected characteristics</li>
+                    <li><strong>Harassment:</strong> Bullying, threats, or intimidation of any kind</li>
+                    <li><strong>Profanity:</strong> Excessive use of offensive language</li>
+                    <li><strong>Misinformation:</strong> Deliberately false or misleading information</li>
+                    <li><strong>Illegal Content:</strong> Any content violating local or international laws</li>
+                    <li><strong>Copyright Infringement:</strong> Unauthorized use of copyrighted material</li>
+                    <li><strong>Personal Information:</strong> Sharing private information without consent</li>
+                </ul>
+                
+                <p><strong>Content Moderation Process:</strong></p>
+                <ul>
+                    <li>Automated systems detect and remove spam and harmful content</li>
+                    <li>User reports are reviewed within 24-48 hours</li>
+                    <li>Violations result in content removal and potential account suspension</li>
+                    <li>Repeat offenders may face permanent bans</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="features-heading">
+                <h2 id="features-heading"><span class="section-emoji" aria-hidden="true">🎯</span>What You Can Do</h2>
+                <p>With Cellophane, you can:</p>
+                <ul>
+                    <li>Add professional commentary and insights on any webpage</li>
+                    <li>Engage in meaningful discussions with other users</li>
+                    <li>Control visibility settings (private, friends, or public)</li>
+                    <li>Report inappropriate content for review</li>
+                    <li>Appeal moderation decisions through our support system</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="content-heading">
+                <h2 id="content-heading"><span class="section-emoji" aria-hidden="true">📝</span>Your Content Rights & Licenses</h2>
+                <ul>
+                    <li>You retain ownership of all content you create</li>
+                    <li>You control visibility and can delete your content anytime</li>
+                    <li>Deleted content is removed from public view immediately</li>
+                    <li>We retain deleted content for up to 30 days for legal compliance</li>
+                </ul>
+                
+                <div class="ai-disclosure">
+                    <h3>How We Use Your Content</h3>
+                    <p>By using Cellophane, you grant us a license to use your anonymized content for:</p>
+                    <ul>
+                        <li>Improving our annotation and recommendation systems</li>
+                        <li>Creating aggregated insights about web content trends</li>
+                        <li>Developing AI training datasets with personally identifiable information removed</li>
+                        <li>Generating anonymous market intelligence reports</li>
+                    </ul>
+                    <p><strong>Important:</strong> Your content is anonymized by removing usernames, email addresses, and other identifying information. We aggregate anonymized data with thousands of other users before any external use.</p>
+                    <p><strong>Opt-Out Option:</strong> You can request exclusion from aggregated datasets by contacting <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="moderation-heading">
+                <h2 id="moderation-heading"><span class="section-emoji" aria-hidden="true">🛡️</span>Content Moderation & Appeals</h2>
+                <ul>
+                    <li>We use automated systems and human review to moderate content</li>
+                    <li>Content violating our guidelines is removed promptly</li>
+                    <li>Users receive notifications when their content is moderated</li>
+                    <li>You can appeal moderation decisions within 30 days</li>
+                    <li>Appeals are reviewed by our moderation team within 72 hours</li>
+                </ul>
+                
+                <div class="friendly-box" role="note">
+                    <strong>💡 Report System:</strong> Help keep our community safe by reporting inappropriate content. Use the report button on any comment or email us at <a href="mailto:report@cellophane.ai">report@cellophane.ai</a>
+                </div>
+            </section>
+            
+            <section aria-labelledby="privacy-heading">
+                <h2 id="privacy-heading"><span class="section-emoji" aria-hidden="true">🔒</span>Privacy & Data Protection</h2>
+                <p>Your privacy is fundamental to our service:</p>
+                <ul>
+                    <li>Personal data is anonymized within 90 days of creation</li>
+                    <li>We use encryption to protect all data transfers</li>
+                    <li>You can download or delete your data anytime</li>
+                    <li>We never sell personally identifiable information</li>
+                    <li>Read our full <a href="/privacy.html">Privacy Policy</a> for complete details</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="ai-heading">
+                <h2 id="ai-heading"><span class="section-emoji" aria-hidden="true">🤖</span>AI Features & Data Usage</h2>
+                <p>We use AI technology to enhance your experience:</p>
+                <ul>
+                    <li>Smart suggestions and auto-complete features</li>
+                    <li>Automated content moderation for safety</li>
+                    <li>Sentiment analysis to improve discussions</li>
+                    <li>Your comments help train AI to better understand web content perspectives</li>
+                </ul>
+                <p><strong>Privacy Protection:</strong> Your identity is always protected through anonymization when data is used for AI training.</p>
+            </section>
+            
+            <section aria-labelledby="thirdparty-heading">
+                <h2 id="thirdparty-heading"><span class="section-emoji" aria-hidden="true">🌐</span>Third-Party Websites</h2>
+                <p>Cellophane operates as a layer over third-party websites. We are not responsible for their content, policies, or practices. Website owners may request removal of Cellophane functionality from their sites.</p>
+            </section>
+            
+            <section aria-labelledby="legal-heading">
+                <h2 id="legal-heading"><span class="section-emoji" aria-hidden="true">⚖️</span>Legal Terms</h2>
+                <div class="simple-highlight" role="region" aria-label="Legal information">
+                    <p><strong>Service Availability:</strong> We strive for 99.9% uptime but cannot guarantee uninterrupted service.</p>
+                    <p><strong>Liability Limitation:</strong> To the maximum extent permitted by law, our total liability shall not exceed £100 GBP. As our service is currently free during beta, we cannot be held liable for any indirect, incidental, or consequential damages.</p>
+                    <p><strong>Dispute Resolution:</strong> Disputes will be resolved through binding arbitration in London, England, under the rules of the London Court of International Arbitration (LCIA).</p>
+                    <p><strong>Governing Law:</strong> These terms are governed by the laws of England and Wales.</p>
+                    <p><strong>Changes to Terms:</strong> We'll notify you 30 days before any material changes to these terms.</p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="regional-heading">
+                <h2 id="regional-heading"><span class="section-emoji" aria-hidden="true">🌍</span>Regional Rights</h2>
+                <p><strong>EU Users (GDPR):</strong> You have rights to access, rectify, erase, port, and object to processing of your data.</p>
+                <p><strong>California Users (CCPA):</strong> You have rights to know, delete, and opt-out of sale of personal information (we don't sell personal data).</p>
+                <p><strong>All Users:</strong> You can exercise your privacy rights by contacting <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></p>
+            </section>
+            
+            <section aria-labelledby="termination-heading">
+                <h2 id="termination-heading"><span class="section-emoji" aria-hidden="true">❌</span>Account Termination</h2>
+                <ul>
+                    <li>You can delete your account anytime through account settings</li>
+                    <li>We may suspend accounts that violate our Community Guidelines</li>
+                    <li>Suspended users can appeal within 30 days</li>
+                    <li>Personal data is deleted within 30 days of account closure</li>
+                    <li>Anonymized aggregate data may be retained for analytics</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="contact-heading">
+                <h2 id="contact-heading"><span class="section-emoji" aria-hidden="true">💬</span>Contact Us</h2>
+                <p>We're here to help with any questions or concerns:</p>
+                <address>
+                    <ul style="list-style: none; margin-left: 0;">
+                        <li>General Support: <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
+                        <li>Privacy Concerns: <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                        <li>Content Reports: <a href="mailto:report@cellophane.ai">report@cellophane.ai</a></li>
+                        <li>Legal Inquiries: <a href="mailto:legal@cellophane.ai">legal@cellophane.ai</a></li>
+                        <li>Response Time: Within 24-48 hours</li>
+                    </ul>
+                </address>
+            </section>
+            
+            <div class="agreement-box" role="region" aria-label="Agreement notice">
+                By using Cellophane, you agree to these terms and our commitment to maintaining a professional, respectful platform for meaningful web discussions.
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer">
+                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <nav aria-label="Footer navigation">
+                    <a href="/">Home</a>
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/community-guidelines.html">Community Guidelines</a>
+                    <a href="/help">Help Center</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

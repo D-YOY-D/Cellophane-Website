@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellophane™ - Privacy Policy</title>
+    <meta name="description" content="Privacy Policy for Cellophane™ - How we protect your data while enabling meaningful web discussions">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip to content link - WCAG 2.4.1 */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100000;
+            border-radius: 0 0 4px 0;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            * {
+                border-color: currentColor !important;
+            }
+        }
+        
+        /* Reduced motion support - WCAG 2.3.3 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        /* Decorative gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(0,212,255,0.05) 0%, 
+                rgba(123,100,255,0.05) 25%, 
+                rgba(255,107,157,0.05) 50%, 
+                rgba(255,199,55,0.05) 75%, 
+                rgba(0,212,255,0.05) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Clear focus indicators - WCAG 2.4.7 */
+        *:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        .emoji-logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+            font-weight: 300;
+        }
+        
+        .last-updated {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        h2 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-emoji {
+            font-size: 32px;
+            display: inline-block;
+        }
+        
+        p {
+            margin-bottom: 18px;
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        ul {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        /* Promise Box */
+        .promise-box {
+            background: #e8f5e9;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            border: 2px solid #4caf50;
+        }
+        
+        .promise-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+        
+        .promise-box p {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1b5e20;
+        }
+        
+        /* Quick facts */
+        .quick-facts {
+            background: #fff3e0;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #ff9800;
+        }
+        
+        .quick-facts h3 {
+            color: #e65100;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .quick-facts ul {
+            margin-left: 25px;
+        }
+        
+        .quick-facts li {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* Info box */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+        
+        .info-box strong {
+            color: #0d47a1;
+        }
+        
+        /* Simple table */
+        .simple-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .simple-table th {
+            background: #1976d2;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .simple-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .simple-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .simple-table tr:hover td {
+            background: #f8f9fa;
+        }
+        
+        /* Rights box */
+        .rights-box {
+            background: #fce4ec;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #c2185b;
+        }
+        
+        .rights-box h3 {
+            color: #880e4f;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        /* Cookie info */
+        .cookie-info {
+            background: #f3e5f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #9c27b0;
+        }
+        
+        /* AI Disclosure */
+        .ai-disclosure {
+            background: #e8eaf6;
+            border: 2px solid #3f51b5;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .ai-disclosure h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+        
+        /* Anonymization box */
+        .anonymization-box {
+            background: #f1f8e9;
+            border: 2px solid #689f38;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .anonymization-box h3 {
+            color: #33691e;
+            margin-bottom: 15px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .footer nav {
+            margin-top: 15px;
+        }
+        
+        .footer a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+            padding: 5px;
+        }
+        
+        .footer a:hover {
+            color: #0052a3;
+            transform: translateY(-2px);
+        }
+        
+        .footer a:focus {
+            outline: 3px solid #00D4FF;
+            outline-offset: 2px;
+        }
+        
+        strong {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        
+        /* Links with proper contrast */
+        a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            color: #0052a3;
+        }
+        
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .emoji-logo {
+                font-size: 48px;
+            }
+            
+            .simple-table {
+                font-size: 14px;
+            }
+            
+            .simple-table th, .simple-table td {
+                padding: 10px;
+            }
+            
+            .footer a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header>
+            <div class="header">
+                <span class="emoji-logo" role="img" aria-label="Lock">🔒</span>
+                <h1>Privacy Policy</h1>
+                <div class="subtitle">Your privacy protected, your identity secured</div>
+                <div class="last-updated">
+                    <time datetime="2025-01-01">Last Updated: January 1, 2025</time>
+                </div>
+            </div>
+        </header>
+        
+        <main id="main-content">
+            <section class="promise-box" aria-labelledby="promise-heading">
+                <h3 id="promise-heading">🤝 Our Core Privacy Promise</h3>
+                <p><strong>We never sell personally identifiable information.</strong></p>
+                <p>Your identity is protected through comprehensive anonymization.</p>
+            </section>
+            
+            <section class="quick-facts" aria-labelledby="facts-heading">
+                <h3 id="facts-heading">⚡ Privacy Quick Facts</h3>
+                <ul>
+                    <li>Personal data is anonymized within 90 days</li>
+                    <li>You can opt-out of data aggregation anytime</li>
+                    <li>We use bank-level encryption</li>
+                    <li>Content moderation data is kept separate from personal data</li>
+                    <li>You can delete all your data with one click</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="collect-heading">
+                <h2 id="collect-heading"><span class="section-emoji" aria-hidden="true">📋</span>What We Collect</h2>
+                
+                <h3>Account Information:</h3>
+                <ul>
+                    <li>Email address (for authentication)</li>
+                    <li>Username (for display purposes)</li>
+                    <li>Password (encrypted with bcrypt)</li>
+                </ul>
+                
+                <h3>Your Content:</h3>
+                <ul>
+                    <li>Comments and annotations you create</li>
+                    <li>Privacy settings for each item</li>
+                    <li>Timestamp and webpage URL</li>
+                </ul>
+                
+                <h3>Moderation Data:</h3>
+                <ul>
+                    <li>Reports you submit about inappropriate content</li>
+                    <li>Moderation actions taken on your content</li>
+                    <li>Appeal requests and outcomes</li>
+                </ul>
+                
+                <h3>Technical Information:</h3>
+                <ul>
+                    <li>Browser type and version</li>
+                    <li>General location (country/region via IP)</li>
+                    <li>Device type (desktop/mobile)</li>
+                    <li>Error logs for debugging</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="ai-heading">
+                <h2 id="ai-heading"><span class="section-emoji" aria-hidden="true">🤖</span>How We Use Your Data for AI</h2>
+                
+                <div class="ai-disclosure">
+                    <h3>AI Training and Development</h3>
+                    <p>Comments and interactions you create through Cellophane may be processed to improve our services and develop AI technologies. Your content helps train AI to better understand human perspectives on web content.</p>
+                    
+                    <p><strong>How We Protect Your Identity:</strong></p>
+                    <ul>
+                        <li>All personally identifiable information is removed before AI processing</li>
+                        <li>Content is aggregated with thousands of other users</li>
+                        <li>Individual comments cannot be traced back to you</li>
+                        <li>We never include usernames, emails, or IP addresses in datasets</li>
+                    </ul>
+                    
+                    <p><strong>What We Use It For:</strong></p>
+                    <ul>
+                        <li>Improving content recommendation algorithms</li>
+                        <li>Training sentiment analysis models</li>
+                        <li>Creating market intelligence reports (fully anonymized)</li>
+                        <li>Developing better moderation systems</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section aria-labelledby="anonymization-heading">
+                <h2 id="anonymization-heading"><span class="section-emoji" aria-hidden="true">🎭</span>Our Anonymization Process</h2>
+                
+                <div class="anonymization-box">
+                    <h3>What "Anonymization" Means</h3>
+                    <p>We follow industry best practices to ensure your identity cannot be determined from processed data:</p>
+                    
+                    <p><strong>We Remove:</strong></p>
+                    <ul>
+                        <li>Names, usernames, and account IDs</li>
+                        <li>Email addresses and contact information</li>
+                        <li>IP addresses and precise location data</li>
+                        <li>Any unique identifiers</li>
+                        <li>Content that could identify you (like personal stories)</li>
+                    </ul>
+                    
+                    <p><strong>We Apply:</strong></p>
+                    <ul>
+                        <li>K-anonymity (grouping with at least 1000 similar users)</li>
+                        <li>Differential privacy techniques</li>
+                        <li>Data generalization and suppression</li>
+                        <li>Regular audits of anonymization effectiveness</li>
+                    </ul>
+                    
+                    <p><strong>Timeline:</strong> Personal data is anonymized within 90 days of creation</p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="use-heading">
+                <h2 id="use-heading"><span class="section-emoji" aria-hidden="true">🎯</span>How We Use Your Information</h2>
+                
+                <table class="simple-table">
+                    <tr>
+                        <th>Purpose</th>
+                        <th>What We Use</th>
+                        <th>Legal Basis</th>
+                    </tr>
+                    <tr>
+                        <td>Provide the service</td>
+                        <td>Account data, content</td>
+                        <td>Contract performance</td>
+                    </tr>
+                    <tr>
+                        <td>Content moderation</td>
+                        <td>Content, reports</td>
+                        <td>Legitimate interest</td>
+                    </tr>
+                    <tr>
+                        <td>Service improvement</td>
+                        <td>Anonymized usage data</td>
+                        <td>Legitimate interest</td>
+                    </tr>
+                    <tr>
+                        <td>AI development</td>
+                        <td>Anonymized content</td>
+                        <td>Legitimate interest</td>
+                    </tr>
+                    <tr>
+                        <td>Legal compliance</td>
+                        <td>Required records</td>
+                        <td>Legal obligation</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <section aria-labelledby="share-heading">
+                <h2 id="share-heading"><span class="section-emoji" aria-hidden="true">🤝</span>Who We Share With</h2>
+                
+                <div class="info-box">
+                    <strong>Important:</strong> We never sell personally identifiable information. We may share anonymized, aggregated data for research and development purposes.
+                </div>
+                
+                <p>We share data only in these circumstances:</p>
+                <ul>
+                    <li><strong>With your consent:</strong> When you make content public or share it</li>
+                    <li><strong>Service providers:</strong> Trusted partners who help operate our service (under strict NDAs)</li>
+                    <li><strong>Legal requirements:</strong> When required by law or valid legal process</li>
+                    <li><strong>Safety:</strong> To prevent harm, fraud, or security threats</li>
+                    <li><strong>Anonymized datasets:</strong> Aggregated, de-identified data for AI training</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="security-heading">
+                <h2 id="security-heading"><span class="section-emoji" aria-hidden="true">🔐</span>Data Security</h2>
+                <ul>
+                    <li>✅ AES-256 encryption for data at rest</li>
+                    <li>✅ TLS 1.3 for data in transit</li>
+                    <li>✅ Regular security audits and penetration testing</li>
+                    <li>✅ Isolated systems for different data types</li>
+                    <li>✅ 24/7 security monitoring</li>
+                    <li>✅ Incident response team</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="rights-heading">
+                <h2 id="rights-heading"><span class="section-emoji" aria-hidden="true">🎮</span>Your Privacy Rights</h2>
+                
+                <div class="rights-box">
+                    <h3>You Can Always:</h3>
+                    <ul>
+                        <li><strong>Access:</strong> View all data we have about you</li>
+                        <li><strong>Download:</strong> Export your data in JSON format</li>
+                        <li><strong>Delete:</strong> Remove your account and all associated data</li>
+                        <li><strong>Correct:</strong> Update any inaccurate information</li>
+                        <li><strong>Opt-out:</strong> Exclude yourself from aggregated datasets</li>
+                        <li><strong>Object:</strong> Challenge specific data processing</li>
+                    </ul>
+                    <p><strong>How to exercise rights:</strong> Email <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> or use account settings</p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="optout-heading">
+                <h2 id="optout-heading"><span class="section-emoji" aria-hidden="true">🚪</span>Opt-Out Options</h2>
+                <p>You have full control over how your data is used:</p>
+                <ul>
+                    <li><strong>AI Training Opt-Out:</strong> Email <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> to exclude your content from AI datasets</li>
+                    <li><strong>Analytics Opt-Out:</strong> Disable analytics cookies in your browser</li>
+                    <li><strong>Marketing Opt-Out:</strong> Unsubscribe from emails using the link in any message</li>
+                    <li><strong>Complete Deletion:</strong> Delete your account to remove all data</li>
+                </ul>
+                <p><strong>Note:</strong> Opting out doesn't affect your ability to use core features</p>
+            </section>
+            
+            <section aria-labelledby="cookies-heading">
+                <h2 id="cookies-heading"><span class="section-emoji" aria-hidden="true">🍪</span>Cookies & Tracking</h2>
+                
+                <div class="cookie-info">
+                    <p>We use minimal cookies for essential functions:</p>
+                    <ul>
+                        <li><strong>Authentication:</strong> Keep you logged in</li>
+                        <li><strong>Preferences:</strong> Remember your settings</li>
+                        <li><strong>Security:</strong> Prevent fraud and abuse</li>
+                        <li><strong>Analytics:</strong> Understand usage patterns (if you consent)</li>
+                    </ul>
+                    <p>You can disable non-essential cookies in your browser settings.</p>
+                </div>
+            </section>
+            
+            <section aria-labelledby="retention-heading">
+                <h2 id="retention-heading"><span class="section-emoji" aria-hidden="true">📅</span>Data Retention</h2>
+                
+                <table class="simple-table">
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Retention Period</th>
+                        <th>Why</th>
+                    </tr>
+                    <tr>
+                        <td>Active account data</td>
+                        <td>Until deletion requested</td>
+                        <td>Service provision</td>
+                    </tr>
+                    <tr>
+                        <td>Deleted content</td>
+                        <td>30 days</td>
+                        <td>Recovery/legal compliance</td>
+                    </tr>
+                    <tr>
+                        <td>Moderation records</td>
+                        <td>2 years</td>
+                        <td>Safety/appeals</td>
+                    </tr>
+                    <tr>
+                        <td>Anonymized data</td>
+                        <td>Indefinite</td>
+                        <td>Service improvement</td>
+                    </tr>
+                    <tr>
+                        <td>Security logs</td>
+                        <td>90 days</td>
+                        <td>Security monitoring</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <section aria-labelledby="children-heading">
+                <h2 id="children-heading"><span class="section-emoji" aria-hidden="true">👶</span>Children's Privacy</h2>
+                <ul>
+                    <li>Cellophane is not intended for users under 13</li>
+                    <li>We don't knowingly collect data from children</li>
+                    <li>If we discover a user is under 13, we delete their account</li>
+                    <li>Parents can contact us at <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="international-heading">
+                <h2 id="international-heading"><span class="section-emoji" aria-hidden="true">🌍</span>International Users</h2>
+                
+                <h3>EU Users (GDPR):</h3>
+                <ul>
+                    <li>Right to access, rectification, and erasure</li>
+                    <li>Right to data portability</li>
+                    <li>Right to object to processing</li>
+                    <li>Right to lodge complaints with supervisory authorities</li>
+                    <li>Data Protection Officer: <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
+                </ul>
+                
+                <h3>California Users (CCPA/CPRA):</h3>
+                <ul>
+                    <li>Right to know what personal information we collect</li>
+                    <li>Right to delete personal information</li>
+                    <li>Right to opt-out of sale (we don't sell personal data)</li>
+                    <li>Right to non-discrimination</li>
+                    <li>Right to limit use of sensitive personal information</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="changes-heading">
+                <h2 id="changes-heading"><span class="section-emoji" aria-hidden="true">🔄</span>Policy Updates</h2>
+                <p>When we update this policy:</p>
+                <ul>
+                    <li>We'll notify you via email for material changes</li>
+                    <li>We'll post a notice in the extension</li>
+                    <li>Updates take effect 30 days after notification</li>
+                    <li>Continued use constitutes acceptance</li>
+                </ul>
+            </section>
+            
+            <section aria-labelledby="contact-heading">
+                <h2 id="contact-heading"><span class="section-emoji" aria-hidden="true">💬</span>Contact Us</h2>
+                <p>For privacy questions or to exercise your rights:</p>
+                <address>
+                    <ul style="list-style: none; margin-left: 0;">
+                        <li>Privacy Team: <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                        <li>Data Protection Officer: <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
+                        <li>Opt-Out Requests: <a href="mailto:optout@cellophane.ai">optout@cellophane.ai</a></li>
+                        <li>General Support: <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
+                        <li>Response Time: Within 72 hours</li>
+                    </ul>
+                </address>
+            </section>
+            
+            <div class="promise-box" style="margin-top: 40px;">
+                <p><strong>Your privacy is fundamental to our mission.</strong></p>
+                <p>We're building Cellophane to enable meaningful discussions while protecting your identity.</p>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer">
+                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <nav aria-label="Footer navigation">
+                    <a href="/">Home</a>
+                    <a href="/terms.html">Terms of Service</a>
+                    <a href="/transparency">Transparency Report</a>
+                    <a href="/help">Help Center</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
