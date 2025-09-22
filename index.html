@@ -538,8 +538,9 @@
             </div>
             
             <div class="age-warning">
-                ⚠️ You must be at least 13 years old to use Cellophane
+                ⚠️ You must be at least 13+ years old to use Cellophane
             </div>
+<div class="age-note">In the EEA, ages 13–15 require parental/guardian consent; UK is 13+.</div>
             
             <div class="terms-summary">
                 <h3>Quick Summary:</h3>
@@ -547,7 +548,7 @@
                     <li>Your content is yours - we never sell your data</li>
                     <li>Be respectful - no harassment or illegal content</li>
                     <li>You control privacy - choose who sees your notes</li>
-                    <li>We use cookies only for essential functions</li>
+                    <li>We use essential cookies and optional analytics with your consent. Manage your choices below.</li>
                     <li>You can delete everything anytime</li>
                 </ul>
             </div>
@@ -556,7 +557,7 @@
                 <div class="checkbox-wrapper">
                     <input type="checkbox" id="ageConfirm" onchange="checkAllBoxes()">
                     <label for="ageConfirm">
-                        I confirm that I am at least 13 years old
+                        I confirm that I am at least 13+ years old
                     </label>
                 </div>
                 
@@ -660,7 +661,7 @@
     
     <footer>
         <div class="copyright">
-            © 2025 Cellophane™. All Rights Reserved.
+            © 2025 Cellophane AI Ltd.. All Rights Reserved.
         </div>
         <div>
             <a href="/privacy.html">Privacy Policy</a>
@@ -710,7 +711,7 @@
             // Save acceptance
             setCookie('termsAccepted', 'true', 365);
             setCookie('cookieConsent', 'accepted', 365);
-            setCookie('userAge13Plus', 'true', 365);
+            setCookie('userAge16Plus', 'true', 365);
             setCookie('acceptanceDate', new Date().toISOString(), 365);
             
             // Close modal

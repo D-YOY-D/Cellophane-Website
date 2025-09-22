@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cellophane™ - Privacy Policy</title>
-    <meta name="description" content="Privacy Policy for Cellophane™ - How we protect your data while enabling meaningful web discussions">
+    <meta name="description" content="Privacy Policy for Cellophane™ - The transparent overlay platform for uncensored web conversations">
     
     <style>
         * {
@@ -48,7 +48,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #1a1a2e;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
             padding: 20px;
@@ -64,11 +64,11 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, 
-                rgba(0,212,255,0.05) 0%, 
-                rgba(123,100,255,0.05) 25%, 
-                rgba(255,107,157,0.05) 50%, 
-                rgba(255,199,55,0.05) 75%, 
-                rgba(0,212,255,0.05) 100%);
+                rgba(0,212,255,0.08) 0%, 
+                rgba(123,100,255,0.08) 25%, 
+                rgba(255,107,157,0.08) 50%, 
+                rgba(255,199,55,0.08) 75%, 
+                rgba(0,212,255,0.08) 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -86,33 +86,63 @@
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: #ffffff;
+            background: rgba(255,255,255,0.98);
             border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 50px;
+            padding: 60px;
             position: relative;
             z-index: 2;
+            backdrop-filter: blur(10px);
         }
         
         .header {
             text-align: center;
             margin-bottom: 50px;
             padding-bottom: 30px;
-            border-bottom: 3px solid #e0e0e0;
+            border-bottom: 3px solid linear-gradient(90deg, #667eea, #764ba2);
+            position: relative;
         }
         
-        .emoji-logo {
-            font-size: 60px;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
             margin-bottom: 20px;
-            display: block;
+        }
+        
+        .logo-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .version-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
         }
         
         h1 {
             font-size: 48px;
             font-weight: 800;
-            color: #1a1a2e;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
         
@@ -128,20 +158,57 @@
             color: #777;
         }
         
+        .toc-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(102,126,234,0.3);
+        }
+        
+        .toc-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .toc-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .toc-box li {
+            margin-bottom: 8px;
+        }
+        
+        .toc-box a {
+            color: #764ba2;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .toc-box a:hover {
+            color: #667eea;
+            padding-left: 5px;
+        }
+        
         h2 {
             color: #1a1a2e;
-            font-size: 28px;
-            margin-top: 40px;
+            font-size: 30px;
+            margin-top: 45px;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 12px;
             font-weight: 700;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(102,126,234,0.2);
         }
         
         h3 {
             color: #333;
-            font-size: 20px;
+            font-size: 22px;
             margin-top: 25px;
             margin-bottom: 15px;
             font-weight: 600;
@@ -172,7 +239,7 @@
         
         /* Promise Box */
         .promise-box {
-            background: #e8f5e9;
+            background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(139,195,74,0.1));
             border-radius: 20px;
             padding: 30px;
             margin: 30px 0;
@@ -194,7 +261,7 @@
         
         /* Quick facts */
         .quick-facts {
-            background: #fff3e0;
+            background: linear-gradient(135deg, rgba(255,152,0,0.1), rgba(255,193,7,0.1));
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 40px;
@@ -216,9 +283,75 @@
             color: #333;
         }
         
+        /* Privacy Layers Box */
+        .privacy-layers {
+            background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05));
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid rgba(102,126,234,0.3);
+        }
+        
+        .privacy-layers h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .layer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .layer-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .layer-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .layer-card.public {
+            border-color: #007AFF;
+        }
+        
+        .layer-card.private {
+            border-color: #28a745;
+        }
+        
+        .layer-card.friends {
+            border-color: #ff8c00;
+        }
+        
+        .layer-card.influencer {
+            border-color: #667eea;
+        }
+        
+        .layer-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .layer-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .layer-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
         /* Info box */
         .info-box {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, rgba(33,150,243,0.1), rgba(3,169,244,0.1));
             border-left: 4px solid #1976d2;
             padding: 20px;
             margin: 30px 0;
@@ -241,7 +374,7 @@
         }
         
         .simple-table th {
-            background: #1976d2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 15px;
             text-align: left;
@@ -259,12 +392,12 @@
         }
         
         .simple-table tr:hover td {
-            background: #f8f9fa;
+            background: rgba(102,126,234,0.05);
         }
         
         /* Rights box */
         .rights-box {
-            background: #fce4ec;
+            background: linear-gradient(135deg, rgba(233,30,99,0.1), rgba(236,64,122,0.1));
             border-radius: 20px;
             padding: 30px;
             margin: 30px 0;
@@ -279,7 +412,7 @@
         
         /* Cookie info */
         .cookie-info {
-            background: #f3e5f5;
+            background: linear-gradient(135deg, rgba(156,39,176,0.1), rgba(171,71,188,0.1));
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
@@ -288,7 +421,7 @@
         
         /* AI Disclosure */
         .ai-disclosure {
-            background: #e8eaf6;
+            background: linear-gradient(135deg, rgba(63,81,181,0.1), rgba(92,107,192,0.1));
             border: 2px solid #3f51b5;
             border-radius: 12px;
             padding: 25px;
@@ -302,7 +435,7 @@
         
         /* Anonymization box */
         .anonymization-box {
-            background: #f1f8e9;
+            background: linear-gradient(135deg, rgba(104,159,56,0.1), rgba(124,179,66,0.1));
             border: 2px solid #689f38;
             border-radius: 12px;
             padding: 25px;
@@ -314,10 +447,24 @@
             margin-bottom: 15px;
         }
         
+        /* Content Moderation Box */
+        .moderation-box {
+            background: linear-gradient(135deg, rgba(255,87,34,0.1), rgba(255,110,64,0.1));
+            border: 2px solid #ff5722;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .moderation-box h3 {
+            color: #bf360c;
+            margin-bottom: 15px;
+        }
+        
         .footer {
             margin-top: 50px;
             padding-top: 30px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid rgba(102,126,234,0.2);
             text-align: center;
             color: #666;
         }
@@ -327,8 +474,8 @@
         }
         
         .footer a {
-            color: #0066cc;
-            text-decoration: underline;
+            color: #667eea;
+            text-decoration: none;
             margin: 0 15px;
             font-weight: 500;
             transition: all 0.3s;
@@ -337,7 +484,7 @@
         }
         
         .footer a:hover {
-            color: #0052a3;
+            color: #764ba2;
             transform: translateY(-2px);
         }
         
@@ -353,12 +500,12 @@
         
         /* Links with proper contrast */
         a {
-            color: #0066cc;
+            color: #667eea;
             text-decoration: underline;
         }
         
         a:hover {
-            color: #0052a3;
+            color: #764ba2;
         }
         
         /* Screen reader only text */
@@ -388,8 +535,10 @@
                 font-size: 24px;
             }
             
-            .emoji-logo {
-                font-size: 48px;
+            .logo-image {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
             }
             
             .simple-table {
@@ -404,6 +553,10 @@
                 display: block;
                 margin: 10px 0;
             }
+            
+            .layer-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -414,116 +567,154 @@
     <div class="container">
         <header>
             <div class="header">
-                <span class="emoji-logo" role="img" aria-label="Lock">🔒</span>
-                <h1>Privacy Policy</h1>
-                <div class="subtitle">Your privacy protected, your identity secured</div>
+                <div class="version-badge">v1.1</div>
+                <div class="logo-container">
+                    <div class="logo-image">📋</div>
+                </div>
+                <h1>Cellophane™ Privacy Policy</h1>
+                <div class="subtitle">Add notes and media to any website - transparent social layer with live comments</div>
                 <div class="last-updated">
-                    <time datetime="2025-01-01">Last Updated: January 1, 2025</time>
+                    P25-09-22">Last Updated: September 22, 2025</time>
                 </div>
             </div>
         </header>
         
         <main id="main-content">
+            <!-- Table of Contents -->
+            <section class="toc-box" aria-labelledby="toc-heading">
+                <h3 id="toc-heading">📑 Quick Navigation</h3>
+                <ul>
+                    <li>→ <a href="#privacy-promise">Our Privacy Promise</a></li>
+                    <li>→ <a href="#privacy-layers">Privacy Layers Explained</a></li>
+                    <li>→ <a href="#data-collection">What We Collect</a></li>
+                    <li>→ <a href="#ai-usage">AI & Anonymization</a></li>
+                    <li>→ <a href="#your-rights">Your Rights</a></li>
+                    <li>→ <a href="#moderation">Content Moderation</a></li>
+                    <li>→ <a href="#security">Security Measures</a></li>
+                </ul>
+            </section>
+            
             <section class="promise-box" aria-labelledby="promise-heading">
-                <h3 id="promise-heading">🤝 Our Core Privacy Promise</h3>
-                <p><strong>We never sell personally identifiable information.</strong></p>
-                <p>Your identity is protected through comprehensive anonymization.</p>
+                <h3 id="promise-heading">🛡️ Our Core Privacy Promise</h3>
+                <p><strong>Your freedom of expression is protected through comprehensive privacy controls.</strong></p>
+                <p>We never sell personally identifiable information. Your identity is protected through advanced anonymization.</p>
+                <p>You own your content; you grant us a limited license to host and display it as described in our Terms of Service.</p>
+                <p><strong>Company:</strong> Cellophane AI Ltd.</p>
+                <p><strong>Contact:</strong> privacy@cellophane.ai</p>
             </section>
             
             <section class="quick-facts" aria-labelledby="facts-heading">
                 <h3 id="facts-heading">⚡ Privacy Quick Facts</h3>
                 <ul>
-                    <li>Personal data is anonymized within 90 days</li>
-                    <li>You can opt-out of data aggregation anytime</li>
-                    <li>We use bank-level encryption</li>
-                    <li>Content moderation data is kept separate from personal data</li>
-                    <li>You can delete all your data with one click</li>
+                    <li>✔ We aim to anonymize personal data within ~90 days, subject to technical and legal constraints</li>
+                    <li>✔ 4 privacy layers: Public, Private, Friends, Influencer</li>
+                    <li>✔ Complete control over content visibility</li>
+                    <li>✔ Industry-standard AES-256 encryption</li>
+                    <li>✔ Data deletion available upon request</li>
+                    <li>✔ We do not perform cross-site tracking without explicit consent and as permitted by law</li>
+                    <li>✔ Uncensored expression (within legal limits)</li>
+                    <li>✔ Opt-out from AI training available</li>
                 </ul>
             </section>
             
-            <section aria-labelledby="collect-heading">
+            <section id="privacy-layers" class="privacy-layers" aria-labelledby="layers-heading">
+                <h3 id="layers-heading">🎨 Cellophane™ Privacy Layers</h3>
+                <p>You control exactly who sees your cellophanes through our color-coded visibility system:</p>
+                <div class="layer-grid">
+                    <div class="layer-card public">
+                        <div class="layer-icon">🌍</div>
+                        <div class="layer-title">Public (Blue)</div>
+                        <div class="layer-desc">Visible to all Cellophane users on this page</div>
+                    </div>
+                    <div class="layer-card private">
+                        <div class="layer-icon">🔒</div>
+                        <div class="layer-title">Private (Green)</div>
+                        <div class="layer-desc">Only you can see these notes</div>
+                    </div>
+                    <div class="layer-card friends">
+                        <div class="layer-icon">👥</div>
+                        <div class="layer-title">Groups (Orange)</div>
+                        <div class="layer-desc">Shared with your closed Group of friends only</div>
+                    </div>
+                    <div class="layer-card influencer">
+                        <div class="layer-icon">⭐</div>
+                        <div class="layer-title">Influencer (Purple)</div>
+                        <div class="layer-desc">Exclusive to your followers</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="data-collection" aria-labelledby="collect-heading">
                 <h2 id="collect-heading"><span class="section-emoji" aria-hidden="true">📋</span>What We Collect</h2>
                 
                 <h3>Account Information:</h3>
                 <ul>
                     <li>Email address (for authentication)</li>
-                    <li>Username (for display purposes)</li>
+                    <li>Username & display name</li>
                     <li>Password (encrypted with bcrypt)</li>
+                    <li>Avatar preference (Dicebear style selection)</li>
+                    <li>Profile settings and preferences</li>
                 </ul>
                 
-                <h3>Your Content:</h3>
+                <h3>Your Cellophanes (Content):</h3>
                 <ul>
-                    <li>Comments and annotations you create</li>
-                    <li>Privacy settings for each item</li>
-                    <li>Timestamp and webpage URL</li>
+                    <li>Text comments and annotations</li>
+                    <li>Media uploads (images, videos, voice notes)</li>
+                    <li>Reactions and emoji responses</li>
+                    <li>Drawing markups and highlights</li>
+                    <li>Visibility settings for each cellophane</li>
+                    <li>URL and position on the webpage</li>
+                    <li>Timestamps and edit history</li>
                 </ul>
                 
-                <h3>Moderation Data:</h3>
+                <h3>Social Interactions:</h3>
                 <ul>
-                    <li>Reports you submit about inappropriate content</li>
-                    <li>Moderation actions taken on your content</li>
-                    <li>Appeal requests and outcomes</li>
+                    <li>Following/follower relationships</li>
+                    <li>Group memberships</li>
+                    <li>Shared cellophanes and viral loops</li>
+                    <li>Comments on other users' cellophanes</li>
+                    <li>Reaction history</li>
                 </ul>
                 
                 <h3>Technical Information:</h3>
                 <ul>
                     <li>Browser type and version</li>
+                    <li>Extension version</li>
                     <li>General location (country/region via IP)</li>
                     <li>Device type (desktop/mobile)</li>
+                    <li>Screen resolution for proper overlay positioning</li>
                     <li>Error logs for debugging</li>
+                    <li>Performance metrics (load times, etc.)</li>
                 </ul>
             </section>
             
-            <section aria-labelledby="ai-heading">
-                <h2 id="ai-heading"><span class="section-emoji" aria-hidden="true">🤖</span>How We Use Your Data for AI</h2>
+            <section id="ai-usage" aria-labelledby="ai-heading">
+                <h2 id="ai-heading"><span class="section-emoji" aria-hidden="true">🤖</span>AI & Data Processing</h2>
                 
                 <div class="ai-disclosure">
-                    <h3>AI Training and Development</h3>
-                    <p>Comments and interactions you create through Cellophane may be processed to improve our services and develop AI technologies. Your content helps train AI to better understand human perspectives on web content.</p>
+                    <h3>AI-Powered Features</h3>
+                    <p>Cellophane™ uses AI to enhance your experience while protecting your privacy:</p>
                     
-                    <p><strong>How We Protect Your Identity:</strong></p>
+                    <p><strong>Current AI Features:</strong></p>
                     <ul>
-                        <li>All personally identifiable information is removed before AI processing</li>
-                        <li>Content is aggregated with thousands of other users</li>
-                        <li>Individual comments cannot be traced back to you</li>
-                        <li>We never include usernames, emails, or IP addresses in datasets</li>
+                        <li>Smart content recommendations</li>
+                        <li>Sentiment analysis for trending topics</li>
+                        <li>Auto-moderation of harmful content</li>
+                        <li>Language translation services</li>
+                        <li>Future: AI Avatar Guides for interactive help</li>
                     </ul>
                     
-                    <p><strong>What We Use It For:</strong></p>
+                    <p><strong>How We Protect Your Privacy:</strong></p>
                     <ul>
-                        <li>Improving content recommendation algorithms</li>
-                        <li>Training sentiment analysis models</li>
-                        <li>Creating market intelligence reports (fully anonymized)</li>
-                        <li>Developing better moderation systems</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <section aria-labelledby="anonymization-heading">
-                <h2 id="anonymization-heading"><span class="section-emoji" aria-hidden="true">🎭</span>Our Anonymization Process</h2>
-                
-                <div class="anonymization-box">
-                    <h3>What "Anonymization" Means</h3>
-                    <p>We follow industry best practices to ensure your identity cannot be determined from processed data:</p>
-                    
-                    <p><strong>We Remove:</strong></p>
-                    <ul>
-                        <li>Names, usernames, and account IDs</li>
-                        <li>Email addresses and contact information</li>
-                        <li>IP addresses and precise location data</li>
-                        <li>Any unique identifiers</li>
-                        <li>Content that could identify you (like personal stories)</li>
+                        <li>We remove personal identifiers and apply privacy-preserving techniques before AI processing, wherever feasible</li>
+                        <li>Content aggregated with thousands of other users</li>
+                        <li>We aim to achieve meaningful k-anonymity; actual levels depend on context</li>
+                        <li>We may apply privacy-preserving techniques (e.g., aggregation or noise)</li>
+                        <li>No usernames, emails, or IPs in datasets</li>
+                        <li>Periodic reviews of anonymization effectiveness</li>
                     </ul>
                     
-                    <p><strong>We Apply:</strong></p>
-                    <ul>
-                        <li>K-anonymity (grouping with at least 1000 similar users)</li>
-                        <li>Differential privacy techniques</li>
-                        <li>Data generalization and suppression</li>
-                        <li>Regular audits of anonymization effectiveness</li>
-                    </ul>
-                    
-                    <p><strong>Timeline:</strong> Personal data is anonymized within 90 days of creation</p>
+                    <p><strong>Opt-Out Available:</strong> Email <a href="mailto:ai-optout@cellophane.ai">ai-optout@cellophane.ai</a> to exclude your content from AI training.</p>
                 </div>
             </section>
             
@@ -534,16 +725,21 @@
                     <tr>
                         <th>Purpose</th>
                         <th>What We Use</th>
-                        <th>Legal Basis</th>
+                        <th>Legal Basis (GDPR)</th>
                     </tr>
                     <tr>
-                        <td>Provide the service</td>
-                        <td>Account data, content</td>
+                        <td>Provide overlay service</td>
+                        <td>Account data, cellophanes</td>
+                        <td>Contract performance</td>
+                    </tr>
+                    <tr>
+                        <td>Social features</td>
+                        <td>Profile, interactions</td>
                         <td>Contract performance</td>
                     </tr>
                     <tr>
                         <td>Content moderation</td>
-                        <td>Content, reports</td>
+                        <td>Cellophanes, reports</td>
                         <td>Legitimate interest</td>
                     </tr>
                     <tr>
@@ -557,6 +753,11 @@
                         <td>Legitimate interest</td>
                     </tr>
                     <tr>
+                        <td>Viral features</td>
+                        <td>Shared content, links</td>
+                        <td>User consent</td>
+                    </tr>
+                    <tr>
                         <td>Legal compliance</td>
                         <td>Required records</td>
                         <td>Legal obligation</td>
@@ -564,77 +765,104 @@
                 </table>
             </section>
             
+            <section id="moderation" aria-labelledby="moderation-heading">
+                <h2 id="moderation-heading"><span class="section-emoji" aria-hidden="true">⚖️</span>Content Moderation & Freedom</h2>
+                
+                <div class="moderation-box">
+                    <h3>Our Approach to Uncensored Expression</h3>
+                    <p>Cellophane™ was built to enable free expression on the web. We believe in minimal moderation:</p>
+                    
+                    <p><strong>As a general rule, we remove content only when it:</strong></p>
+                    <ul>
+                        <li>Violates applicable laws (CSAM, terrorism, etc.)</li>
+                        <li>Contains direct threats of violence</li>
+                        <li>Shares private personal information (doxxing)</li>
+                        <li>Infringes on intellectual property rights</li>
+                        <li>Is commercial spam or malware</li>
+                    </ul>
+                    
+                    <p><strong>As a general rule we do not remove content for these reasons, subject to law and community policy:</strong></p>
+                    <ul>
+                        <li>Political opinions or controversial views</li>
+                        <li>Criticism of public figures or companies</li>
+                        <li>Adult content (with appropriate visibility settings)</li>
+                        <li>Strong language or unpopular opinions</li>
+                        <li>Disagreements or debates</li>
+                    </ul>
+                    
+                    <p><strong>User Controls:</strong> You can block users, filter content types, and control what you see without affecting others' freedom to express.</p>
+                </div>
+            </section>
+            
             <section aria-labelledby="share-heading">
                 <h2 id="share-heading"><span class="section-emoji" aria-hidden="true">🤝</span>Who We Share With</h2>
                 
                 <div class="info-box">
-                    <strong>Important:</strong> We never sell personally identifiable information. We may share anonymized, aggregated data for research and development purposes.
+                    <strong>Important:</strong> We never sell personally identifiable information. Period.
                 </div>
                 
-                <p>We share data only in these circumstances:</p>
+                <p>We share data only in these limited circumstances:</p>
                 <ul>
-                    <li><strong>With your consent:</strong> When you make content public or share it</li>
-                    <li><strong>Service providers:</strong> Trusted partners who help operate our service (under strict NDAs)</li>
-                    <li><strong>Legal requirements:</strong> When required by law or valid legal process</li>
-                    <li><strong>Safety:</strong> To prevent harm, fraud, or security threats</li>
-                    <li><strong>Anonymized datasets:</strong> Aggregated, de-identified data for AI training</li>
+                    <li><strong>With your consent:</strong> When you make cellophanes public or share them</li>
+                    <li><strong>Service providers:</strong> Supabase (database), Cloudflare (CDN), AWS (hosting) - under data processing agreements and confidentiality obligations</li>
+                    <li><strong>Legal requirements:</strong> Only when required by valid court order or legal process</li>
+                    <li><strong>Safety:</strong> To prevent imminent harm or illegal activities</li>
+                    <li><strong>Anonymized datasets:</strong> Aggregated, de-identified data for research (opt-out available)</li>
+                    <li><strong>Business transfers:</strong> If Cellophane™ is acquired (users will be notified)</li>
                 </ul>
+                
+                <p><strong>International Data Transfers:</strong> We may transfer your data internationally using Standard Contractual Clauses (SCCs) approved by the European Commission and UK International Data Transfer Agreement (IDTA) where applicable.</p>
             </section>
             
-            <section aria-labelledby="security-heading">
-                <h2 id="security-heading"><span class="section-emoji" aria-hidden="true">🔐</span>Data Security</h2>
+            <section id="security" aria-labelledby="security-heading">
+                <h2 id="security-heading"><span class="section-emoji" aria-hidden="true">🔐</span>Security Measures</h2>
                 <ul>
-                    <li>✅ AES-256 encryption for data at rest</li>
-                    <li>✅ TLS 1.3 for data in transit</li>
-                    <li>✅ Regular security audits and penetration testing</li>
+                    <li>✅ Industry-standard AES-256 encryption for data at rest</li>
+                    <li>✅ TLS 1.3 for all data in transit</li>
+                    <li>✅ bcrypt password hashing (cost factor 12)</li>
+                    <li>✅ Row-level security in Supabase</li>
+                    <li>✅ Periodic security reviews</li>
                     <li>✅ Isolated systems for different data types</li>
-                    <li>✅ 24/7 security monitoring</li>
-                    <li>✅ Incident response team</li>
+                    <li>✅ Security monitoring and alerts</li>
+                    <li>✅ Automatic backups with encryption</li>
+                    <li>✅ Two-factor authentication available</li>
+                    <li>✅ Regular security training for all team members</li>
                 </ul>
             </section>
             
-            <section aria-labelledby="rights-heading">
+            <section id="your-rights" aria-labelledby="rights-heading">
                 <h2 id="rights-heading"><span class="section-emoji" aria-hidden="true">🎮</span>Your Privacy Rights</h2>
                 
                 <div class="rights-box">
-                    <h3>You Can Always:</h3>
+                    <h3>You Have Full Control:</h3>
                     <ul>
-                        <li><strong>Access:</strong> View all data we have about you</li>
-                        <li><strong>Download:</strong> Export your data in JSON format</li>
-                        <li><strong>Delete:</strong> Remove your account and all associated data</li>
-                        <li><strong>Correct:</strong> Update any inaccurate information</li>
-                        <li><strong>Opt-out:</strong> Exclude yourself from aggregated datasets</li>
-                        <li><strong>Object:</strong> Challenge specific data processing</li>
+                        <li><strong>Access:</strong> View all data we have about you via settings panel</li>
+                        <li><strong>Download:</strong> Export your cellophanes in JSON/CSV format</li>
+                        <li><strong>Delete:</strong> We delete data within a reasonable time, subject to law, technical limits and backups</li>
+                        <li><strong>Correct:</strong> Edit any cellophane or profile information</li>
+                        <li><strong>Portability:</strong> Transfer your content to other services</li>
+                        <li><strong>Opt-out:</strong> Exclude from AI training and analytics</li>
+                        <li><strong>Object:</strong> Challenge any data processing decision</li>
+                        <li><strong>Restrict:</strong> Limit how we process your data</li>
                     </ul>
-                    <p><strong>How to exercise rights:</strong> Email <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> or use account settings</p>
+                    <p><strong>How to exercise rights:</strong> Use in-app settings or email <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></p>
+                    <p><strong>Response time:</strong> We aim to respond within 30 days; identity verification may be required</p>
                 </div>
-            </section>
-            
-            <section aria-labelledby="optout-heading">
-                <h2 id="optout-heading"><span class="section-emoji" aria-hidden="true">🚪</span>Opt-Out Options</h2>
-                <p>You have full control over how your data is used:</p>
-                <ul>
-                    <li><strong>AI Training Opt-Out:</strong> Email <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> to exclude your content from AI datasets</li>
-                    <li><strong>Analytics Opt-Out:</strong> Disable analytics cookies in your browser</li>
-                    <li><strong>Marketing Opt-Out:</strong> Unsubscribe from emails using the link in any message</li>
-                    <li><strong>Complete Deletion:</strong> Delete your account to remove all data</li>
-                </ul>
-                <p><strong>Note:</strong> Opting out doesn't affect your ability to use core features</p>
-            </section>
-            
-            <section aria-labelledby="cookies-heading">
-                <h2 id="cookies-heading"><span class="section-emoji" aria-hidden="true">🍪</span>Cookies & Tracking</h2>
                 
-                <div class="cookie-info">
-                    <p>We use minimal cookies for essential functions:</p>
-                    <ul>
-                        <li><strong>Authentication:</strong> Keep you logged in</li>
-                        <li><strong>Preferences:</strong> Remember your settings</li>
-                        <li><strong>Security:</strong> Prevent fraud and abuse</li>
-                        <li><strong>Analytics:</strong> Understand usage patterns (if you consent)</li>
-                    </ul>
-                    <p>You can disable non-essential cookies in your browser settings.</p>
-                </div>
+                <p><strong>Do Not Track (DNT) & Global Privacy Control (GPC):</strong> We currently do not respond to Do Not Track (DNT) signals. We honor Global Privacy Control (GPC) signals where supported.</p>
+            </section>
+            
+            <section aria-labelledby="blockchain-heading">
+                <h2 id="blockchain-heading"><span class="section-emoji" aria-hidden="true">⛓️</span>Future: Blockchain & Decentralization</h2>
+                <p>We're planning to integrate Web3 technologies for even greater privacy and ownership:</p>
+                <ul>
+                    <li><strong>Blockchain Verification:</strong> Immutable proof of content ownership</li>
+                    <li><strong>Decentralized Storage:</strong> IPFS integration for censorship resistance</li>
+                    <li><strong>NFT Cellophanes:</strong> Mint your content as NFTs</li>
+                    <li><strong>Token Governance:</strong> Community-driven moderation decisions</li>
+                    <li><strong>Zero-Knowledge Proofs:</strong> Verify identity without revealing it</li>
+                </ul>
+                <p><em>These features are in development and will be opt-in when available.</em></p>
             </section>
             
             <section aria-labelledby="retention-heading">
@@ -648,18 +876,23 @@
                     </tr>
                     <tr>
                         <td>Active account data</td>
-                        <td>Until deletion requested</td>
+                        <td>As long as needed and as required by law</td>
                         <td>Service provision</td>
                     </tr>
                     <tr>
-                        <td>Deleted content</td>
-                        <td>30 days</td>
-                        <td>Recovery/legal compliance</td>
+                        <td>Deleted cellophanes</td>
+                        <td>Typically 30 days (trash folder)</td>
+                        <td>Recovery option</td>
+                    </tr>
+                    <tr>
+                        <td>Public cellophanes cache</td>
+                        <td>Generally 7 days after deletion</td>
+                        <td>CDN propagation</td>
                     </tr>
                     <tr>
                         <td>Moderation records</td>
-                        <td>2 years</td>
-                        <td>Safety/appeals</td>
+                        <td>Generally 2 years</td>
+                        <td>Appeals/legal</td>
                     </tr>
                     <tr>
                         <td>Anonymized data</td>
@@ -668,52 +901,73 @@
                     </tr>
                     <tr>
                         <td>Security logs</td>
-                        <td>90 days</td>
+                        <td>Typically 90 days</td>
                         <td>Security monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Billing records</td>
+                        <td>As required by law</td>
+                        <td>Tax requirements</td>
                     </tr>
                 </table>
             </section>
             
+            <section aria-labelledby="cookies-heading">
+                <h2 id="cookies-heading"><span class="section-emoji" aria-hidden="true">🍪</span>Cookies & Local Storage</h2>
+                
+                <div class="cookie-info">
+                    <p>We use minimal cookies and local storage for essential functions:</p>
+                    <ul>
+                        <li><strong>Authentication:</strong> Session tokens to keep you logged in</li>
+                        <li><strong>Preferences:</strong> Your UI settings (theme, language, view mode)</li>
+                        <li><strong>Draft cellophanes:</strong> Temporarily saved locally until posted</li>
+                        <li><strong>Security:</strong> CSRF tokens for protection</li>
+                        <li><strong>Analytics:</strong> Basic usage metrics (if you consent)</li>
+                    </ul>
+                    <p><strong>Cross-site tracking:</strong> We do not perform cross-site tracking without explicit consent and as permitted by law.</p>
+                    <p><strong>Local-first approach:</strong> Most data stays in your browser until you choose to sync.</p>
+                    <p>In the <strong>EEA</strong>, for users aged <strong>13–15</strong>, we do not perform advertising personalization or profiling without verified parental/guardian consent.</p>
+                </div>
+            </section>
+            
             <section aria-labelledby="children-heading">
-                <h2 id="children-heading"><span class="section-emoji" aria-hidden="true">👶</span>Children's Privacy</h2>
-                <ul>
-                    <li>Cellophane is not intended for users under 13</li>
-                    <li>We don't knowingly collect data from children</li>
-                    <li>If we discover a user is under 13, we delete their account</li>
-                    <li>Parents can contact us at <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
-                </ul>
+                <h2 id="children-heading"><span class="section-emoji" aria-hidden="true">👶</span>Children</h2>
+                <p>We do not knowingly collect personal data from children under <strong>13</strong>. If you are in the <strong>EEA</strong>, users aged <strong>13–15</strong> require <strong>parental/guardian consent</strong> to use the Service; at <strong>16+</strong> no such consent is required. In the <strong>UK</strong> and other regions, the minimum age is <strong>13</strong>. If we learn that we have collected personal data contrary to these rules, we will delete it within a reasonable time. Parents or guardians may contact <strong>privacy@cellophane.ai</strong> to request restriction or deletion of a child's data.</p>
             </section>
             
             <section aria-labelledby="international-heading">
                 <h2 id="international-heading"><span class="section-emoji" aria-hidden="true">🌍</span>International Users</h2>
                 
-                <h3>EU Users (GDPR):</h3>
+                <h3>EU/UK Users (GDPR):</h3>
                 <ul>
                     <li>Right to access, rectification, and erasure</li>
                     <li>Right to data portability</li>
                     <li>Right to object to processing</li>
+                    <li>Right to restrict processing</li>
+                    <li>Right to withdraw consent</li>
                     <li>Right to lodge complaints with supervisory authorities</li>
-                    <li>Data Protection Officer: <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
+                    <li>Data Protection Contact: <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
                 </ul>
                 
                 <h3>California Users (CCPA/CPRA):</h3>
                 <ul>
                     <li>Right to know what personal information we collect</li>
                     <li>Right to delete personal information</li>
-                    <li>Right to opt-out of sale (we don't sell personal data)</li>
+                    <li>Right to opt-out of sale (we don't sell data)</li>
                     <li>Right to non-discrimination</li>
+                    <li>Right to correct inaccurate information</li>
                     <li>Right to limit use of sensitive personal information</li>
                 </ul>
             </section>
             
             <section aria-labelledby="changes-heading">
-                <h2 id="changes-heading"><span class="section-emoji" aria-hidden="true">🔄</span>Policy Updates</h2>
+                <h2 id="changes-heading"><span class="section-emoji" aria-hidden="true">📄</span>Policy Updates</h2>
                 <p>When we update this policy:</p>
                 <ul>
-                    <li>We'll notify you via email for material changes</li>
-                    <li>We'll post a notice in the extension</li>
-                    <li>Updates take effect 30 days after notification</li>
-                    <li>Continued use constitutes acceptance</li>
+                    <li>We'll notify you via email and in-app notification</li>
+                    <li>We will provide advance notice where required or appropriate</li>
+                    <li>We may provide a change log from time to time</li>
+                    <li>Continued use after notice period constitutes acceptance</li>
                 </ul>
             </section>
             
@@ -722,29 +976,33 @@
                 <p>For privacy questions or to exercise your rights:</p>
                 <address>
                     <ul style="list-style: none; margin-left: 0;">
-                        <li>Privacy Team: <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
-                        <li>Data Protection Officer: <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
-                        <li>Opt-Out Requests: <a href="mailto:optout@cellophane.ai">optout@cellophane.ai</a></li>
-                        <li>General Support: <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
-                        <li>Response Time: Within 72 hours</li>
+                        <li><strong>Privacy Team:</strong> <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                        <li><strong>Data Protection Contact:</strong> <a href="mailto:dpo@cellophane.ai">dpo@cellophane.ai</a></li>
+                        <li><strong>Security Issues:</strong> <a href="mailto:security@cellophane.ai">security@cellophane.ai</a></li>
+                        <li><strong>Opt-Out Requests:</strong> <a href="mailto:optout@cellophane.ai">optout@cellophane.ai</a></li>
+                        <li><strong>General Support:</strong> <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
+                        <li><strong>Response Time:</strong> We aim to respond within 30 days</li>
                     </ul>
                 </address>
+                <p>Parents/guardians can exercise these rights on behalf of children by contacting <strong>privacy@cellophane.ai</strong>.</p>
             </section>
             
             <div class="promise-box" style="margin-top: 40px;">
-                <p><strong>Your privacy is fundamental to our mission.</strong></p>
-                <p>We're building Cellophane to enable meaningful discussions while protecting your identity.</p>
+                <p><strong>Your privacy enables your freedom.</strong></p>
+                <p>Cellophane™ exists to help you share your voice on the web—responsibly and in line with our Terms and this Policy.</p>
+                <p>We're building the transparent layer of the internet where privacy and expression coexist.</p>
             </div>
         </main>
         
         <footer>
             <div class="footer">
-                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <p>© 2025 Cellophane AI Ltd. ("Cellophane™"). All Rights Reserved.</p>
+                <p style="font-size: 14px; margin-top: 10px;">Domain: cellophane.ai | Patent Pending</p>
                 <nav aria-label="Footer navigation">
                     <a href="/">Home</a>
                     <a href="/terms.html">Terms of Service</a>
-                    <a href="/transparency">Transparency Report</a>
                     <a href="/help">Help Center</a>
+                    <a href="/developers">API Docs</a>
                 </nav>
             </div>
         </footer>

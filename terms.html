@@ -30,6 +30,19 @@
             top: 0;
         }
         
+        /* Version number */
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #7B64FF 0%, #00D4FF 100%);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        
         /* High contrast mode support */
         @media (prefers-contrast: high) {
             * {
@@ -112,20 +125,38 @@
         h1 {
             font-size: 48px;
             font-weight: 800;
-            color: #1a1a2e;
+            background: linear-gradient(135deg, #7B64FF 0%, #00D4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
+            display: inline-block;
         }
         
         .subtitle {
             color: #666;
             font-size: 18px;
             font-weight: 300;
+            margin-top: 10px;
         }
         
         .last-updated {
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 14px;
             color: #777;
+        }
+        
+        .contact-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .contact-info a {
+            color: #0066cc;
+            text-decoration: underline;
+            margin: 0 5px;
         }
         
         h2 {
@@ -137,11 +168,33 @@
             align-items: center;
             gap: 12px;
             font-weight: 700;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        h2:first-of-type {
+            border-top: none;
+            padding-top: 0;
         }
         
         .section-emoji {
             font-size: 32px;
             display: inline-block;
+        }
+        
+        .section-number {
+            color: #7B64FF;
+            font-weight: 300;
+            font-size: 24px;
+            margin-right: 5px;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
         
         p {
@@ -151,7 +204,7 @@
             font-size: 16px;
         }
         
-        ul {
+        ul, ol {
             margin: 20px 0 20px 30px;
         }
         
@@ -162,13 +215,35 @@
             font-size: 16px;
         }
         
+        /* Plain English Summary Box */
+        .plain-english {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+        
         /* TL;DR Box with proper contrast */
         .tldr {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 40px;
             border: 2px solid #1976d2;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tldr::before {
+            content: '📌';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
         }
         
         .tldr h3 {
@@ -185,6 +260,16 @@
         .tldr li {
             font-weight: 500;
             color: #1a1a2e;
+        }
+        
+        /* Acceptance box */
+        .acceptance-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1976d2;
+            padding: 20px;
+            margin: 30px 0;
+            font-style: italic;
+            border-radius: 8px;
         }
         
         /* Important box for community guidelines */
@@ -212,6 +297,15 @@
         
         .friendly-box strong {
             color: #2e7d32;
+        }
+        
+        /* Legal highlight */
+        .legal-highlight {
+            background: #f5f5f5;
+            padding: 20px;
+            border-left: 4px solid #666;
+            margin: 20px 0;
+            border-radius: 8px;
         }
         
         /* Simple highlight with proper contrast */
@@ -243,7 +337,7 @@
         
         /* Agreement box with proper contrast */
         .agreement-box {
-            background: #e8f5e9;
+            background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%);
             border-radius: 20px;
             padding: 30px;
             margin: 40px 0;
@@ -252,6 +346,42 @@
             font-size: 18px;
             border: 2px solid #2e7d32;
             color: #1b5e20;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .toc h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+        
+        .toc ol {
+            margin: 0;
+            padding-left: 25px;
+        }
+        
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Code/mono text */
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
         }
         
         .footer {
@@ -314,6 +444,11 @@
             border: 0;
         }
         
+        /* Section IDs for navigation */
+        section {
+            scroll-margin-top: 20px;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 30px 20px;
@@ -338,6 +473,11 @@
             }
         }
     </style>
+
+    <style>
+    .summary{padding:.75rem 1rem;border-left:4px solid #999;background:#f7f7f7;margin:0.5rem 0;border-radius:4px;}
+    </style>
+    
 </head>
 <body>
     <!-- Skip to main content link -->
@@ -347,205 +487,482 @@
         <header>
             <div class="header">
                 <span class="emoji-logo" role="img" aria-label="Chat bubble">💬</span>
-                <h1>Terms of Service</h1>
+                <h1>Cellophane™</h1>
+                <span class="version-badge">v2.2</span>
+                <h1 style="display: block; margin-top: 10px; font-size: 36px;">Terms of Service</h1>
                 <div class="subtitle">Professional commentary for the web</div>
                 <div class="last-updated">
-                    <time datetime="2025-01-01">Effective: January 1, 2025</time>
+                    P25-09-22"><time datetime="2025-09-22">Effective: September 22, 2025</time></time> | 
+                    Entity: Cellophane AI Ltd.
+                </div>
+                <div class="contact-info">
+                    <strong>Contact:</strong> 
+                    <a href="mailto:support@cellophane.ai">support@cellophane.ai</a> | 
+                    <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> | 
+                    <a href="mailto:support@cellophane.ai">support@cellophane.ai</a> | 
+                    <a href="mailto:support@cellophane.ai">support@cellophane.ai</a>
                 </div>
             </div>
         </header>
         
         <main id="main-content">
+            <div class="acceptance-box">
+                <strong>By accessing or using Cellophane™'s products, browser extensions, mobile apps, websites and related services (the "Service"), you agree to these Terms of Service ("Terms") and our commitment to maintaining a professional, respectful platform.</strong>
+            </div>
+            
             <section class="tldr" aria-labelledby="summary-heading">
-                <h3 id="summary-heading">📌 Quick Summary</h3>
-                <ul>
-                    <li>Be at least 13 years old</li>
-                    <li>Follow our Community Guidelines</li>
-                    <li>Your content is yours, but we moderate for safety</li>
-                    <li>We use anonymized data to improve AI</li>
-                    <li>You can opt-out of data aggregation</li>
-                </ul>
-            </section>
-            
-            <section aria-labelledby="welcome-heading">
-                <h2 id="welcome-heading"><span class="section-emoji" aria-hidden="true">👋</span>Welcome!</h2>
-                <p>Cellophane enables meaningful discussions on any webpage. By using our service, you agree to these terms and our commitment to maintaining a professional, respectful platform.</p>
-            </section>
-            
-            <section aria-labelledby="eligibility-heading">
-                <h2 id="eligibility-heading"><span class="section-emoji" aria-hidden="true">✅</span>Who Can Use Cellophane</h2>
+                <h3 id="summary-heading">📌 Quick Summary (Non-Binding)</h3>
                 <ul>
                     <li>You must be at least 13 years old</li>
-                    <li>If you're under 18, please get your parent's permission</li>
-                    <li>You need to follow the laws of your country</li>
-                    <li>You must agree to follow our Community Guidelines</li>
+                    <li>Your content is yours, but we get a limited operational license</li>
+                    <li>We won't use your private content for promotion without permission</li>
+                    <li>We focus enforcement on illegal content and safety risks</li>
+                    <li>Lawful but offensive content may be labeled rather than removed</li>
+                    <li>Site owners have a dedicated channel for objections</li>
+                    <li>Service provided "as-is" with liability capped at £100 or fees paid</li>
+                    <li>Disputes resolved through LCIA arbitration in London</li>
+                    <li>We'll provide advance notice of material changes</li>
                 </ul>
             </section>
             
-            <section aria-labelledby="community-heading">
-                <h2 id="community-heading"><span class="section-emoji" aria-hidden="true">🏛️</span>Community Guidelines</h2>
+            <!-- Table of Contents -->
+            <section class="toc" aria-labelledby="toc-heading">
+                <h3 id="toc-heading">📚 Table of Contents</h3>
+                <ol>
+                    <li><a href="#overview">Overview & Acceptance</a></li>
+                    <li><a href="#definitions">Definitions</a></li>
+                    <li><a href="#eligibility">Eligibility</a></li>
+                    <li><a href="#accounts">Accounts & Security</a></li>
+                    <li><a href="#layer">The Cellophane Layer</a></li>
+                    <li><a href="#content">Your Content: Rights & Licenses</a></li>
+                    <li><a href="#ai">AI Features & Data Usage</a></li>
+                    <li><a href="#community">Prohibited Content & Conduct</a></li>
+                    <li><a href="#site-owners">Site/Domain Owner Rights</a></li>
+                    <li><a href="#software">Software License</a></li>
+                    <li><a href="#privacy">Privacy & Data Protection</a></li>
+                    <li><a href="#third-party">Third-Party Content</a></li>
+                    <li><a href="#ip-takedown">IP Notice-and-Takedown</a></li>
+                    <li><a href="#billing">Billing & Payments</a></li>
+                    <li><a href="#changes">Changes to Service & Terms</a></li>
+                    <li><a href="#termination">Termination</a></li>
+                    <li><a href="#disclaimer">Disclaimers</a></li>
+                    <li><a href="#liability">Limitation of Liability</a></li>
+                    <li><a href="#indemnity">Indemnification</a></li>
+                    <li><a href="#disputes">Governing Law & Disputes</a></li>
+                    <li><a href="#general">General Provisions</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ol>
+            </section>
+            
+            <section id="overview" aria-labelledby="overview-heading">
+                <h2 id="overview-heading">
+                    <span class="section-number">1.</span>
+                    <span class="section-emoji" aria-hidden="true">👋</span>
+                    Overview & Acceptance
+                </h2>
+<div class="summary" role="note"><strong>Plain-English Summary:</strong> If paid features appear, you’ll be charged applicable fees and taxes. Prices can change with notice; refunds apply only where required by law.</div>
+
+<div class="summary" role="note"><strong>Plain-English Summary:</strong> You own what you post. We only take a narrow operational licence to host, cache and display it; we won’t use private content for ads without permission.</div>
+
+                <p>Welcome! Cellophane™ enables meaningful discussions on any webpage through our innovative commentary layer. These Terms form a binding agreement between you and Cellophane AI Ltd..</p>
+                <ul>
+                    <li><strong>Incorporated Policies:</strong> Our <a href="/privacy.html">Privacy Policy</a>, Community Guidelines, and any product-specific terms are incorporated by reference</li>
+                    <li><strong>Organization Use:</strong> If using the Service on behalf of an organization, you represent that you're authorized to accept these Terms for that organization</li>
+                    <li><strong>Conflicts:</strong> Feature-specific terms override these general Terms for that specific feature</li>
+                </ul>
+            </section>
+            
+            <section id="definitions" aria-labelledby="definitions-heading">
+                <h2 id="definitions-heading">
+                    <span class="section-number">2.</span>
+                    <span class="section-emoji" aria-hidden="true">📖</span>
+                    Definitions
+                </h2>
+                <ul>
+                    <li><strong>"Service"</strong> means the Cellophane overlay platform and related applications</li>
+                    <li><strong>"Overlay"</strong> means user interface elements and content presented in association with third-party webpages</li>
+                    <li><strong>"User Content"</strong> means content submitted, posted, or displayed by users through the Service</li>
+                    <li><strong>"Site Owner"/"Domain Owner"</strong> means the operator/controller of a third-party website or domain referenced by the Service</li>
+                    <li><strong>"Account"</strong> means a registered profile enabling access to the Service</li>
+                </ul>
+            </section>
+            
+            <section id="eligibility" aria-labelledby="eligibility-heading">
+                <h2 id="eligibility-heading">
+                    <span class="section-number">3.</span>
+                    <span class="section-emoji" aria-hidden="true">✅</span>
+                    Eligibility
+                </h2>
+                <p>The Service is not intended for children under <strong>13</strong>. If you are in the <strong>EEA</strong>, users aged <strong>13–15</strong> require <strong>parental/guardian consent</strong> to use the Service; at <strong>16+</strong> no such consent is required. In the <strong>UK</strong> and other regions, the minimum age is <strong>13</strong>. By creating an account or using the Service, you <strong>represent and warrant</strong> that you meet these requirements and have the legal capacity to enter into these Terms. If you are a parent/guardian permitting a child to use the Service (where allowed), you are responsible for the child's activity on the Service.</p>
+                <p>For how we handle children's data and parental requests, see our <strong>Privacy Policy</strong>.</p>
+                <p><strong>Accessibility:</strong> We intend to improve accessibility over time and welcome feedback.</p>
+                <p><strong>Consumer Rights:</strong> Nothing in these Terms is intended to exclude or limit statutory consumer rights that cannot be excluded under applicable law.</p>
+            </section>
+            
+            <section id="accounts" aria-labelledby="accounts-heading">
+                <h2 id="accounts-heading">
+                    <span class="section-number">4.</span>
+                    <span class="section-emoji" aria-hidden="true">🔑</span>
+                    Accounts & Security
+                </h2>
+                <div class="plain-english">
+                    Plain-English summary: You're responsible for your account security. Don't share passwords or try to bypass our security measures.
+                </div>
+                <p>You are responsible for safeguarding your account credentials and devices. You must not:</p>
+                <ul>
+                    <li>Access or attempt to access the Service through unauthorized means</li>
+                    <li>Circumvent technical measures or overload/abuse the Service</li>
+                    <li>Share your account credentials with others</li>
+                </ul>
+                <p>You are <strong>at least 13 years old</strong>, and if you are in the <strong>EEA</strong> and aged <strong>13–15</strong>, you have <strong>verifiable parental/guardian consent</strong> to use the Service; if you are <strong>16+</strong> in the EEA or <strong>13+</strong> elsewhere (including the UK), you may use the Service without such consent.</p>
+                <p>We may apply rate limiting, throttling, or temporary suspension where we reasonably detect abuse, security risk, or service degradation.</p>
+                <p>You must promptly notify us of any unauthorized use or security breach at support@cellophane.ai.</p>
+            </section>
+            
+            <section id="layer" aria-labelledby="layer-heading">
+                <h2 id="layer-heading">
+                    <span class="section-number">5.</span>
+                    <span class="section-emoji" aria-hidden="true">🎯</span>
+                    The Cellophane Layer
+                </h2>
+                <p>Cellophane™ provides a <strong>contextual commentary layer</strong> over third-party webpages. The Service operates as an independent overlay and is not affiliated with third-party sites unless expressly stated.</p>
                 
-                <div class="guidelines-box">
-                    <h3>Our Platform Standards</h3>
-                    <p>Cellophane is committed to fostering meaningful, professional discussions. We actively moderate content to ensure a safe and productive environment for all users.</p>
+                <h3>Visibility Settings:</h3>
+                <ul>
+                    <li><strong>Public:</strong> Content marked as public may be visible to all Cellophane users viewing that webpage</li>
+                    <li><strong>Friends:</strong> Visible only to users you've connected with</li>
+                    <li><strong>Private:</strong> Visible only to you</li>
+                    <li><strong>Groups/Teams:</strong> Visible to members of specific collaboration spaces</li>
+                </ul>
+            </section>
+            
+            <section id="content" aria-labelledby="content-heading">
+                <h2 id="content-heading">
+                    <span class="section-number">6.</span>
+                    <span class="section-emoji" aria-hidden="true">📝</span>
+                    Your Content: Rights & Licenses
+                </h2>
+                <div class="plain-english">
+                    Plain-English summary: You own your content; we need a narrow operational license to run the Service. We won't promote your private content without permission.
                 </div>
                 
-                <p><strong>Prohibited Content:</strong></p>
-                <ul>
-                    <li><strong>Spam:</strong> Repetitive, unsolicited, or commercial content</li>
-                    <li><strong>Hate Speech:</strong> Content targeting individuals or groups based on protected characteristics</li>
-                    <li><strong>Harassment:</strong> Bullying, threats, or intimidation of any kind</li>
-                    <li><strong>Profanity:</strong> Excessive use of offensive language</li>
-                    <li><strong>Misinformation:</strong> Deliberately false or misleading information</li>
-                    <li><strong>Illegal Content:</strong> Any content violating local or international laws</li>
-                    <li><strong>Copyright Infringement:</strong> Unauthorized use of copyrighted material</li>
-                    <li><strong>Personal Information:</strong> Sharing private information without consent</li>
-                </ul>
+                <h3>Your Ownership</h3>
+                <p>You retain ownership of your content. You grant us a <strong>limited, worldwide, non-exclusive, royalty-free license</strong> to host, store, reproduce, display, and distribute such content <strong>solely to operate and provide the Service</strong>, as described in our Privacy Policy.</p>
                 
-                <p><strong>Content Moderation Process:</strong></p>
-                <ul>
-                    <li>Automated systems detect and remove spam and harmful content</li>
-                    <li>User reports are reviewed within 24-48 hours</li>
-                    <li>Violations result in content removal and potential account suspension</li>
-                    <li>Repeat offenders may face permanent bans</li>
-                </ul>
-            </section>
-            
-            <section aria-labelledby="features-heading">
-                <h2 id="features-heading"><span class="section-emoji" aria-hidden="true">🎯</span>What You Can Do</h2>
-                <p>With Cellophane, you can:</p>
-                <ul>
-                    <li>Add professional commentary and insights on any webpage</li>
-                    <li>Engage in meaningful discussions with other users</li>
-                    <li>Control visibility settings (private, friends, or public)</li>
-                    <li>Report inappropriate content for review</li>
-                    <li>Appeal moderation decisions through our support system</li>
-                </ul>
-            </section>
-            
-            <section aria-labelledby="content-heading">
-                <h2 id="content-heading"><span class="section-emoji" aria-hidden="true">📝</span>Your Content Rights & Licenses</h2>
-                <ul>
-                    <li>You retain ownership of all content you create</li>
-                    <li>You control visibility and can delete your content anytime</li>
-                    <li>Deleted content is removed from public view immediately</li>
-                    <li>We retain deleted content for up to 30 days for legal compliance</li>
-                </ul>
-                
-                <div class="ai-disclosure">
-                    <h3>How We Use Your Content</h3>
-                    <p>By using Cellophane, you grant us a license to use your anonymized content for:</p>
-                    <ul>
-                        <li>Improving our annotation and recommendation systems</li>
-                        <li>Creating aggregated insights about web content trends</li>
-                        <li>Developing AI training datasets with personally identifiable information removed</li>
-                        <li>Generating anonymous market intelligence reports</li>
-                    </ul>
-                    <p><strong>Important:</strong> Your content is anonymized by removing usernames, email addresses, and other identifying information. We aggregate anonymized data with thousands of other users before any external use.</p>
-                    <p><strong>Opt-Out Option:</strong> You can request exclusion from aggregated datasets by contacting <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></p>
-                </div>
-            </section>
-            
-            <section aria-labelledby="moderation-heading">
-                <h2 id="moderation-heading"><span class="section-emoji" aria-hidden="true">🛡️</span>Content Moderation & Appeals</h2>
-                <ul>
-                    <li>We use automated systems and human review to moderate content</li>
-                    <li>Content violating our guidelines is removed promptly</li>
-                    <li>Users receive notifications when their content is moderated</li>
-                    <li>You can appeal moderation decisions within 30 days</li>
-                    <li>Appeals are reviewed by our moderation team within 72 hours</li>
-                </ul>
+                <h3>License to Cellophane</h3>
+                <p>You grant Cellophane AI Ltd. a non-exclusive, worldwide, royalty-free license to host, cache, reproduce and display your User Content, and to make technical modifications necessary for transmission, storage, formatting and display via the Service. This license is solely for operating and improving the Service. We will not use private or access-restricted content for advertising or promotional purposes without your express consent.</p>
                 
                 <div class="friendly-box" role="note">
-                    <strong>💡 Report System:</strong> Help keep our community safe by reporting inappropriate content. Use the report button on any comment or email us at <a href="mailto:report@cellophane.ai">report@cellophane.ai</a>
+                    <strong>💡 Your Control:</strong> You can delete or change visibility of your content anytime. Deleted content is removed from public view immediately but may be retained in backups for legal compliance.
                 </div>
             </section>
             
-            <section aria-labelledby="privacy-heading">
-                <h2 id="privacy-heading"><span class="section-emoji" aria-hidden="true">🔒</span>Privacy & Data Protection</h2>
-                <p>Your privacy is fundamental to our service:</p>
-                <ul>
-                    <li>Personal data is anonymized within 90 days of creation</li>
-                    <li>We use encryption to protect all data transfers</li>
-                    <li>You can download or delete your data anytime</li>
-                    <li>We never sell personally identifiable information</li>
-                    <li>Read our full <a href="/privacy.html">Privacy Policy</a> for complete details</li>
-                </ul>
-            </section>
-            
-            <section aria-labelledby="ai-heading">
-                <h2 id="ai-heading"><span class="section-emoji" aria-hidden="true">🤖</span>AI Features & Data Usage</h2>
-                <p>We use AI technology to enhance your experience:</p>
-                <ul>
-                    <li>Smart suggestions and auto-complete features</li>
-                    <li>Automated content moderation for safety</li>
-                    <li>Sentiment analysis to improve discussions</li>
-                    <li>Your comments help train AI to better understand web content perspectives</li>
-                </ul>
-                <p><strong>Privacy Protection:</strong> Your identity is always protected through anonymization when data is used for AI training.</p>
-            </section>
-            
-            <section aria-labelledby="thirdparty-heading">
-                <h2 id="thirdparty-heading"><span class="section-emoji" aria-hidden="true">🌐</span>Third-Party Websites</h2>
-                <p>Cellophane operates as a layer over third-party websites. We are not responsible for their content, policies, or practices. Website owners may request removal of Cellophane functionality from their sites.</p>
-            </section>
-            
-            <section aria-labelledby="legal-heading">
-                <h2 id="legal-heading"><span class="section-emoji" aria-hidden="true">⚖️</span>Legal Terms</h2>
-                <div class="simple-highlight" role="region" aria-label="Legal information">
-                    <p><strong>Service Availability:</strong> We strive for 99.9% uptime but cannot guarantee uninterrupted service.</p>
-                    <p><strong>Liability Limitation:</strong> To the maximum extent permitted by law, our total liability shall not exceed £100 GBP. As our service is currently free during beta, we cannot be held liable for any indirect, incidental, or consequential damages.</p>
-                    <p><strong>Dispute Resolution:</strong> Disputes will be resolved through binding arbitration in London, England, under the rules of the London Court of International Arbitration (LCIA).</p>
-                    <p><strong>Governing Law:</strong> These terms are governed by the laws of England and Wales.</p>
-                    <p><strong>Changes to Terms:</strong> We'll notify you 30 days before any material changes to these terms.</p>
+            <section id="ai" aria-labelledby="ai-heading">
+                <h2 id="ai-heading">
+                    <span class="section-number">7.</span>
+                    <span class="section-emoji" aria-hidden="true">🤖</span>
+                    AI Features & Data Usage
+                </h2>
+                
+                <div class="ai-disclosure">
+                    <h3>How We Use AI Technology</h3>
+                    <p>We use artificial intelligence to enhance your experience through:</p>
+                    <ul>
+                        <li>Smart suggestions and auto-complete</li>
+                        <li>Content recommendations and discovery</li>
+                        <li>Automated moderation for safety</li>
+                        <li>Aggregated insights about web content trends</li>
+                    </ul>
+                    
+                    <p><strong>Opt-Out Option:</strong> You can request exclusion from AI training datasets by emailing <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a> with subject "AI Training Opt-Out".</p>
                 </div>
             </section>
             
-            <section aria-labelledby="regional-heading">
-                <h2 id="regional-heading"><span class="section-emoji" aria-hidden="true">🌍</span>Regional Rights</h2>
-                <p><strong>EU Users (GDPR):</strong> You have rights to access, rectify, erase, port, and object to processing of your data.</p>
-                <p><strong>California Users (CCPA):</strong> You have rights to know, delete, and opt-out of sale of personal information (we don't sell personal data).</p>
-                <p><strong>All Users:</strong> You can exercise your privacy rights by contacting <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></p>
+            <section id="community" aria-labelledby="community-heading">
+                <h2 id="community-heading">
+                    <span class="section-number">8.</span>
+                    <span class="section-emoji" aria-hidden="true">🛡️</span>
+                    Prohibited Content & Conduct
+                </h2>
+                <div class="plain-english">
+                    Plain-English summary: We enforce against illegality, safety risks, and rights violations. Lawful but offensive speech may be down-ranked or labeled rather than removed.
+                </div>
+                
+                <div class="guidelines-box">
+                    <h3>Our Free Expression Philosophy</h3>
+                    <p>Cellophane is committed to fostering meaningful discussions while respecting diverse viewpoints. We prioritize safety and legality while preserving lawful expression.</p>
+                </div>
+                
+                <p>Users must not use the Service to:</p>
+                <ol type="a">
+                    <li>Incite or threaten violence or harm</li>
+                    <li>Disclose another person's sensitive personal information ('doxxing') or otherwise unlawfully process personal data</li>
+                    <li>Harass in a manner constituting a criminal or civil wrong</li>
+                    <li>Infringe intellectual property or other rights</li>
+                    <li>Impersonate others, defraud, phish, distribute malware, or attempt to bypass technical protections</li>
+                    <li>Violate applicable law</li>
+                </ol>
+                
+                <p>Where content is lawful yet potentially offensive or distressing, we may apply labeling, reduced visibility, or user-controlled filters instead of removal. We may act immediately, including removal or suspension, where we reasonably believe there is imminent risk.</p>
+                
+                <h3>Enforcement Ladder</h3>
+                <p>Our graduated enforcement approach: Warning → Targeted removal → Suspension → Termination. We allow immediate action for imminent harm.</p>
             </section>
             
-            <section aria-labelledby="termination-heading">
-                <h2 id="termination-heading"><span class="section-emoji" aria-hidden="true">❌</span>Account Termination</h2>
+            <section id="site-owners" aria-labelledby="site-owners-heading">
+                <h2 id="site-owners-heading">
+                    <span class="section-number">9.</span>
+                    <span class="section-emoji" aria-hidden="true">🌐</span>
+                    Site/Domain Owner Rights
+                </h2>
+                <div class="plain-english">
+                    Plain-English summary: Site owners have a dedicated channel to object or request action regarding overlay content referring to their pages.
+                </div>
+                
+                <p>Site or domain owners may submit objections or requests concerning overlay content referencing their properties to support@cellophane.ai.</p>
+                
+                <h3>Verification Process:</h3>
                 <ul>
-                    <li>You can delete your account anytime through account settings</li>
-                    <li>We may suspend accounts that violate our Community Guidelines</li>
-                    <li>Suspended users can appeal within 30 days</li>
-                    <li>Personal data is deleted within 30 days of account closure</li>
-                    <li>Anonymized aggregate data may be retained for analytics</li>
+                    <li>We may require verification of domain ownership (e.g., DNS TXT record or return-email from an administrative contact)</li>
+                    <li>Following verification, we will review requests in good faith and respond within a reasonable time</li>
+                    <li>An appeal mechanism will be offered for contested decisions</li>
+                </ul>
+                
+                <p>The Service operates as an independent overlay and is not affiliated with third-party sites unless expressly stated.</p>
+            </section>
+            
+            <section id="software" aria-labelledby="software-heading">
+                <h2 id="software-heading">
+                    <span class="section-number">10.</span>
+                    <span class="section-emoji" aria-hidden="true">💻</span>
+                    Software License & Restrictions
+                </h2>
+                
+                <p>Cellophane grants you a limited, revocable, non-exclusive, non-transferable, non-sublicensable license to use our software, extensions, and apps solely to access the Service.</p>
+                
+                <h3>You May NOT:</h3>
+                <ol type="a">
+                    <li>Reverse engineer, decompile, or extract source code</li>
+                    <li>Circumvent security or access controls</li>
+                    <li>Rent, lease, sell, or sublicense the software</li>
+                    <li>Create derivative works without permission</li>
+                    <li>Misuse APIs or scrape content at scale</li>
+                    <li>Overload or interfere with our infrastructure</li>
+                </ol>
+            </section>
+            
+            <section id="privacy" aria-labelledby="privacy-heading">
+                <h2 id="privacy-heading">
+                    <span class="section-number">11.</span>
+                    <span class="section-emoji" aria-hidden="true">🔐</span>
+                    Privacy & Data Protection
+                </h2>
+                
+                <p>Our collection and use of personal data are described in our <a href="/privacy.html">Privacy Policy</a>. We do not provide data portability beyond what is required by applicable law. For how we handle children's data and parental requests, see our <strong>Privacy Policy</strong>.</p>
+                
+                <h3>Key Protections:</h3>
+                <ul>
+                    <li><strong>Encryption:</strong> Industry-standard encryption in transit and at rest</li>
+                    <li><strong>Data Minimization:</strong> We collect only what's necessary</li>
+                    <li><strong>Your Rights:</strong> Access, download, correct, or delete your data anytime</li>
+                    <li><strong>No Selling:</strong> We NEVER sell personally identifiable information</li>
                 </ul>
             </section>
             
-            <section aria-labelledby="contact-heading">
-                <h2 id="contact-heading"><span class="section-emoji" aria-hidden="true">💬</span>Contact Us</h2>
-                <p>We're here to help with any questions or concerns:</p>
+            <section id="third-party" aria-labelledby="third-party-heading">
+                <h2 id="third-party-heading">
+                    <span class="section-number">12.</span>
+                    <span class="section-emoji" aria-hidden="true">🌍</span>
+                    Third-Party Content & Websites
+                </h2>
+                
+                <p>Cellophane operates as a layer over third-party websites. We are NOT responsible for:</p>
+                <ul>
+                    <li>Content, policies, or practices of third-party sites</li>
+                    <li>Availability or functionality of external websites</li>
+                    <li>Products or services offered by third parties</li>
+                </ul>
+            </section>
+            
+            <section id="ip-takedown" aria-labelledby="ip-takedown-heading">
+                <h2 id="ip-takedown-heading">
+                    <span class="section-number">13.</span>
+                    <span class="section-emoji" aria-hidden="true">⚖️</span>
+                    Global IP Notice-and-Takedown
+                </h2>
+                
+                <p>If you believe content infringes your intellectual property, please send a notice to support@cellophane.ai including:</p>
+                <ul>
+                    <li>Your contact details</li>
+                    <li>A description of the work and allegedly infringing material</li>
+                    <li>Its location on the Service</li>
+                    <li>A statement of good-faith belief in the infringement</li>
+                    <li>A statement made under penalty of perjury that the information is accurate and that you are the rights holder or authorized to act</li>
+                </ul>
+                
+                <p>We may remove or restrict access to the material and, where appropriate, terminate accounts of repeat infringers.</p>
+            </section>
+            
+            <section id="billing" aria-labelledby="billing-heading">
+                <h2 id="billing-heading">
+                    <span class="section-number">14.</span>
+                    <span class="section-emoji" aria-hidden="true">💳</span>
+                    Billing & Payments
+                </h2>
+                
+                <p>If paid features are offered, you agree to pay applicable fees, taxes and charges. Unless required otherwise by law, fees are non-refundable once the billing period begins. We will provide reasonable notice of price changes. You authorize us or our payment processors to charge your selected payment method.</p>
+                
+                <div class="friendly-box">
+                    <strong>🎉 Beta Period:</strong> The Service is currently FREE during our beta phase. We'll provide advance notice before introducing any paid features.
+                </div>
+            </section>
+            
+            <section id="changes" aria-labelledby="changes-heading">
+                <h2 id="changes-heading">
+                    <span class="section-number">15.</span>
+                    <span class="section-emoji" aria-hidden="true">📝</span>
+                    Changes to Service, Pricing and Terms
+                </h2>
+<div class="summary" role="note"><strong>Plain-English Summary:</strong> We may change features, pricing, or these Terms. We’ll give reasonable advance notice for material updates; you can stop using the Service before changes take effect.</div>
+
+                
+                <p>We may update these Terms or adjust features or pricing. Where changes are material, we will provide reasonable advance notice before the effective date by posting the updated Terms and/or contacting you at support@cellophane.ai if available.</p>
+                
+                <p>If you do not agree to the changes, you must stop using the Service before they take effect. Continued use after the effective date constitutes acceptance.</p>
+            </section>
+            
+            <section id="termination" aria-labelledby="termination-heading">
+                <h2 id="termination-heading">
+                    <span class="section-number">16.</span>
+                    <span class="section-emoji" aria-hidden="true">⌛</span>
+                    Account Termination
+                </h2>
+                
+                <h3>Your Rights</h3>
+                <ul>
+                    <li>Delete your account anytime via settings</li>
+                    <li>Export your data before deletion</li>
+                    <li>Request immediate deletion via <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                </ul>
+                
+                <h3>Our Rights</h3>
+                <p>We may suspend or terminate access where we reasonably believe there is a breach of these Terms, legal risk, or security threat. We may suspend or terminate access if we reasonably believe the account <strong>does not meet the Eligibility requirements</strong> or if required to comply with law.</p>
+                
+                <h3>Effects of Termination</h3>
+<div class="summary" role="note"><strong>Plain-English Summary:</strong> If there’s risk or a breach, we may suspend or end access. After termination, your right to use the Service stops; certain clauses continue.</div>
+
+                <p>Upon termination, your right to use the Service ends. We may retain or delete data in accordance with law and our Privacy Policy. Certain provisions by their nature survive termination (including ownership, licenses granted for operation already performed, disclaimers, limitations of liability, indemnities, and dispute resolution).</p>
+            </section>
+            
+            <section id="disclaimer" aria-labelledby="disclaimer-heading">
+                <h2 id="disclaimer-heading">
+                    <span class="section-number">17.</span>
+                    <span class="section-emoji" aria-hidden="true">⚠️</span>
+                    Warranty Disclaimer
+                </h2>
+                
+                <div class="legal-highlight">
+                    <p>The Service is provided 'AS IS' and 'AS AVAILABLE' without warranties of any kind, whether express, implied or statutory, including implied warranties of merchantability, fitness for a particular purpose and non-infringement, to the maximum extent permitted by law.</p>
+                </div>
+            </section>
+            
+            <section id="liability" aria-labelledby="liability-heading">
+                <h2 id="liability-heading">
+                    <span class="section-number">18.</span>
+                    <span class="section-emoji" aria-hidden="true">💼</span>
+                    Limitation of Liability
+                </h2>
+                
+                <div class="simple-highlight">
+                    <p>To the maximum extent permitted by law, Cellophane AI Ltd. will not be liable for any indirect, incidental, consequential, special or exemplary damages, including lost profits.</p>
+                    
+                    <p>Our aggregate liability for all claims relating to the Service is limited to the greater of (a) the amounts you paid to Cellophane AI Ltd. for the Service during the twelve (12) months prior to the event giving rise to liability; or (b) £100.</p>
+                </div>
+            </section>
+            
+            <section id="indemnity" aria-labelledby="indemnity-heading">
+                <h2 id="indemnity-heading">
+                    <span class="section-number">19.</span>
+                    <span class="section-emoji" aria-hidden="true">🛡️</span>
+                    Indemnification
+                </h2>
+                
+                <p>You will indemnify and hold harmless Cellophane AI Ltd. and its officers, directors, employees and agents from and against any claims, liabilities, damages, losses and expenses (including reasonable legal fees) arising out of or related to:</p>
+                <ol type="a">
+                    <li>Your User Content</li>
+                    <li>Your use of the Service in violation of these Terms or law</li>
+                    <li>Your infringement or violation of any third-party right</li>
+                    <li>Your failure to maintain the security of your account or device</li>
+                </ol>
+            </section>
+            
+            <section id="disputes" aria-labelledby="disputes-heading">
+                <h2 id="disputes-heading">
+                    <span class="section-number">20.</span>
+                    <span class="section-emoji" aria-hidden="true">⚖️</span>
+                    Governing Law & Disputes
+                </h2>
+                
+                <p>These Terms and any non-contractual obligations arising out of or in connection with them are governed by the laws of [[JURISDICTION: England & Wales]].</p>
+                
+                <p>Any dispute shall be finally resolved by arbitration under the LCIA Rules; the seat of arbitration shall be London, England; the language shall be English.</p>
+                
+                <p>Notwithstanding the foregoing, either party may seek injunctive or other equitable relief in any court of competent jurisdiction to prevent or stop unauthorized access, misuse, or infringement of intellectual property or confidential information.</p>
+            </section>
+            
+            <section id="general" aria-labelledby="general-heading">
+                <h2 id="general-heading">
+                    <span class="section-number">21.</span>
+                    <span class="section-emoji" aria-hidden="true">📋</span>
+                    General Provisions
+                </h2>
+                
+                <ul>
+                    <li><strong>Language:</strong> These Terms are drafted in English (UK) and that version controls. Translations are provided solely for convenience</li>
+                    <li><strong>Assignment:</strong> You can't transfer these Terms; we may assign to affiliates or successors</li>
+                    <li><strong>Severability:</strong> If any provision is invalid, the rest remains in effect</li>
+                    <li><strong>No Waiver:</strong> Failure to enforce isn't a waiver of our rights</li>
+                    <li><strong>Force Majeure:</strong> Not liable for events beyond reasonable control</li>
+                    <li><strong>Entire Agreement:</strong> These Terms (with incorporated policies) are the complete agreement</li>
+                </ul>
+            </section>
+            
+            <section id="contact" aria-labelledby="contact-heading">
+                <h2 id="contact-heading">
+                    <span class="section-number">22.</span>
+                    <span class="section-emoji" aria-hidden="true">💬</span>
+                    Contact Us
+                </h2>
+                
                 <address>
                     <ul style="list-style: none; margin-left: 0;">
-                        <li>General Support: <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
-                        <li>Privacy Concerns: <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
-                        <li>Content Reports: <a href="mailto:report@cellophane.ai">report@cellophane.ai</a></li>
-                        <li>Legal Inquiries: <a href="mailto:legal@cellophane.ai">legal@cellophane.ai</a></li>
-                        <li>Response Time: Within 24-48 hours</li>
+                        <li>📧 <strong>General Support:</strong> <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
+                        <li>🔐 <strong>Privacy & Data:</strong> <a href="mailto:privacy@cellophane.ai">privacy@cellophane.ai</a></li>
+                        <li>🌐 <strong>Site Owner Reports:</strong> <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
+                        <li>⚖️ <strong>IP Reports:</strong> <a href="mailto:support@cellophane.ai">support@cellophane.ai</a></li>
                     </ul>
                 </address>
+                
+                <p>For rights requests (GDPR/CCPA), we acknowledge within 72 hours and respond substantively within 30 days.</p>
             </section>
             
             <div class="agreement-box" role="region" aria-label="Agreement notice">
-                By using Cellophane, you agree to these terms and our commitment to maintaining a professional, respectful platform for meaningful web discussions.
+                🤝 By using Cellophane™, you agree to these Terms and join our mission to create meaningful, professional discussions across the web.
             </div>
         </main>
         
         <footer>
             <div class="footer">
-                <p>© 2025 Cellophane™. All rights reserved.</p>
+                <p>© 2025 Cellophane AI Ltd.. All rights reserved.</p>
+                <p style="font-size: 12px; margin-top: 10px;">
+                    Cellophane™ is a registered trademark | Patent Pending
+                </p>
                 <nav aria-label="Footer navigation">
                     <a href="/">Home</a>
                     <a href="/privacy.html">Privacy Policy</a>
                     <a href="/community-guidelines.html">Community Guidelines</a>
                     <a href="/help">Help Center</a>
+                    <a href="/api">API Docs</a>
                 </nav>
             </div>
         </footer>
