@@ -1,7 +1,7 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.3.0
- * Fixed: No placeholder URLs, Full media support
+ * Version: 1.4.0
+ * Fixed: No placeholder URLs, Full media support, Create cellophane
  */
 
 // ===========================================
@@ -42,6 +42,7 @@ const DOM = {
     followingFeedLoading: document.getElementById('following-feed-loading'),
     modalDetail: document.getElementById('modal-detail'),
     modalProfile: document.getElementById('modal-profile'),
+    modalCreate: document.getElementById('modal-create'),
     detailCellophane: document.getElementById('detail-cellophane'),
     commentsList: document.getElementById('comments-list'),
     commentText: document.getElementById('comment-text'),
@@ -53,7 +54,14 @@ const DOM = {
     statFollowers: document.getElementById('stat-followers'),
     statFollowing: document.getElementById('stat-following'),
     btnLogout: document.getElementById('btn-logout'),
-    toastContainer: document.getElementById('toast-container')
+    toastContainer: document.getElementById('toast-container'),
+    // Create form elements
+    btnCreateFab: document.getElementById('btn-create-fab'),
+    formCreate: document.getElementById('form-create'),
+    createText: document.getElementById('create-text'),
+    createUrl: document.getElementById('create-url'),
+    charCount: document.getElementById('char-count'),
+    btnCreateSubmit: document.getElementById('btn-create-submit')
 };
 
 // ===========================================
@@ -141,6 +149,19 @@ function setupEventListeners() {
     });
     
     document.querySelector('.feed-container').addEventListener('scroll', handleScroll);
+    
+    // Create cellophane events
+    if (DOM.btnCreateFab) {
+        DOM.btnCreateFab.addEventListener('click', openCreateModal);
+    }
+    
+    if (DOM.formCreate) {
+        DOM.formCreate.addEventListener('submit', handleCreateSubmit);
+    }
+    
+    if (DOM.createText) {
+        DOM.createText.addEventListener('input', updateCharCounter);
+    }
 }
 
 // ===========================================
@@ -708,6 +729,9 @@ async function openProfileModal() {
 function closeAllModals() {
     DOM.modalDetail.classList.remove('active');
     DOM.modalProfile.classList.remove('active');
+    if (DOM.modalCreate) {
+        DOM.modalCreate.classList.remove('active');
+    }
     AppState.currentCellophane = null;
 }
 
@@ -790,6 +814,96 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ===========================================
+// CREATE CELLOPHANE
+// ===========================================
+
+function openCreateModal() {
+    console.log('📝 Opening create modal');
+    console.log('📝 DOM.modalCreate:', DOM.modalCreate);
+    
+    if (!DOM.modalCreate) {
+        console.error('❌ modalCreate element not found!');
+        showToast('Create modal not available', 'error');
+        return;
+    }
+    
+    // Reset form
+    if (DOM.formCreate) {
+        DOM.formCreate.reset();
+    }
+    if (DOM.charCount) {
+        DOM.charCount.textContent = '0';
+        DOM.charCount.parentElement.className = 'char-counter';
+    }
+    
+    // Reset visibility selection
+    const publicOption = document.querySelector('.visibility-option input[value="public"]');
+    if (publicOption) {
+        publicOption.checked = true;
+    }
+    
+    DOM.modalCreate.classList.add('active');
+}
+
+function updateCharCounter() {
+    const length = DOM.createText.value.length;
+    DOM.charCount.textContent = length;
+    
+    const counter = DOM.charCount.parentElement;
+    counter.classList.remove('warning', 'danger');
+    
+    if (length >= 450) {
+        counter.classList.add('danger');
+    } else if (length >= 400) {
+        counter.classList.add('warning');
+    }
+}
+
+async function handleCreateSubmit(e) {
+    e.preventDefault();
+    
+    const text = DOM.createText.value.trim();
+    if (!text) {
+        showToast('Please enter some text', 'error');
+        return;
+    }
+    
+    const visibility = document.querySelector('input[name="visibility"]:checked')?.value || 'public';
+    const url = DOM.createUrl.value.trim() || null;
+    
+    // Disable button while submitting
+    DOM.btnCreateSubmit.disabled = true;
+    DOM.btnCreateSubmit.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Creating...';
+    
+    console.log('📝 Creating cellophane:', { text, visibility, url });
+    
+    const { data, error } = await CelloAPI.cellophanes.create({
+        text,
+        visibility,
+        url,
+        position_x: 50,
+        position_y: 50
+    });
+    
+    // Re-enable button
+    DOM.btnCreateSubmit.disabled = false;
+    DOM.btnCreateSubmit.innerHTML = '<svg><use href="#icon-plus"/></svg><span>Create Cellophane</span>';
+    
+    if (error) {
+        console.error('❌ Create error:', error);
+        showToast('Failed to create cellophane', 'error');
+        return;
+    }
+    
+    console.log('✅ Created cellophane:', data);
+    showToast('Cellophane created! 🎉', 'success');
+    
+    // Close modal and refresh feed
+    closeAllModals();
+    await loadMyFeed(true);
 }
 
 // ===========================================
