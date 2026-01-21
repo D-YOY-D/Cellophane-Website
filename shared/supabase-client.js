@@ -1,10 +1,12 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.2.0
+ * Version: 1.4.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.4.0: Fixed comments with UUID generation
+ * UPDATE v1.3.0: Added media upload support
  * UPDATE v1.2.0: Fixed create cellophane with UUID + timestamp
  * UPDATE v1.1.0: Added avatar support via public_user_profiles join
  */
