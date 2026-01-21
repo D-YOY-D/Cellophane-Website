@@ -5,8 +5,8 @@
     "start_url": "/pwa/",
     "display": "standalone",
     "orientation": "portrait",
-    "theme_color": "#4A90E2",
-    "background_color": "#4A90E2",
+    "theme_color": "#3b82f6",
+    "background_color": "#3b82f6",
     "lang": "en",
     "dir": "ltr",
     "icons": [
@@ -60,7 +60,6 @@
         }
     ],
     "categories": ["social", "lifestyle"],
-    "screenshots": [],
     "shortcuts": [
         {
             "name": "My Cellophanes",
@@ -76,15 +75,5 @@
             "url": "/pwa/?tab=following",
             "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
         }
-    ],
-    "share_target": {
-        "action": "/pwa/share",
-        "method": "POST",
-        "enctype": "multipart/form-data",
-        "params": {
-            "title": "title",
-            "text": "text",
-            "url": "url"
-        }
-    }
+    ]
 }

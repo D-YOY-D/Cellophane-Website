@@ -1,7 +1,7 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.1.0
- * English version
+ * Version: 1.2.0
+ * Figma design with colorful cards and SVG icons
  */
 
 // ===========================================
@@ -24,45 +24,28 @@ const AppState = {
 // ===========================================
 
 const DOM = {
-    // Screens
     screenLogin: document.getElementById('screen-login'),
     screenMain: document.getElementById('screen-main'),
-    
-    // Login
     btnGoogleLogin: document.getElementById('btn-google-login'),
-    
-    // Header
     btnProfile: document.getElementById('btn-profile'),
     userAvatar: document.getElementById('user-avatar'),
-    
-    // Tabs
     tabBtns: document.querySelectorAll('.tab-btn'),
     feedMy: document.getElementById('feed-my'),
     feedFollowing: document.getElementById('feed-following'),
-    
-    // My Feed
     myFeedList: document.getElementById('my-feed-list'),
     myFeedCount: document.getElementById('my-feed-count'),
     myFeedEmpty: document.getElementById('my-feed-empty'),
     myFeedLoading: document.getElementById('my-feed-loading'),
-    
-    // Following Feed
     followingFeedList: document.getElementById('following-feed-list'),
     followingFeedCount: document.getElementById('following-feed-count'),
     followingFeedEmpty: document.getElementById('following-feed-empty'),
     followingFeedLoading: document.getElementById('following-feed-loading'),
-    
-    // Modals
     modalDetail: document.getElementById('modal-detail'),
     modalProfile: document.getElementById('modal-profile'),
-    
-    // Detail Modal
     detailCellophane: document.getElementById('detail-cellophane'),
     commentsList: document.getElementById('comments-list'),
     commentText: document.getElementById('comment-text'),
     btnSendComment: document.getElementById('btn-send-comment'),
-    
-    // Profile Modal
     profileAvatar: document.getElementById('profile-avatar'),
     profileName: document.getElementById('profile-name'),
     profileEmail: document.getElementById('profile-email'),
@@ -70,9 +53,46 @@ const DOM = {
     statFollowers: document.getElementById('stat-followers'),
     statFollowing: document.getElementById('stat-following'),
     btnLogout: document.getElementById('btn-logout'),
-    
-    // Toast
     toastContainer: document.getElementById('toast-container')
+};
+
+// ===========================================
+// SVG ICONS
+// ===========================================
+
+const Icons = {
+    globe: '<svg><use href="#icon-globe"/></svg>',
+    lock: '<svg><use href="#icon-lock"/></svg>',
+    users: '<svg><use href="#icon-users"/></svg>',
+    star: '<svg><use href="#icon-star"/></svg>',
+    thumbsup: '<svg><use href="#icon-thumbsup"/></svg>',
+    message: '<svg><use href="#icon-message"/></svg>',
+    share: '<svg><use href="#icon-share"/></svg>',
+    link: '<svg><use href="#icon-link"/></svg>',
+    heart: '<svg><use href="#icon-heart"/></svg>'
+};
+
+// ===========================================
+// VISIBILITY CONFIGURATION
+// ===========================================
+
+const VisibilityConfig = {
+    public: {
+        label: 'PUBLIC',
+        icon: 'globe'
+    },
+    private: {
+        label: 'PRIVATE',
+        icon: 'lock'
+    },
+    groups: {
+        label: 'GROUP',
+        icon: 'users'
+    },
+    influencer: {
+        label: 'INFLUENCER',
+        icon: 'star'
+    }
 };
 
 // ===========================================
@@ -80,12 +100,10 @@ const DOM = {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA...');
+    console.log('🎬 Initializing Cellophane PWA v1.2...');
     
-    // Setup event listeners
     setupEventListeners();
     
-    // Check for existing session
     const { data: { session } } = await CelloAPI.auth.getSession();
     
     if (session) {
@@ -96,7 +114,6 @@ async function initApp() {
         showScreen('login');
     }
     
-    // Listen for auth changes (important for OAuth redirect)
     CelloAPI.auth.onAuthStateChange(async (event, session) => {
         console.log('🔔 Auth event:', event);
         
@@ -113,37 +130,28 @@ async function initApp() {
 // ===========================================
 
 function setupEventListeners() {
-    // Google Login
     DOM.btnGoogleLogin.addEventListener('click', handleGoogleLogin);
     
-    // Tab Navigation
     DOM.tabBtns.forEach(btn => {
         btn.addEventListener('click', () => handleTabChange(btn.dataset.tab));
     });
     
-    // Profile Button
     DOM.btnProfile.addEventListener('click', openProfileModal);
-    
-    // Logout
     DOM.btnLogout.addEventListener('click', handleLogout);
     
-    // Modal Close Buttons
     document.querySelectorAll('.modal .btn-close, .modal .btn-back').forEach(btn => {
         btn.addEventListener('click', closeAllModals);
     });
     
-    // Modal Overlay Click
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', closeAllModals);
     });
     
-    // Comment Send
     DOM.btnSendComment.addEventListener('click', handleSendComment);
     DOM.commentText.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSendComment();
     });
     
-    // Infinite Scroll
     document.querySelector('.feed-container').addEventListener('scroll', handleScroll);
 }
 
@@ -164,32 +172,34 @@ async function handleGoogleLogin() {
         DOM.btnGoogleLogin.disabled = false;
         DOM.btnGoogleLogin.innerHTML = '<svg class="google-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Sign in with Google</span>';
     }
-    // If success, the page will redirect to Google, then back to us
-    // The onAuthStateChange listener will handle the rest
 }
 
 async function handleAuthSuccess(session) {
     AppState.session = session;
     
-    // Get user details
     const { data: { user } } = await CelloAPI.auth.getUser();
     AppState.user = user;
     
     console.log('👤 User:', user.email);
+    console.log('👤 User metadata:', user.user_metadata);
     
-    // Update UI with user info
     const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
     const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
     
-    DOM.userAvatar.src = avatarUrl || 'https://via.placeholder.com/32';
-    DOM.profileAvatar.src = avatarUrl || 'https://via.placeholder.com/80';
+    if (avatarUrl) {
+        DOM.userAvatar.src = avatarUrl;
+        DOM.profileAvatar.src = avatarUrl;
+    } else {
+        // Create avatar with initials
+        const initials = getInitials(displayName);
+        DOM.userAvatar.style.display = 'none';
+        DOM.profileAvatar.style.display = 'none';
+    }
+    
     DOM.profileName.textContent = displayName;
     DOM.profileEmail.textContent = user.email;
     
-    // Show main screen
     showScreen('main');
-    
-    // Load feeds
     await loadMyFeed(true);
     
     showToast(`Welcome, ${displayName}! 👋`, 'success');
@@ -214,7 +224,6 @@ async function handleLogout() {
     if (error) {
         showToast('Sign out failed', 'error');
     }
-    // onAuthStateChange will handle the rest
 }
 
 // ===========================================
@@ -239,16 +248,13 @@ function showScreen(screen) {
 function handleTabChange(tab) {
     AppState.currentTab = tab;
     
-    // Update tab buttons
     DOM.tabBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
     });
     
-    // Update feeds visibility
     DOM.feedMy.classList.toggle('active', tab === 'my-feed');
     DOM.feedFollowing.classList.toggle('active', tab === 'following');
     
-    // Load feed if needed
     if (tab === 'my-feed' && AppState.feeds.my.data.length === 0) {
         loadMyFeed(true);
     } else if (tab === 'following' && AppState.feeds.following.data.length === 0) {
@@ -294,7 +300,6 @@ async function loadMyFeed(reset = false) {
     feed.data = [...feed.data, ...data];
     feed.page++;
     
-    // Update UI
     DOM.myFeedCount.textContent = feed.data.length;
     DOM.statCellophanes.textContent = feed.data.length;
     
@@ -339,7 +344,6 @@ async function loadFollowingFeed(reset = false) {
     feed.data = [...feed.data, ...data];
     feed.page++;
     
-    // Update UI
     DOM.followingFeedCount.textContent = feed.data.length;
     
     if (feed.data.length === 0) {
@@ -350,7 +354,7 @@ async function loadFollowingFeed(reset = false) {
 }
 
 // ===========================================
-// CELLOPHANE RENDERING
+// CELLOPHANE RENDERING - FIGMA DESIGN
 // ===========================================
 
 function renderCellophanes(cellophanes, container) {
@@ -362,47 +366,63 @@ function renderCellophanes(cellophanes, container) {
 
 function createCellophaneCard(cellophane) {
     const card = document.createElement('div');
-    card.className = `cellophane-card ${cellophane.visibility || 'public'}`;
+    const visibility = cellophane.visibility || 'public';
+    card.className = `cellophane-card ${visibility}`;
     card.dataset.id = cellophane.id;
     
-    const authorAvatar = cellophane.authorAvatar || 'https://via.placeholder.com/40';
     const authorName = cellophane.author || 'Anonymous';
+    const authorAvatar = cellophane.authorAvatar || '';
     const timestamp = formatTimestamp(cellophane.created_at);
-    const visibility = getVisibilityLabel(cellophane.visibility);
-    const visibilityClass = cellophane.visibility || 'public';
+    const visibilityConfig = VisibilityConfig[visibility] || VisibilityConfig.public;
     const sourceUrl = cellophane.url || '';
-    const sourceDomain = sourceUrl ? new URL(sourceUrl).hostname : '';
+    const sourceDomain = sourceUrl ? extractDomain(sourceUrl) : '';
+    const initials = getInitials(authorName);
+    
+    // Avatar HTML - image or fallback with initials
+    const avatarHtml = authorAvatar 
+        ? `<img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <div class="avatar-fallback" style="display:none;">${initials}</div>`
+        : `<div class="avatar-fallback">${initials}</div>`;
     
     card.innerHTML = `
-        <div class="cellophane-header">
-            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" onerror="this.src='https://via.placeholder.com/40'">
-            <div class="cellophane-author-info">
-                <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
-                <div class="cellophane-meta">
-                    <span>${timestamp}</span>
-                    <span class="visibility-badge ${visibilityClass}">${visibility}</span>
+        <div class="cellophane-gradient-strip"></div>
+        <div class="cellophane-card-inner">
+            <div class="cellophane-header">
+                <div class="cellophane-user">
+                    ${avatarHtml}
+                    <div class="cellophane-author-info">
+                        <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
+                        <div class="cellophane-time">${timestamp}</div>
+                    </div>
                 </div>
+                <span class="visibility-badge ${visibility}">
+                    ${Icons[visibilityConfig.icon]}
+                    ${visibilityConfig.label}
+                </span>
             </div>
-        </div>
-        <div class="cellophane-content">${escapeHtml(cellophane.text || '')}</div>
-        ${sourceUrl ? `
-            <div class="cellophane-source">
-                <span class="cellophane-source-icon">🔗</span>
-                <span class="cellophane-source-url">${sourceDomain}</span>
+            
+            <div class="cellophane-content">${escapeHtml(cellophane.text || '')}</div>
+            
+            ${sourceUrl ? `
+                <a href="${sourceUrl}" target="_blank" class="cellophane-source">
+                    ${Icons.link}
+                    <span class="cellophane-source-url">${sourceDomain}</span>
+                </a>
+            ` : ''}
+            
+            <div class="cellophane-actions">
+                <button class="action-btn btn-like" data-id="${cellophane.id}">
+                    ${Icons.thumbsup}
+                    <span class="like-count">0</span>
+                </button>
+                <button class="action-btn btn-comment" data-id="${cellophane.id}">
+                    ${Icons.message}
+                    <span class="comment-count">${cellophane.comments_count || 0}</span>
+                </button>
+                <button class="action-btn btn-share" data-id="${cellophane.id}">
+                    ${Icons.share}
+                </button>
             </div>
-        ` : ''}
-        <div class="cellophane-actions">
-            <button class="action-btn btn-like" data-id="${cellophane.id}">
-                <span>❤️</span>
-                <span class="like-count">0</span>
-            </button>
-            <button class="action-btn btn-comment" data-id="${cellophane.id}">
-                <span>💬</span>
-                <span class="comment-count">${cellophane.comments_count || 0}</span>
-            </button>
-            <button class="action-btn btn-share" data-id="${cellophane.id}">
-                <span>📤</span>
-            </button>
         </div>
     `;
     
@@ -439,7 +459,6 @@ async function handleLike(cellophaneId) {
         return;
     }
     
-    // Update UI
     const btn = document.querySelector(`.btn-like[data-id="${cellophaneId}"]`);
     if (btn) {
         btn.classList.toggle('liked', data.action === 'added');
@@ -459,7 +478,6 @@ async function handleShare(cellophane) {
                 url: shareUrl
             });
         } catch (err) {
-            // User cancelled or error
             if (err.name !== 'AbortError') {
                 copyToClipboard(shareUrl);
             }
@@ -484,30 +502,35 @@ function copyToClipboard(text) {
 async function openCellophaneDetail(cellophane) {
     AppState.currentCellophane = cellophane;
     
-    const authorAvatar = cellophane.authorAvatar || 'https://via.placeholder.com/48';
     const authorName = cellophane.author || 'Anonymous';
+    const authorAvatar = cellophane.authorAvatar || '';
     const timestamp = formatTimestamp(cellophane.created_at);
+    const initials = getInitials(authorName);
+    
+    const avatarHtml = authorAvatar 
+        ? `<img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <div class="avatar-fallback" style="display:none;width:48px;height:48px;">${initials}</div>`
+        : `<div class="avatar-fallback" style="width:48px;height:48px;">${initials}</div>`;
     
     DOM.detailCellophane.innerHTML = `
-        <div class="cellophane-header">
-            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.src='https://via.placeholder.com/48'">
-            <div class="cellophane-author-info">
-                <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
-                <div class="cellophane-meta">
-                    <span>${timestamp}</span>
+        <div class="cellophane-header" style="margin-bottom:16px;">
+            <div class="cellophane-user">
+                ${avatarHtml}
+                <div class="cellophane-author-info">
+                    <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
+                    <div class="cellophane-time">${timestamp}</div>
                 </div>
             </div>
         </div>
         <div class="cellophane-content" style="font-size:1.1rem;margin:16px 0;">${escapeHtml(cellophane.text || '')}</div>
         ${cellophane.url ? `
             <a href="${cellophane.url}" target="_blank" class="cellophane-source">
-                <span class="cellophane-source-icon">🔗</span>
+                ${Icons.link}
                 <span>View Source</span>
             </a>
         ` : ''}
     `;
     
-    // Load comments
     DOM.commentsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
     DOM.modalDetail.classList.add('active');
     
@@ -521,16 +544,19 @@ async function openCellophaneDetail(cellophane) {
     if (comments.length === 0) {
         DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">No comments yet</p>';
     } else {
-        DOM.commentsList.innerHTML = comments.map(comment => `
-            <div class="comment-item">
-                <img src="https://via.placeholder.com/32" alt="" class="comment-avatar">
-                <div class="comment-body">
-                    <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
-                    <div class="comment-text">${escapeHtml(comment.text)}</div>
-                    <div class="comment-time">${formatTimestamp(comment.created_at)}</div>
+        DOM.commentsList.innerHTML = comments.map(comment => {
+            const commentInitials = getInitials(comment.author || 'A');
+            return `
+                <div class="comment-item">
+                    <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;background:var(--color-primary-gradient);">${commentInitials}</div>
+                    <div class="comment-body">
+                        <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
+                        <div class="comment-time">${formatTimestamp(comment.created_at)}</div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 }
 
@@ -550,10 +576,12 @@ async function handleSendComment() {
         return;
     }
     
-    // Add comment to list
+    const userAvatar = AppState.user?.user_metadata?.avatar_url || '';
+    const initials = getInitials(data.author);
+    
     const commentHtml = `
         <div class="comment-item">
-            <img src="${AppState.user?.user_metadata?.avatar_url || 'https://via.placeholder.com/32'}" alt="" class="comment-avatar">
+            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;background:var(--header-gradient);">${initials}</div>
             <div class="comment-body">
                 <div class="comment-author">${escapeHtml(data.author)}</div>
                 <div class="comment-text">${escapeHtml(data.text)}</div>
@@ -574,7 +602,6 @@ async function handleSendComment() {
 // ===========================================
 
 async function openProfileModal() {
-    // Load stats
     const { data: followers } = await CelloAPI.follows.getFollowers();
     const { data: following } = await CelloAPI.follows.getFollowing();
     
@@ -651,14 +678,21 @@ function formatTimestamp(timestamp) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function getVisibilityLabel(visibility) {
-    const labels = {
-        public: '🌍 Public',
-        private: '🔒 Private',
-        groups: '👥 Group',
-        influencer: '⭐ Influencer'
-    };
-    return labels[visibility] || labels.public;
+function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) {
+        return parts[0].charAt(0).toUpperCase();
+    }
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+function extractDomain(url) {
+    try {
+        return new URL(url).hostname;
+    } catch {
+        return url;
+    }
 }
 
 function escapeHtml(text) {
@@ -669,7 +703,7 @@ function escapeHtml(text) {
 }
 
 // ===========================================
-// SERVICE WORKER REGISTRATION
+// SERVICE WORKER
 // ===========================================
 
 if ('serviceWorker' in navigator) {
