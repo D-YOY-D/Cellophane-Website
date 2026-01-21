@@ -16,7 +16,20 @@ const AppState = {
         my: { data: [], page: 0, hasMore: true, loading: false },
         following: { data: [], page: 0, hasMore: true, loading: false }
     },
-    currentCellophane: null
+    currentCellophane: null,
+    // Media upload state
+    pendingMedia: {
+        file: null,
+        type: null,
+        url: null,
+        base64: null
+    },
+    audioRecording: {
+        mediaRecorder: null,
+        chunks: [],
+        startTime: null,
+        timerInterval: null
+    }
 };
 
 // ===========================================
@@ -62,7 +75,19 @@ const DOM = {
     createText: document.getElementById('create-text'),
     createUrl: document.getElementById('create-url'),
     charCount: document.getElementById('char-count'),
-    btnCreateSubmit: document.getElementById('btn-create-submit')
+    btnCreateSubmit: document.getElementById('btn-create-submit'),
+    // Media upload elements
+    btnAddImage: document.getElementById('btn-add-image'),
+    btnAddVideo: document.getElementById('btn-add-video'),
+    btnAddAudio: document.getElementById('btn-add-audio'),
+    inputImage: document.getElementById('input-image'),
+    inputVideo: document.getElementById('input-video'),
+    mediaPreview: document.getElementById('media-preview'),
+    mediaPreviewContent: document.getElementById('media-preview-content'),
+    btnRemoveMedia: document.getElementById('btn-remove-media'),
+    audioRecorder: document.getElementById('audio-recorder'),
+    recordingTime: document.getElementById('recording-time'),
+    btnStopRecording: document.getElementById('btn-stop-recording')
 };
 
 // ===========================================
@@ -172,6 +197,29 @@ function setupEventListeners() {
     document.querySelectorAll('input[name="visibility"]').forEach(radio => {
         radio.addEventListener('change', updateSubmitButtonColor);
     });
+    
+    // Media upload events
+    if (DOM.btnAddImage) {
+        DOM.btnAddImage.addEventListener('click', () => DOM.inputImage.click());
+    }
+    if (DOM.btnAddVideo) {
+        DOM.btnAddVideo.addEventListener('click', () => DOM.inputVideo.click());
+    }
+    if (DOM.btnAddAudio) {
+        DOM.btnAddAudio.addEventListener('click', startAudioRecording);
+    }
+    if (DOM.inputImage) {
+        DOM.inputImage.addEventListener('change', (e) => handleFileSelect(e, 'image'));
+    }
+    if (DOM.inputVideo) {
+        DOM.inputVideo.addEventListener('change', (e) => handleFileSelect(e, 'video'));
+    }
+    if (DOM.btnRemoveMedia) {
+        DOM.btnRemoveMedia.addEventListener('click', clearMediaPreview);
+    }
+    if (DOM.btnStopRecording) {
+        DOM.btnStopRecording.addEventListener('click', stopAudioRecording);
+    }
 }
 
 // ===========================================
@@ -841,8 +889,159 @@ function escapeHtml(text) {
 }
 
 // ===========================================
-// CREATE CELLOPHANE
+// MEDIA UPLOAD FUNCTIONS
 // ===========================================
+
+function handleFileSelect(event, mediaType) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    console.log(`📎 Selected ${mediaType}:`, file.name);
+    
+    // Store file reference
+    AppState.pendingMedia = {
+        file: file,
+        type: mediaType,
+        url: null,
+        base64: null
+    };
+    
+    // Show preview
+    showMediaPreview(file, mediaType);
+}
+
+function showMediaPreview(file, mediaType) {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        let previewHtml = '';
+        
+        if (mediaType === 'image') {
+            previewHtml = `<img src="${e.target.result}" alt="Preview">`;
+        } else if (mediaType === 'video') {
+            previewHtml = `<video src="${e.target.result}" controls></video>`;
+        } else if (mediaType === 'audio') {
+            previewHtml = `
+                <div class="audio-preview">
+                    <span class="audio-icon">🎵</span>
+                    <audio src="${e.target.result}" controls></audio>
+                </div>
+            `;
+        }
+        
+        DOM.mediaPreviewContent.innerHTML = previewHtml;
+        DOM.mediaPreview.classList.remove('hidden');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function clearMediaPreview() {
+    AppState.pendingMedia = {
+        file: null,
+        type: null,
+        url: null,
+        base64: null
+    };
+    
+    DOM.mediaPreviewContent.innerHTML = '';
+    DOM.mediaPreview.classList.add('hidden');
+    
+    // Reset file inputs
+    if (DOM.inputImage) DOM.inputImage.value = '';
+    if (DOM.inputVideo) DOM.inputVideo.value = '';
+}
+
+async function startAudioRecording() {
+    try {
+        console.log('🎤 Starting audio recording...');
+        
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        
+        AppState.audioRecording = {
+            mediaRecorder: mediaRecorder,
+            chunks: [],
+            startTime: Date.now(),
+            timerInterval: null
+        };
+        
+        mediaRecorder.ondataavailable = (e) => {
+            AppState.audioRecording.chunks.push(e.data);
+        };
+        
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(AppState.audioRecording.chunks, { type: 'audio/webm' });
+            const file = new File([blob], `recording_${Date.now()}.webm`, { type: 'audio/webm' });
+            
+            // Store as pending media
+            AppState.pendingMedia = {
+                file: file,
+                type: 'audio',
+                url: null,
+                base64: null
+            };
+            
+            // Show preview
+            showMediaPreview(file, 'audio');
+            
+            // Clean up
+            stream.getTracks().forEach(track => track.stop());
+            clearInterval(AppState.audioRecording.timerInterval);
+            DOM.audioRecorder.classList.add('hidden');
+        };
+        
+        mediaRecorder.start();
+        
+        // Show recording UI
+        DOM.audioRecorder.classList.remove('hidden');
+        
+        // Start timer
+        AppState.audioRecording.timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - AppState.audioRecording.startTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            DOM.recordingTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        showToast('Recording started...', 'info');
+        
+    } catch (error) {
+        console.error('❌ Microphone error:', error);
+        showToast('Could not access microphone', 'error');
+    }
+}
+
+function stopAudioRecording() {
+    console.log('🛑 Stopping audio recording...');
+    
+    if (AppState.audioRecording.mediaRecorder && 
+        AppState.audioRecording.mediaRecorder.state === 'recording') {
+        AppState.audioRecording.mediaRecorder.stop();
+    }
+}
+
+async function uploadPendingMedia() {
+    if (!AppState.pendingMedia.file) {
+        return { url: null, type: null };
+    }
+    
+    console.log('📤 Uploading media...');
+    showToast('Uploading media...', 'info');
+    
+    const { url, error } = await CelloAPI.media.uploadFile(
+        AppState.pendingMedia.file,
+        AppState.pendingMedia.type
+    );
+    
+    if (error) {
+        console.error('❌ Upload failed:', error);
+        showToast('Media upload failed', 'error');
+        return { url: null, type: null };
+    }
+    
+    return { url: url, type: AppState.pendingMedia.type };
+}
 
 // ===========================================
 // CREATE CELLOPHANE
@@ -885,6 +1084,9 @@ function openCreateModal(prefillUrl = null) {
     if (publicOption) {
         publicOption.checked = true;
     }
+    
+    // Reset media preview
+    clearMediaPreview();
     
     // Pre-fill URL if provided (from "Add to this page")
     if (prefillUrl && DOM.createUrl) {
@@ -940,14 +1142,26 @@ async function handleCreateSubmit(e) {
     DOM.btnCreateSubmit.disabled = true;
     DOM.btnCreateSubmit.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Creating...';
     
-    console.log('📝 Creating cellophane:', { text, visibility, url });
+    // Upload media if present
+    let mediaUrl = null;
+    let mediaType = null;
+    
+    if (AppState.pendingMedia.file) {
+        const uploaded = await uploadPendingMedia();
+        mediaUrl = uploaded.url;
+        mediaType = uploaded.type;
+    }
+    
+    console.log('📝 Creating cellophane:', { text, visibility, url, mediaUrl, mediaType });
     
     const { data, error } = await CelloAPI.cellophanes.create({
         text,
         visibility,
         url,
         position_x: 50,
-        position_y: 50
+        position_y: 50,
+        media_url: mediaUrl,
+        media_type: mediaType
     });
     
     // Re-enable button
@@ -962,6 +1176,9 @@ async function handleCreateSubmit(e) {
     
     console.log('✅ Created cellophane:', data);
     showToast('Cellophane created! 🎉', 'success');
+    
+    // Clear media preview
+    clearMediaPreview();
     
     // Close modal and refresh feed
     closeAllModals();
