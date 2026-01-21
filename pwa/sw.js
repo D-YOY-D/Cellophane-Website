@@ -1,9 +1,9 @@
 /**
  * Cellophane PWA Service Worker
- * Version: 1.3.0
+ * Version: 1.5.0
  */
 
-const CACHE_NAME = 'cellophane-pwa-v1.3';
+const CACHE_NAME = 'cellophane-pwa-v1.5';
 const STATIC_ASSETS = [
     '/pwa/',
     '/pwa/index.html',
