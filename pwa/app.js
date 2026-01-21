@@ -153,7 +153,7 @@ function setupEventListeners() {
     
     // Create cellophane events
     if (DOM.btnCreateFab) {
-        DOM.btnCreateFab.addEventListener('click', openCreateModal);
+        DOM.btnCreateFab.addEventListener('click', () => openCreateModal());
     }
     
     if (DOM.btnAddToPage) {
@@ -167,6 +167,11 @@ function setupEventListeners() {
     if (DOM.createText) {
         DOM.createText.addEventListener('input', updateCharCounter);
     }
+    
+    // Visibility selection - change button color
+    document.querySelectorAll('input[name="visibility"]').forEach(radio => {
+        radio.addEventListener('change', updateSubmitButtonColor);
+    });
 }
 
 // ===========================================
@@ -886,6 +891,9 @@ function openCreateModal(prefillUrl = null) {
         DOM.createUrl.value = prefillUrl;
     }
     
+    // Set initial button color to public
+    updateSubmitButtonColor();
+    
     DOM.modalCreate.classList.add('active');
 }
 
@@ -901,6 +909,19 @@ function updateCharCounter() {
     } else if (length >= 400) {
         counter.classList.add('warning');
     }
+}
+
+function updateSubmitButtonColor() {
+    const visibility = document.querySelector('input[name="visibility"]:checked')?.value || 'public';
+    const btn = DOM.btnCreateSubmit;
+    
+    if (!btn) return;
+    
+    // Remove all visibility classes
+    btn.classList.remove('btn-public', 'btn-private', 'btn-groups', 'btn-influencer');
+    
+    // Add the selected one
+    btn.classList.add(`btn-${visibility}`);
 }
 
 async function handleCreateSubmit(e) {

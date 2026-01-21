@@ -1708,6 +1708,23 @@ img {
     height: 20px;
 }
 
+/* Submit button colors by visibility */
+.btn-primary.btn-public {
+    background: var(--color-public-gradient);
+}
+
+.btn-primary.btn-private {
+    background: var(--color-private-gradient);
+}
+
+.btn-primary.btn-groups {
+    background: var(--color-groups-gradient);
+}
+
+.btn-primary.btn-influencer {
+    background: var(--color-influencer-gradient);
+}
+
 /* Loading state for submit */
 .btn-primary.loading {
     pointer-events: none;
