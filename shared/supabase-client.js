@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.1.0
+ * Version: 1.2.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.2.0: Fixed create cellophane with UUID + timestamp
  * UPDATE v1.1.0: Added avatar support via public_user_profiles join
  */
 
@@ -107,6 +108,23 @@ const CelloAuth = {
         return () => subscription.unsubscribe();
     }
 };
+
+// ===========================================
+// HELPER: Generate UUID
+// ===========================================
+
+function generateUUID() {
+    // Use crypto.randomUUID if available (modern browsers)
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    // Fallback for older browsers
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 // ===========================================
 // HELPER: Add avatar to cellophanes
@@ -258,12 +276,21 @@ const CelloCellophanes = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: null, error: new Error('Not authenticated') };
         
+        const now = new Date().toISOString();
+        
         const { data, error } = await client
             .from('cellophanes')
             .insert({
-                ...cellophane,
+                id: generateUUID(),
+                text: cellophane.text,
+                url: cellophane.url || 'https://cellophane.ai/pwa',
+                visibility: cellophane.visibility || 'public',
+                position_x: cellophane.position_x || 50,
+                position_y: cellophane.position_y || 50,
                 author_id: user.id,
-                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous'
+                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+                timestamp: now,
+                created_at: now
             })
             .select()
             .single();
@@ -577,4 +604,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.1.0 (with avatars!)');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.2.0 (with avatars + create fix!)');
