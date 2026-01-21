@@ -251,15 +251,22 @@ async function handleAuthSuccess(session) {
     
     const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
     const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+    const initials = displayName.charAt(0).toUpperCase();
     
-    // Update header avatar - NO placeholder URLs!
+    // Update header avatar with fallback
+    const avatarFallback = document.getElementById('user-avatar-fallback');
     if (avatarUrl) {
         DOM.userAvatar.src = avatarUrl;
         DOM.userAvatar.style.display = 'block';
+        if (avatarFallback) avatarFallback.style.display = 'none';
         DOM.profileAvatar.src = avatarUrl;
         DOM.profileAvatar.style.display = 'block';
     } else {
         DOM.userAvatar.style.display = 'none';
+        if (avatarFallback) {
+            avatarFallback.textContent = initials;
+            avatarFallback.style.display = 'flex';
+        }
         DOM.profileAvatar.style.display = 'none';
     }
     
@@ -619,16 +626,31 @@ window.openImageFullscreen = openImageFullscreen;
 // ===========================================
 
 async function handleLike(cellophaneId) {
+    console.log('❤️ Toggling like for:', cellophaneId);
+    
     const { data, error } = await CelloAPI.reactions.toggle(cellophaneId, '❤️');
     
     if (error) {
+        console.error('❌ Like error:', error);
         showToast('Failed to add like', 'error');
         return;
     }
     
+    console.log('❤️ Like result:', data);
+    
+    // Update button state
     const btn = document.querySelector(`.btn-like[data-id="${cellophaneId}"]`);
     if (btn) {
-        btn.classList.toggle('liked', data.action === 'added');
+        const isLiked = data.action === 'added';
+        btn.classList.toggle('liked', isLiked);
+        
+        // Update count
+        const countEl = btn.querySelector('.like-count');
+        if (countEl) {
+            let count = parseInt(countEl.textContent) || 0;
+            count = isLiked ? count + 1 : Math.max(0, count - 1);
+            countEl.textContent = count;
+        }
     }
     
     showToast(data.action === 'added' ? '❤️ Liked!' : 'Like removed', 'success');
@@ -1136,7 +1158,12 @@ async function handleCreateSubmit(e) {
     }
     
     const visibility = document.querySelector('input[name="visibility"]:checked')?.value || 'public';
-    const url = DOM.createUrl.value.trim() || null;
+    let url = DOM.createUrl.value.trim() || null;
+    
+    // Auto-fix URL: add https:// if missing
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
     
     // Disable button while submitting
     DOM.btnCreateSubmit.disabled = true;

@@ -143,6 +143,12 @@
             <line x1="12" y1="19" x2="12" y2="23"></line>
             <line x1="8" y1="23" x2="16" y2="23"></line>
         </symbol>
+        
+        <!-- Send Icon -->
+        <symbol id="icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </symbol>
     </svg>
 
     <!-- App Container -->
@@ -200,8 +206,10 @@
                         <button class="btn-icon">
                             <svg><use href="#icon-bell"/></svg>
                         </button>
-                        <button id="btn-profile" class="btn-icon">
-                            <img id="user-avatar" src="" alt="Profile" class="avatar">
+                        <button id="btn-profile" class="btn-icon profile-btn">
+                            <img id="user-avatar" src="" alt="Profile" class="avatar header-avatar">
+                            <div id="user-avatar-fallback" class="avatar-fallback header-avatar-fallback">?</div>
+                        </button>
                         </button>
                     </div>
                 </div>
@@ -337,10 +345,10 @@
                         <div class="form-group">
                             <label for="create-url">Page URL to comment on (optional)</label>
                             <input 
-                                type="url" 
+                                type="text" 
                                 id="create-url" 
                                 class="form-input" 
-                                placeholder="https://example.com/article"
+                                placeholder="example.com or www.example.com"
                             >
                             <p class="form-hint">Leave empty for a general post visible to your followers</p>
                         </div>
@@ -421,8 +429,8 @@
                         </div>
                         <div class="comment-input">
                             <input type="text" id="comment-text" placeholder="Add a comment...">
-                            <button id="btn-send-comment" class="btn-icon">
-                                <svg><use href="#icon-share"/></svg>
+                            <button id="btn-send-comment" class="btn-icon" title="Send comment">
+                                <svg><use href="#icon-send"/></svg>
                             </button>
                         </div>
                     </div>

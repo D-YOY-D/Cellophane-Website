@@ -320,6 +320,38 @@ img {
     border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
+/* Header Profile Button */
+.profile-btn {
+    position: relative;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.header-avatar {
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.header-avatar-fallback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
 /* ===========================================
    Tab Navigation
    =========================================== */
@@ -1003,6 +1035,7 @@ img {
 .comment-input {
     display: flex;
     gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .comment-input input {
@@ -1017,6 +1050,31 @@ img {
 
 .comment-input input:focus {
     border-color: var(--color-primary);
+}
+
+.comment-input .btn-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: var(--radius-full);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.comment-input .btn-icon:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.05);
+}
+
+.comment-input .btn-icon svg {
+    width: 18px;
+    height: 18px;
 }
 
 /* ===========================================
