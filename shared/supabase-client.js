@@ -1,11 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.0.0
+ * Version: 1.1.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
- * DO NOT include Chrome extension specific code here.
+ * UPDATE v1.1.0: Added avatar support via public_user_profiles join
  */
 
 // ===========================================
@@ -109,6 +109,45 @@ const CelloAuth = {
 };
 
 // ===========================================
+// HELPER: Add avatar to cellophanes
+// ===========================================
+
+async function addAvatarsToCellophanes(cellophanes) {
+    if (!cellophanes || cellophanes.length === 0) return cellophanes;
+    
+    const client = getClient();
+    if (!client) return cellophanes;
+    
+    // Get unique author IDs
+    const authorIds = [...new Set(cellophanes.map(c => c.author_id).filter(Boolean))];
+    
+    if (authorIds.length === 0) return cellophanes;
+    
+    // Fetch avatars from public_user_profiles
+    const { data: profiles, error } = await client
+        .from('public_user_profiles')
+        .select('id, avatar_url, display_name')
+        .in('id', authorIds);
+    
+    if (error || !profiles) {
+        console.warn('⚠️ Could not fetch user profiles:', error);
+        return cellophanes;
+    }
+    
+    // Create a lookup map
+    const avatarMap = {};
+    profiles.forEach(p => {
+        avatarMap[p.id] = p.avatar_url;
+    });
+    
+    // Add avatar to each cellophane
+    return cellophanes.map(c => ({
+        ...c,
+        author_avatar: avatarMap[c.author_id] || null
+    }));
+}
+
+// ===========================================
 // CELLOPHANES MODULE
 // ===========================================
 
@@ -135,7 +174,12 @@ const CelloCellophanes = {
             .order('created_at', { ascending: false })
             .range(from, to);
         
-        return { data: data || [], error };
+        if (error) return { data: [], error };
+        
+        // Add avatars
+        const withAvatars = await addAvatarsToCellophanes(data || []);
+        
+        return { data: withAvatars, error: null };
     },
     
     /**
@@ -173,7 +217,12 @@ const CelloCellophanes = {
             .order('created_at', { ascending: false })
             .range(from, to);
         
-        return { data: data || [], error };
+        if (error) return { data: [], error };
+        
+        // Add avatars
+        const withAvatars = await addAvatarsToCellophanes(data || []);
+        
+        return { data: withAvatars, error: null };
     },
     
     /**
@@ -190,7 +239,12 @@ const CelloCellophanes = {
             .eq('id', id)
             .single();
         
-        return { data, error };
+        if (error || !data) return { data: null, error };
+        
+        // Add avatar
+        const withAvatars = await addAvatarsToCellophanes([data]);
+        
+        return { data: withAvatars[0], error: null };
     },
     
     /**
@@ -523,4 +577,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.0.0');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.1.0 (with avatars!)');
