@@ -1220,3 +1220,452 @@ img {
 .image-fullscreen-close:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+
+/* ===========================================
+   FAB - Floating Action Button
+   =========================================== */
+
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab svg {
+    width: 28px;
+    height: 28px;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+/* ===========================================
+   Create Cellophane Form
+   =========================================== */
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    resize: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--color-surface);
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--color-surface);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.char-counter.warning {
+    color: #f59e0b;
+}
+
+.char-counter.danger {
+    color: var(--color-danger);
+}
+
+/* Visibility Options */
+.visibility-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.visibility-option {
+    cursor: pointer;
+}
+
+.visibility-option input {
+    display: none;
+}
+
+.visibility-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-border);
+    transition: all 0.2s ease;
+    background: var(--color-surface);
+}
+
+.visibility-card svg {
+    width: 24px;
+    height: 24px;
+}
+
+.visibility-card span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Visibility Colors */
+.visibility-card.public {
+    color: var(--color-public);
+}
+
+.visibility-card.private {
+    color: var(--color-private);
+}
+
+.visibility-card.groups {
+    color: var(--color-groups);
+}
+
+.visibility-card.influencer {
+    color: var(--color-influencer);
+}
+
+/* Selected State */
+.visibility-option input:checked + .visibility-card.public {
+    background: var(--color-public-light);
+    border-color: var(--color-public);
+}
+
+.visibility-option input:checked + .visibility-card.private {
+    background: var(--color-private-light);
+    border-color: var(--color-private);
+}
+
+.visibility-option input:checked + .visibility-card.groups {
+    background: var(--color-groups-light);
+    border-color: var(--color-groups);
+}
+
+.visibility-option input:checked + .visibility-card.influencer {
+    background: var(--color-influencer-light);
+    border-color: var(--color-influencer);
+}
+
+/* Submit Button */
+.btn-full {
+    width: 100%;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-full svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===========================================
+   FAB - Floating Action Button
+   =========================================== */
+
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border: none;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+/* ===========================================
+   Create Form Styles
+   =========================================== */
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    resize: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--color-surface);
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: var(--color-surface);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.char-counter.warning {
+    color: #f97316;
+}
+
+.char-counter.danger {
+    color: var(--color-danger);
+}
+
+/* Visibility Options */
+.visibility-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.visibility-option {
+    cursor: pointer;
+}
+
+.visibility-option input {
+    display: none;
+}
+
+.visibility-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-border);
+    transition: all 0.2s ease;
+    background: var(--color-surface);
+}
+
+.visibility-card svg {
+    width: 24px;
+    height: 24px;
+}
+
+.visibility-card span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Visibility Card Colors */
+.visibility-card.public {
+    color: var(--color-public);
+}
+
+.visibility-card.private {
+    color: var(--color-private);
+}
+
+.visibility-card.groups {
+    color: var(--color-groups);
+}
+
+.visibility-card.influencer {
+    color: var(--color-influencer);
+}
+
+/* Selected State */
+.visibility-option input:checked + .visibility-card.public {
+    border-color: var(--color-public);
+    background: var(--color-public-light);
+}
+
+.visibility-option input:checked + .visibility-card.private {
+    border-color: var(--color-private);
+    background: var(--color-private-light);
+}
+
+.visibility-option input:checked + .visibility-card.groups {
+    border-color: var(--color-groups);
+    background: var(--color-groups-light);
+}
+
+.visibility-option input:checked + .visibility-card.influencer {
+    border-color: var(--color-influencer);
+    background: var(--color-influencer-light);
+}
+
+/* Submit Button */
+.btn-full {
+    width: 100%;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-full svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Loading state for submit */
+.btn-primary.loading {
+    pointer-events: none;
+}
+
+.btn-primary.loading span {
+    opacity: 0;
+}
+
+.btn-primary.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

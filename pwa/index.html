@@ -243,6 +243,94 @@
                 
             </main>
             
+            <!-- FAB - Create New Cellophane -->
+            <button id="btn-create-fab" class="fab">
+                <svg><use href="#icon-plus"/></svg>
+            </button>
+            
+        </div>
+        
+        <!-- Create Cellophane Modal -->
+        <div id="modal-create" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="btn-back">←</button>
+                    <h3>New Cellophane</h3>
+                    <button class="btn-close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-create" class="create-form">
+                        <!-- Text Input -->
+                        <div class="form-group">
+                            <label for="create-text">What's on your mind?</label>
+                            <textarea 
+                                id="create-text" 
+                                class="form-textarea" 
+                                placeholder="Share your thoughts..."
+                                rows="4"
+                                maxlength="500"
+                                required
+                            ></textarea>
+                            <div class="char-counter">
+                                <span id="char-count">0</span>/500
+                            </div>
+                        </div>
+                        
+                        <!-- Visibility Selector -->
+                        <div class="form-group">
+                            <label>Who can see this?</label>
+                            <div class="visibility-options">
+                                <label class="visibility-option selected">
+                                    <input type="radio" name="visibility" value="public" checked>
+                                    <div class="visibility-card public">
+                                        <svg><use href="#icon-globe"/></svg>
+                                        <span>Public</span>
+                                    </div>
+                                </label>
+                                <label class="visibility-option">
+                                    <input type="radio" name="visibility" value="private">
+                                    <div class="visibility-card private">
+                                        <svg><use href="#icon-lock"/></svg>
+                                        <span>Private</span>
+                                    </div>
+                                </label>
+                                <label class="visibility-option">
+                                    <input type="radio" name="visibility" value="groups">
+                                    <div class="visibility-card groups">
+                                        <svg><use href="#icon-users"/></svg>
+                                        <span>Group</span>
+                                    </div>
+                                </label>
+                                <label class="visibility-option">
+                                    <input type="radio" name="visibility" value="influencer">
+                                    <div class="visibility-card influencer">
+                                        <svg><use href="#icon-star"/></svg>
+                                        <span>Influencer</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- URL Input (Optional) -->
+                        <div class="form-group">
+                            <label for="create-url">Link (optional)</label>
+                            <input 
+                                type="url" 
+                                id="create-url" 
+                                class="form-input" 
+                                placeholder="https://example.com"
+                            >
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" id="btn-create-submit" class="btn btn-primary btn-full">
+                            <svg><use href="#icon-plus"/></svg>
+                            <span>Create Cellophane</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
         
         <!-- Cellophane Detail Modal -->
