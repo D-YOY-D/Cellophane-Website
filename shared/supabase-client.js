@@ -267,7 +267,7 @@ const CelloCellophanes = {
     
     /**
      * Create a new cellophane
-     * @param {Object} cellophane - { text, url, visibility, position_x, position_y }
+     * @param {Object} cellophane - { text, url, visibility, position_x, position_y, media_url, media_type }
      */
     async create(cellophane) {
         const client = getClient();
@@ -278,20 +278,29 @@ const CelloCellophanes = {
         
         const now = new Date().toISOString();
         
+        // Build insert object
+        const insertData = {
+            id: generateUUID(),
+            text: cellophane.text,
+            url: cellophane.url || 'https://cellophane.ai/pwa',
+            visibility: cellophane.visibility || 'public',
+            position_x: cellophane.position_x || 50,
+            position_y: cellophane.position_y || 50,
+            author_id: user.id,
+            author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+            timestamp: now,
+            created_at: now
+        };
+        
+        // Add media if provided
+        if (cellophane.media_url) {
+            insertData.media_url = cellophane.media_url;
+            insertData.media_type = cellophane.media_type || 'image';
+        }
+        
         const { data, error } = await client
             .from('cellophanes')
-            .insert({
-                id: generateUUID(),
-                text: cellophane.text,
-                url: cellophane.url || 'https://cellophane.ai/pwa',
-                visibility: cellophane.visibility || 'public',
-                position_x: cellophane.position_x || 50,
-                position_y: cellophane.position_y || 50,
-                author_id: user.id,
-                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-                timestamp: now,
-                created_at: now
-            })
+            .insert(insertData)
             .select()
             .single();
         
@@ -584,6 +593,137 @@ const CelloProfile = {
 };
 
 // ===========================================
+// MEDIA UPLOAD MODULE
+// ===========================================
+
+const CelloMedia = {
+    /**
+     * Upload media file to Supabase Storage
+     * @param {File} file - File object from input
+     * @param {string} mediaType - 'image', 'video', or 'audio'
+     * @returns {Promise<{url: string, error: Error|null}>}
+     */
+    async uploadFile(file, mediaType) {
+        const client = getClient();
+        if (!client) return { url: null, error: new Error('Client not initialized') };
+        
+        try {
+            console.log(`📤 Uploading ${mediaType}: ${file.name}`);
+            
+            // Generate unique filename
+            const timestamp = Date.now();
+            const randomStr = Math.random().toString(36).substring(2, 9);
+            const fileExt = file.name.split('.').pop() || 'bin';
+            const filename = `${mediaType}_${timestamp}_${randomStr}.${fileExt}`;
+            const filePath = `${mediaType}s/${filename}`;
+            
+            // Upload to Supabase Storage
+            const { data, error } = await client.storage
+                .from('media')
+                .upload(filePath, file, {
+                    contentType: file.type,
+                    upsert: true
+                });
+            
+            if (error) {
+                console.error('❌ Upload error:', error);
+                return { url: null, error };
+            }
+            
+            // Get public URL
+            const { data: { publicUrl } } = client.storage
+                .from('media')
+                .getPublicUrl(filePath);
+            
+            console.log(`✅ ${mediaType} uploaded:`, publicUrl);
+            return { url: publicUrl, error: null };
+            
+        } catch (error) {
+            console.error(`❌ Error uploading ${mediaType}:`, error);
+            return { url: null, error };
+        }
+    },
+    
+    /**
+     * Upload base64 data (for audio recording)
+     * @param {string} base64Data - Base64 encoded data with data: prefix
+     * @param {string} mediaType - 'image', 'video', or 'audio'
+     */
+    async uploadBase64(base64Data, mediaType) {
+        const client = getClient();
+        if (!client) return { url: null, error: new Error('Client not initialized') };
+        
+        try {
+            console.log(`📤 Uploading ${mediaType} from base64...`);
+            
+            // Parse base64 data URL
+            let contentType = 'application/octet-stream';
+            let base64Content = base64Data;
+            let fileExt = 'bin';
+            
+            if (base64Data.startsWith('data:')) {
+                const matches = base64Data.match(/data:([^;]+);base64,(.+)/);
+                if (matches) {
+                    contentType = matches[1];
+                    base64Content = matches[2];
+                    
+                    // Determine extension
+                    if (contentType.includes('image/jpeg')) fileExt = 'jpg';
+                    else if (contentType.includes('image/png')) fileExt = 'png';
+                    else if (contentType.includes('image/gif')) fileExt = 'gif';
+                    else if (contentType.includes('image/webp')) fileExt = 'webp';
+                    else if (contentType.includes('video/mp4')) fileExt = 'mp4';
+                    else if (contentType.includes('video/webm')) fileExt = 'webm';
+                    else if (contentType.includes('audio/webm')) fileExt = 'webm';
+                    else if (contentType.includes('audio/mp3') || contentType.includes('audio/mpeg')) fileExt = 'mp3';
+                    else if (contentType.includes('audio/wav')) fileExt = 'wav';
+                }
+            }
+            
+            // Convert base64 to blob
+            const byteCharacters = atob(base64Content);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: contentType });
+            
+            // Generate unique filename
+            const timestamp = Date.now();
+            const randomStr = Math.random().toString(36).substring(2, 9);
+            const filename = `${mediaType}_${timestamp}_${randomStr}.${fileExt}`;
+            const filePath = `${mediaType}s/${filename}`;
+            
+            // Upload to Supabase Storage
+            const { data, error } = await client.storage
+                .from('media')
+                .upload(filePath, blob, {
+                    contentType: contentType,
+                    upsert: true
+                });
+            
+            if (error) {
+                console.error('❌ Upload error:', error);
+                return { url: null, error };
+            }
+            
+            // Get public URL
+            const { data: { publicUrl } } = client.storage
+                .from('media')
+                .getPublicUrl(filePath);
+            
+            console.log(`✅ ${mediaType} uploaded:`, publicUrl);
+            return { url: publicUrl, error: null };
+            
+        } catch (error) {
+            console.error(`❌ Error uploading ${mediaType}:`, error);
+            return { url: null, error };
+        }
+    }
+};
+
+// ===========================================
 // EXPORT API
 // ===========================================
 
@@ -598,10 +738,11 @@ const CelloAPI = {
     reactions: CelloReactions,
     comments: CelloComments,
     follows: CelloFollows,
-    profile: CelloProfile
+    profile: CelloProfile,
+    media: CelloMedia
 };
 
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.2.0 (with avatars + create fix!)');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.3.0 (with media upload!)');
