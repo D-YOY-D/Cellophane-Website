@@ -1,6 +1,7 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.0.0
+ * Version: 1.1.0
+ * English version
  */
 
 // ===========================================
@@ -153,15 +154,15 @@ function setupEventListeners() {
 async function handleGoogleLogin() {
     console.log('🔐 Starting Google login...');
     DOM.btnGoogleLogin.disabled = true;
-    DOM.btnGoogleLogin.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> מתחבר...';
+    DOM.btnGoogleLogin.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Signing in...';
     
     const { data, error } = await CelloAPI.auth.signInWithGoogle();
     
     if (error) {
         console.error('❌ Login error:', error);
-        showToast('שגיאה בהתחברות. נסה שוב.', 'error');
+        showToast('Sign in failed. Please try again.', 'error');
         DOM.btnGoogleLogin.disabled = false;
-        DOM.btnGoogleLogin.innerHTML = '<svg class="google-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>התחבר עם Google</span>';
+        DOM.btnGoogleLogin.innerHTML = '<svg class="google-icon" viewBox="0 0 24 24" width="24" height="24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Sign in with Google</span>';
     }
     // If success, the page will redirect to Google, then back to us
     // The onAuthStateChange listener will handle the rest
@@ -191,7 +192,7 @@ async function handleAuthSuccess(session) {
     // Load feeds
     await loadMyFeed(true);
     
-    showToast(`שלום ${displayName}! 👋`, 'success');
+    showToast(`Welcome, ${displayName}! 👋`, 'success');
 }
 
 function handleAuthLogout() {
@@ -203,7 +204,7 @@ function handleAuthLogout() {
     };
     
     showScreen('login');
-    showToast('התנתקת בהצלחה', 'success');
+    showToast('Signed out successfully', 'success');
 }
 
 async function handleLogout() {
@@ -211,7 +212,7 @@ async function handleLogout() {
     const { error } = await CelloAPI.auth.signOut();
     
     if (error) {
-        showToast('שגיאה בהתנתקות', 'error');
+        showToast('Sign out failed', 'error');
     }
     // onAuthStateChange will handle the rest
 }
@@ -282,7 +283,7 @@ async function loadMyFeed(reset = false) {
     
     if (error) {
         console.error('❌ Error loading my feed:', error);
-        showToast('שגיאה בטעינת הצלופנים', 'error');
+        showToast('Failed to load cellophanes', 'error');
         return;
     }
     
@@ -327,7 +328,7 @@ async function loadFollowingFeed(reset = false) {
     
     if (error) {
         console.error('❌ Error loading following feed:', error);
-        showToast('שגיאה בטעינת הפיד', 'error');
+        showToast('Failed to load feed', 'error');
         return;
     }
     
@@ -364,21 +365,22 @@ function createCellophaneCard(cellophane) {
     card.className = `cellophane-card ${cellophane.visibility || 'public'}`;
     card.dataset.id = cellophane.id;
     
-    const authorAvatar = cellophane.authorAvatar || 'https://via.placeholder.com/36';
+    const authorAvatar = cellophane.authorAvatar || 'https://via.placeholder.com/40';
     const authorName = cellophane.author || 'Anonymous';
     const timestamp = formatTimestamp(cellophane.created_at);
     const visibility = getVisibilityLabel(cellophane.visibility);
+    const visibilityClass = cellophane.visibility || 'public';
     const sourceUrl = cellophane.url || '';
     const sourceDomain = sourceUrl ? new URL(sourceUrl).hostname : '';
     
     card.innerHTML = `
         <div class="cellophane-header">
-            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar">
+            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" onerror="this.src='https://via.placeholder.com/40'">
             <div class="cellophane-author-info">
                 <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
                 <div class="cellophane-meta">
                     <span>${timestamp}</span>
-                    <span class="visibility-badge ${cellophane.visibility || 'public'}">${visibility}</span>
+                    <span class="visibility-badge ${visibilityClass}">${visibility}</span>
                 </div>
             </div>
         </div>
@@ -433,7 +435,7 @@ async function handleLike(cellophaneId) {
     const { data, error } = await CelloAPI.reactions.toggle(cellophaneId, '❤️');
     
     if (error) {
-        showToast('שגיאה בהוספת לייק', 'error');
+        showToast('Failed to add like', 'error');
         return;
     }
     
@@ -443,7 +445,7 @@ async function handleLike(cellophaneId) {
         btn.classList.toggle('liked', data.action === 'added');
     }
     
-    showToast(data.action === 'added' ? '❤️ אהבת!' : 'הסרת לייק', 'success');
+    showToast(data.action === 'added' ? '❤️ Liked!' : 'Like removed', 'success');
 }
 
 async function handleShare(cellophane) {
@@ -453,7 +455,7 @@ async function handleShare(cellophane) {
         try {
             await navigator.share({
                 title: 'Cellophane',
-                text: cellophane.text?.substring(0, 100) || 'צלופן חדש',
+                text: cellophane.text?.substring(0, 100) || 'Check out this cellophane',
                 url: shareUrl
             });
         } catch (err) {
@@ -469,9 +471,9 @@ async function handleShare(cellophane) {
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        showToast('הקישור הועתק! 📋', 'success');
+        showToast('Link copied! 📋', 'success');
     }).catch(() => {
-        showToast('שגיאה בהעתקה', 'error');
+        showToast('Failed to copy', 'error');
     });
 }
 
@@ -488,7 +490,7 @@ async function openCellophaneDetail(cellophane) {
     
     DOM.detailCellophane.innerHTML = `
         <div class="cellophane-header">
-            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" style="width:48px;height:48px;">
+            <img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.src='https://via.placeholder.com/48'">
             <div class="cellophane-author-info">
                 <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
                 <div class="cellophane-meta">
@@ -500,7 +502,7 @@ async function openCellophaneDetail(cellophane) {
         ${cellophane.url ? `
             <a href="${cellophane.url}" target="_blank" class="cellophane-source">
                 <span class="cellophane-source-icon">🔗</span>
-                <span>צפה במקור</span>
+                <span>View Source</span>
             </a>
         ` : ''}
     `;
@@ -512,12 +514,12 @@ async function openCellophaneDetail(cellophane) {
     const { data: comments, error } = await CelloAPI.comments.getForCellophane(cellophane.id);
     
     if (error) {
-        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">שגיאה בטעינת תגובות</p>';
+        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">Failed to load comments</p>';
         return;
     }
     
     if (comments.length === 0) {
-        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">אין תגובות עדיין</p>';
+        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">No comments yet</p>';
     } else {
         DOM.commentsList.innerHTML = comments.map(comment => `
             <div class="comment-item">
@@ -544,7 +546,7 @@ async function handleSendComment() {
     DOM.commentText.value = '';
     
     if (error) {
-        showToast('שגיאה בשליחת תגובה', 'error');
+        showToast('Failed to send comment', 'error');
         return;
     }
     
@@ -555,7 +557,7 @@ async function handleSendComment() {
             <div class="comment-body">
                 <div class="comment-author">${escapeHtml(data.author)}</div>
                 <div class="comment-text">${escapeHtml(data.text)}</div>
-                <div class="comment-time">עכשיו</div>
+                <div class="comment-time">Just now</div>
             </div>
         </div>
     `;
@@ -564,7 +566,7 @@ async function handleSendComment() {
     if (noComments) noComments.remove();
     
     DOM.commentsList.insertAdjacentHTML('beforeend', commentHtml);
-    showToast('תגובה נוספה! 💬', 'success');
+    showToast('Comment added! 💬', 'success');
 }
 
 // ===========================================
@@ -641,20 +643,20 @@ function formatTimestamp(timestamp) {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     
-    if (minutes < 1) return 'עכשיו';
-    if (minutes < 60) return `לפני ${minutes} דקות`;
-    if (hours < 24) return `לפני ${hours} שעות`;
-    if (days < 7) return `לפני ${days} ימים`;
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
     
-    return date.toLocaleDateString('he-IL');
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function getVisibilityLabel(visibility) {
     const labels = {
-        public: '🌍 ציבורי',
-        private: '🔒 פרטי',
-        groups: '👥 קבוצה',
-        influencer: '⭐ משפיען'
+        public: '🌍 Public',
+        private: '🔒 Private',
+        groups: '👥 Group',
+        influencer: '⭐ Influencer'
     };
     return labels[visibility] || labels.public;
 }

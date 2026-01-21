@@ -1,14 +1,14 @@
 {
     "name": "Cellophane",
     "short_name": "Cellophane",
-    "description": "שכבת התוכן החברתית של האינטרנט",
+    "description": "The Social Layer of the Internet",
     "start_url": "/pwa/",
     "display": "standalone",
     "orientation": "portrait",
-    "theme_color": "#667eea",
-    "background_color": "#667eea",
-    "lang": "he",
-    "dir": "rtl",
+    "theme_color": "#4A90E2",
+    "background_color": "#4A90E2",
+    "lang": "en",
+    "dir": "ltr",
     "icons": [
         {
             "src": "icons/icon-72.png",
@@ -63,16 +63,16 @@
     "screenshots": [],
     "shortcuts": [
         {
-            "name": "הצלופנים שלי",
-            "short_name": "הצלופנים שלי",
-            "description": "צפה בצלופנים שיצרת",
+            "name": "My Cellophanes",
+            "short_name": "My Feed",
+            "description": "View your cellophanes",
             "url": "/pwa/?tab=my-feed",
             "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
         },
         {
-            "name": "עוקב",
-            "short_name": "עוקב",
-            "description": "צפה בצלופנים של אנשים שאתה עוקב אחריהם",
+            "name": "Following",
+            "short_name": "Following",
+            "description": "View cellophanes from people you follow",
             "url": "/pwa/?tab=following",
             "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
         }
