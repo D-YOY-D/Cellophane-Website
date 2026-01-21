@@ -1,7 +1,7 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.2.0
- * Figma design with colorful cards and SVG icons
+ * Version: 1.3.0
+ * Fixed: No placeholder URLs, Full media support
  */
 
 // ===========================================
@@ -77,22 +77,10 @@ const Icons = {
 // ===========================================
 
 const VisibilityConfig = {
-    public: {
-        label: 'PUBLIC',
-        icon: 'globe'
-    },
-    private: {
-        label: 'PRIVATE',
-        icon: 'lock'
-    },
-    groups: {
-        label: 'GROUP',
-        icon: 'users'
-    },
-    influencer: {
-        label: 'INFLUENCER',
-        icon: 'star'
-    }
+    public: { label: 'PUBLIC', icon: 'globe' },
+    private: { label: 'PRIVATE', icon: 'lock' },
+    groups: { label: 'GROUP', icon: 'users' },
+    influencer: { label: 'INFLUENCER', icon: 'star' }
 };
 
 // ===========================================
@@ -100,7 +88,7 @@ const VisibilityConfig = {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.2...');
+    console.log('🎬 Initializing Cellophane PWA v1.3...');
     
     setupEventListeners();
     
@@ -181,17 +169,17 @@ async function handleAuthSuccess(session) {
     AppState.user = user;
     
     console.log('👤 User:', user.email);
-    console.log('👤 User metadata:', user.user_metadata);
     
     const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
     const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
     
+    // Update header avatar - NO placeholder URLs!
     if (avatarUrl) {
         DOM.userAvatar.src = avatarUrl;
+        DOM.userAvatar.style.display = 'block';
         DOM.profileAvatar.src = avatarUrl;
+        DOM.profileAvatar.style.display = 'block';
     } else {
-        // Create avatar with initials
-        const initials = getInitials(displayName);
         DOM.userAvatar.style.display = 'none';
         DOM.profileAvatar.style.display = 'none';
     }
@@ -220,7 +208,6 @@ function handleAuthLogout() {
 async function handleLogout() {
     closeAllModals();
     const { error } = await CelloAPI.auth.signOut();
-    
     if (error) {
         showToast('Sign out failed', 'error');
     }
@@ -293,6 +280,17 @@ async function loadMyFeed(reset = false) {
         return;
     }
     
+    console.log('📦 Loaded cellophanes:', data);
+    
+    // Debug: Check if avatar fields exist
+    if (data.length > 0) {
+        console.log('🔍 First cellophane fields:', Object.keys(data[0]));
+        console.log('🖼️ Avatar fields:', {
+            authorAvatar: data[0].authorAvatar,
+            author_avatar: data[0].author_avatar
+        });
+    }
+    
     if (data.length < 20) {
         feed.hasMore = false;
     }
@@ -354,7 +352,7 @@ async function loadFollowingFeed(reset = false) {
 }
 
 // ===========================================
-// CELLOPHANE RENDERING - FIGMA DESIGN
+// CELLOPHANE RENDERING WITH MEDIA SUPPORT
 // ===========================================
 
 function renderCellophanes(cellophanes, container) {
@@ -371,16 +369,20 @@ function createCellophaneCard(cellophane) {
     card.dataset.id = cellophane.id;
     
     const authorName = cellophane.author || 'Anonymous';
-    const authorAvatar = cellophane.authorAvatar || '';
+    // Support both camelCase (authorAvatar) and snake_case (author_avatar) from DB
+    const authorAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
     const timestamp = formatTimestamp(cellophane.created_at);
     const visibilityConfig = VisibilityConfig[visibility] || VisibilityConfig.public;
     const sourceUrl = cellophane.url || '';
     const sourceDomain = sourceUrl ? extractDomain(sourceUrl) : '';
     const initials = getInitials(authorName);
     
-    // Avatar HTML - image or fallback with initials
+    // Media HTML - IMPORTANT!
+    const mediaHtml = renderMedia(cellophane);
+    
+    // Avatar HTML - only fallback with initials, NO placeholder URLs!
     const avatarHtml = authorAvatar 
-        ? `<img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        ? `<img src="${authorAvatar}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
            <div class="avatar-fallback" style="display:none;">${initials}</div>`
         : `<div class="avatar-fallback">${initials}</div>`;
     
@@ -403,6 +405,8 @@ function createCellophaneCard(cellophane) {
             
             <div class="cellophane-content">${escapeHtml(cellophane.text || '')}</div>
             
+            ${mediaHtml}
+            
             ${sourceUrl ? `
                 <a href="${sourceUrl}" target="_blank" class="cellophane-source">
                     ${Icons.link}
@@ -413,7 +417,7 @@ function createCellophaneCard(cellophane) {
             <div class="cellophane-actions">
                 <button class="action-btn btn-like" data-id="${cellophane.id}">
                     ${Icons.thumbsup}
-                    <span class="like-count">0</span>
+                    <span class="like-count">${cellophane.reactions_count || 0}</span>
                 </button>
                 <button class="action-btn btn-comment" data-id="${cellophane.id}">
                     ${Icons.message}
@@ -446,6 +450,90 @@ function createCellophaneCard(cellophane) {
     
     return card;
 }
+
+// ===========================================
+// MEDIA RENDERING (IMAGE/VIDEO/AUDIO)
+// ===========================================
+
+function renderMedia(cellophane) {
+    const mediaUrl = cellophane.media_url;
+    const mediaType = cellophane.media_type;
+    
+    if (!mediaUrl) return '';
+    
+    console.log('🖼️ Media:', mediaType, mediaUrl);
+    
+    // IMAGE
+    if (mediaType === 'image' || isImageUrl(mediaUrl)) {
+        return `
+            <div class="cellophane-media" onclick="event.stopPropagation(); openImageFullscreen('${escapeHtml(mediaUrl)}')">
+                <img src="${mediaUrl}" alt="Media" class="media-image" loading="lazy" 
+                     onerror="this.parentElement.style.display='none'">
+            </div>
+        `;
+    }
+    
+    // VIDEO
+    if (mediaType === 'video' || isVideoUrl(mediaUrl)) {
+        return `
+            <div class="cellophane-media" onclick="event.stopPropagation()">
+                <video src="${mediaUrl}" class="media-video" controls preload="metadata" playsinline>
+                    Your browser does not support video playback.
+                </video>
+            </div>
+        `;
+    }
+    
+    // AUDIO
+    if (mediaType === 'audio' || isAudioUrl(mediaUrl)) {
+        return `
+            <div class="cellophane-media cellophane-audio" onclick="event.stopPropagation()">
+                <div class="audio-wrapper">
+                    <div class="audio-icon">🎵</div>
+                    <audio src="${mediaUrl}" class="media-audio" controls preload="metadata">
+                        Your browser does not support audio playback.
+                    </audio>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Unknown - show as downloadable link
+    return `
+        <div class="cellophane-media">
+            <a href="${mediaUrl}" target="_blank" class="media-download" onclick="event.stopPropagation()">
+                📎 ${cellophane.media_name || 'Download attachment'}
+            </a>
+        </div>
+    `;
+}
+
+function isImageUrl(url) {
+    return /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?.*)?$/i.test(url);
+}
+
+function isVideoUrl(url) {
+    return /\.(mp4|webm|ogg|mov|avi|m4v)(\?.*)?$/i.test(url);
+}
+
+function isAudioUrl(url) {
+    return /\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(url);
+}
+
+// Open image in fullscreen
+function openImageFullscreen(url) {
+    const modal = document.createElement('div');
+    modal.className = 'image-fullscreen-modal';
+    modal.innerHTML = `
+        <div class="image-fullscreen-backdrop" onclick="this.parentElement.remove()"></div>
+        <img src="${url}" class="image-fullscreen-img" onclick="event.stopPropagation()">
+        <button class="image-fullscreen-close" onclick="this.parentElement.remove()">✕</button>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Make global
+window.openImageFullscreen = openImageFullscreen;
 
 // ===========================================
 // CELLOPHANE ACTIONS
@@ -503,14 +591,16 @@ async function openCellophaneDetail(cellophane) {
     AppState.currentCellophane = cellophane;
     
     const authorName = cellophane.author || 'Anonymous';
-    const authorAvatar = cellophane.authorAvatar || '';
+    // Support both camelCase and snake_case from DB
+    const authorAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
     const timestamp = formatTimestamp(cellophane.created_at);
     const initials = getInitials(authorName);
+    const mediaHtml = renderMedia(cellophane);
     
     const avatarHtml = authorAvatar 
-        ? `<img src="${authorAvatar}" alt="${authorName}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-           <div class="avatar-fallback" style="display:none;width:48px;height:48px;">${initials}</div>`
-        : `<div class="avatar-fallback" style="width:48px;height:48px;">${initials}</div>`;
+        ? `<img src="${authorAvatar}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <div class="avatar-fallback" style="display:none;width:48px;height:48px;font-size:1.2rem;">${initials}</div>`
+        : `<div class="avatar-fallback" style="width:48px;height:48px;font-size:1.2rem;">${initials}</div>`;
     
     DOM.detailCellophane.innerHTML = `
         <div class="cellophane-header" style="margin-bottom:16px;">
@@ -523,8 +613,9 @@ async function openCellophaneDetail(cellophane) {
             </div>
         </div>
         <div class="cellophane-content" style="font-size:1.1rem;margin:16px 0;">${escapeHtml(cellophane.text || '')}</div>
+        ${mediaHtml}
         ${cellophane.url ? `
-            <a href="${cellophane.url}" target="_blank" class="cellophane-source">
+            <a href="${cellophane.url}" target="_blank" class="cellophane-source" style="margin-top:12px;">
                 ${Icons.link}
                 <span>View Source</span>
             </a>
@@ -537,18 +628,18 @@ async function openCellophaneDetail(cellophane) {
     const { data: comments, error } = await CelloAPI.comments.getForCellophane(cellophane.id);
     
     if (error) {
-        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">Failed to load comments</p>';
+        DOM.commentsList.innerHTML = '<p style="text-align:center;color:var(--color-text-secondary);">Failed to load comments</p>';
         return;
     }
     
     if (comments.length === 0) {
-        DOM.commentsList.innerHTML = '<p class="text-center" style="color:var(--color-text-secondary);">No comments yet</p>';
+        DOM.commentsList.innerHTML = '<p style="text-align:center;color:var(--color-text-secondary);">No comments yet</p>';
     } else {
         DOM.commentsList.innerHTML = comments.map(comment => {
             const commentInitials = getInitials(comment.author || 'A');
             return `
                 <div class="comment-item">
-                    <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;background:var(--color-primary-gradient);">${commentInitials}</div>
+                    <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${commentInitials}</div>
                     <div class="comment-body">
                         <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
                         <div class="comment-text">${escapeHtml(comment.text)}</div>
@@ -576,12 +667,11 @@ async function handleSendComment() {
         return;
     }
     
-    const userAvatar = AppState.user?.user_metadata?.avatar_url || '';
     const initials = getInitials(data.author);
     
     const commentHtml = `
         <div class="comment-item">
-            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;background:var(--header-gradient);">${initials}</div>
+            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${initials}</div>
             <div class="comment-body">
                 <div class="comment-author">${escapeHtml(data.author)}</div>
                 <div class="comment-text">${escapeHtml(data.text)}</div>

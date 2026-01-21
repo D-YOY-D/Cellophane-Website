@@ -17,10 +17,10 @@
     /* Header Gradient */
     --header-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
     
-    /* Public - Blue */
-    --color-public: #3b82f6;
-    --color-public-light: rgba(59, 130, 246, 0.1);
-    --color-public-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    /* Public - Blue (pure blue, not purple!) */
+    --color-public: #2563eb;
+    --color-public-light: rgba(37, 99, 235, 0.1);
+    --color-public-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
     
     /* Private - Green */
     --color-private: #10b981;
@@ -1093,4 +1093,130 @@ img {
 .fab svg {
     width: 24px;
     height: 24px;
+}
+
+/* ===========================================
+   Media Styles (Image/Video/Audio)
+   =========================================== */
+
+.cellophane-media {
+    margin: var(--spacing-sm) 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-background);
+}
+
+.media-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.media-image:hover {
+    transform: scale(1.02);
+}
+
+.media-video {
+    width: 100%;
+    max-height: 300px;
+    background: #000;
+    border-radius: var(--radius-md);
+}
+
+.cellophane-audio {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    padding: var(--spacing-md);
+}
+
+.audio-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.audio-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-audio {
+    flex: 1;
+    height: 40px;
+}
+
+.media-audio::-webkit-media-controls-panel {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.media-download {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.media-download:hover {
+    text-decoration: underline;
+}
+
+/* ===========================================
+   Image Fullscreen Modal
+   =========================================== */
+
+.image-fullscreen-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.image-fullscreen-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.image-fullscreen-img {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.image-fullscreen-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.image-fullscreen-close:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
