@@ -1,0 +1,1096 @@
+/**
+ * Cellophane PWA - Styles
+ * Version: 1.2.0
+ * 
+ * Matching Figma design with colorful cards
+ */
+
+/* ===========================================
+   CSS Variables - Cellophane Brand Colors
+   =========================================== */
+
+:root {
+    /* Brand Colors */
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    
+    /* Header Gradient */
+    --header-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    
+    /* Public - Blue */
+    --color-public: #3b82f6;
+    --color-public-light: rgba(59, 130, 246, 0.1);
+    --color-public-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    
+    /* Private - Green */
+    --color-private: #10b981;
+    --color-private-light: rgba(16, 185, 129, 0.1);
+    --color-private-gradient: linear-gradient(135deg, #10b981, #059669);
+    
+    /* Groups - Orange */
+    --color-groups: #f97316;
+    --color-groups-light: rgba(249, 115, 22, 0.1);
+    --color-groups-gradient: linear-gradient(135deg, #f97316, #ef4444);
+    
+    /* Influencer - Purple */
+    --color-influencer: #8b5cf6;
+    --color-influencer-light: rgba(139, 92, 246, 0.1);
+    --color-influencer-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    
+    /* UI Colors */
+    --color-background: #f0f4f8;
+    --color-surface: #ffffff;
+    --color-text: #1a202c;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-danger: #ef4444;
+    --color-success: #10b981;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+    
+    /* Safe Areas */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    
+    /* Layout */
+    --header-height: 60px;
+    --tab-height: 56px;
+}
+
+/* ===========================================
+   Reset & Base
+   =========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===========================================
+   App Container
+   =========================================== */
+
+#app {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* ===========================================
+   Login Screen
+   =========================================== */
+
+#screen-login {
+    background: var(--header-gradient);
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-logo {
+    margin-bottom: var(--spacing-xl);
+}
+
+.logo-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--spacing-md);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    border-radius: var(--radius-lg);
+}
+
+.login-logo h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.tagline {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+}
+
+.login-content {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+}
+
+.login-description {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text);
+    transition: all 0.2s ease;
+}
+
+.btn-google:hover {
+    background: var(--color-background);
+    border-color: var(--color-primary);
+}
+
+.btn-google:active {
+    transform: scale(0.98);
+}
+
+.google-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.login-footer {
+    margin-top: var(--spacing-lg);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.login-footer a {
+    color: white;
+    text-decoration: underline;
+}
+
+/* ===========================================
+   App Header
+   =========================================== */
+
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--header-height) + var(--safe-top));
+    padding-top: var(--safe-top);
+    background: var(--header-gradient);
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 var(--spacing-md);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: white;
+}
+
+.header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px;
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-top: -2px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    transition: background 0.2s ease;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* ===========================================
+   Tab Navigation
+   =========================================== */
+
+.tab-nav {
+    position: fixed;
+    top: calc(var(--header-height) + var(--safe-top));
+    left: 0;
+    right: 0;
+    background: var(--header-gradient);
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    z-index: 99;
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--color-primary);
+}
+
+.tab-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.tab-icon {
+    display: none;
+}
+
+/* ===========================================
+   Feed Container
+   =========================================== */
+
+.feed-container {
+    flex: 1;
+    margin-top: calc(var(--header-height) + 72px + var(--safe-top));
+    padding-bottom: calc(var(--spacing-lg) + var(--safe-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.feed {
+    display: none;
+    padding: var(--spacing-md);
+}
+
+.feed.active {
+    display: block;
+}
+
+.feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.feed-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.feed-count {
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    min-width: 32px;
+    text-align: center;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* ===========================================
+   Cellophane Card - Figma Design
+   =========================================== */
+
+.cellophane-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 3px solid var(--color-public);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cellophane-card:active {
+    transform: scale(0.98);
+}
+
+/* Card Type Colors */
+.cellophane-card.public {
+    border-color: var(--color-public);
+}
+
+.cellophane-card.private {
+    border-color: var(--color-private);
+}
+
+.cellophane-card.groups {
+    border-color: var(--color-groups);
+}
+
+.cellophane-card.influencer {
+    border-color: var(--color-influencer);
+}
+
+/* Gradient Header Strip */
+.cellophane-gradient-strip {
+    height: 6px;
+}
+
+.cellophane-card.public .cellophane-gradient-strip {
+    background: var(--color-public-gradient);
+}
+
+.cellophane-card.private .cellophane-gradient-strip {
+    background: var(--color-private-gradient);
+}
+
+.cellophane-card.groups .cellophane-gradient-strip {
+    background: var(--color-groups-gradient);
+}
+
+.cellophane-card.influencer .cellophane-gradient-strip {
+    background: var(--color-influencer-gradient);
+}
+
+/* Card Inner Content */
+.cellophane-card-inner {
+    padding: var(--spacing-md);
+    background: linear-gradient(180deg, var(--color-public-light) 0%, transparent 100%);
+}
+
+.cellophane-card.public .cellophane-card-inner {
+    background: linear-gradient(180deg, var(--color-public-light) 0%, transparent 100%);
+}
+
+.cellophane-card.private .cellophane-card-inner {
+    background: linear-gradient(180deg, var(--color-private-light) 0%, transparent 100%);
+}
+
+.cellophane-card.groups .cellophane-card-inner {
+    background: linear-gradient(180deg, var(--color-groups-light) 0%, transparent 100%);
+}
+
+.cellophane-card.influencer .cellophane-card-inner {
+    background: linear-gradient(180deg, var(--color-influencer-light) 0%, transparent 100%);
+}
+
+/* Card Header */
+.cellophane-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.cellophane-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Avatar with Gradient Fallback */
+.cellophane-author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-fallback {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cellophane-card.public .avatar-fallback {
+    background: var(--color-public-gradient);
+}
+
+.cellophane-card.private .avatar-fallback {
+    background: var(--color-private-gradient);
+}
+
+.cellophane-card.groups .avatar-fallback {
+    background: var(--color-groups-gradient);
+}
+
+.cellophane-card.influencer .avatar-fallback {
+    background: var(--color-influencer-gradient);
+}
+
+.cellophane-author-info {
+    flex: 1;
+}
+
+.cellophane-author-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+.cellophane-time {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+/* Visibility Badge with Gradient */
+.visibility-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+}
+
+.visibility-badge svg {
+    width: 12px;
+    height: 12px;
+}
+
+.visibility-badge.public {
+    background: var(--color-public-gradient);
+}
+
+.visibility-badge.private {
+    background: var(--color-private-gradient);
+}
+
+.visibility-badge.groups {
+    background: var(--color-groups-gradient);
+}
+
+.visibility-badge.influencer {
+    background: var(--color-influencer-gradient);
+}
+
+/* Card Content */
+.cellophane-content {
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+/* Source Link */
+.cellophane-source {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.85rem;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.cellophane-source:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.cellophane-source svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.cellophane-card.public .cellophane-source {
+    color: var(--color-public);
+}
+
+.cellophane-card.private .cellophane-source {
+    color: var(--color-private);
+}
+
+.cellophane-card.groups .cellophane-source {
+    color: var(--color-groups);
+}
+
+.cellophane-card.influencer .cellophane-source {
+    color: var(--color-influencer);
+}
+
+.cellophane-source-url {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Card Actions */
+.cellophane-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.action-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.action-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.cellophane-card.public .action-btn {
+    color: var(--color-public);
+}
+
+.cellophane-card.private .action-btn {
+    color: var(--color-private);
+}
+
+.cellophane-card.groups .action-btn {
+    color: var(--color-groups);
+}
+
+.cellophane-card.influencer .action-btn {
+    color: var(--color-influencer);
+}
+
+.action-btn.liked {
+    color: var(--color-danger);
+}
+
+/* ===========================================
+   Empty & Loading States
+   =========================================== */
+
+.empty-state,
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state p {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ===========================================
+   Modals
+   =========================================== */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    max-height: 90vh;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+    padding-bottom: var(--safe-bottom);
+}
+
+.modal-small {
+    max-height: 60vh;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.btn-back,
+.btn-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    transition: background 0.2s ease;
+}
+
+.btn-back:hover,
+.btn-close:hover {
+    background: var(--color-background);
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--spacing-md);
+}
+
+/* ===========================================
+   Profile Modal
+   =========================================== */
+
+.profile-info {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-md);
+    border: 3px solid var(--color-primary);
+}
+
+.profile-info h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.profile-info p {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: center;
+}
+
+/* ===========================================
+   Buttons
+   =========================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.btn-outline:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.btn-danger {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.btn-danger:hover {
+    background: var(--color-danger);
+    color: white;
+}
+
+/* ===========================================
+   Comments Section
+   =========================================== */
+
+.comments-section {
+    margin-top: var(--spacing-lg);
+}
+
+.comments-section h4 {
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.comment-item {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.comment-body {
+    flex: 1;
+    background: var(--color-background);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+}
+
+.comment-author {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.comment-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.comment-time {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+}
+
+.comment-input {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.comment-input input {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.comment-input input:focus {
+    border-color: var(--color-primary);
+}
+
+/* ===========================================
+   Toast Notifications
+   =========================================== */
+
+#toast-container {
+    position: fixed;
+    bottom: calc(var(--spacing-lg) + var(--safe-bottom));
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--color-text);
+    color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    text-align: center;
+    animation: toastIn 0.3s ease;
+    pointer-events: auto;
+}
+
+.toast.success {
+    background: var(--color-success);
+}
+
+.toast.error {
+    background: var(--color-danger);
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===========================================
+   Floating Action Button
+   =========================================== */
+
+.fab {
+    position: fixed;
+    bottom: calc(24px + var(--safe-bottom));
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: var(--header-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+    transition: transform 0.2s ease;
+    z-index: 50;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+}
+
+.fab svg {
+    width: 24px;
+    height: 24px;
+}
