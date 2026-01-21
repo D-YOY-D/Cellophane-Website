@@ -57,6 +57,7 @@ const DOM = {
     toastContainer: document.getElementById('toast-container'),
     // Create form elements
     btnCreateFab: document.getElementById('btn-create-fab'),
+    btnAddToPage: document.getElementById('btn-add-to-page'),
     formCreate: document.getElementById('form-create'),
     createText: document.getElementById('create-text'),
     createUrl: document.getElementById('create-url'),
@@ -153,6 +154,10 @@ function setupEventListeners() {
     // Create cellophane events
     if (DOM.btnCreateFab) {
         DOM.btnCreateFab.addEventListener('click', openCreateModal);
+    }
+    
+    if (DOM.btnAddToPage) {
+        DOM.btnAddToPage.addEventListener('click', handleAddToPage);
     }
     
     if (DOM.formCreate) {
@@ -643,6 +648,20 @@ async function openCellophaneDetail(cellophane) {
         ` : ''}
     `;
     
+    // Show "Add to this page" button if cellophane has a real URL (not PWA default)
+    const hasRealUrl = cellophane.url && 
+                       !cellophane.url.includes('cellophane.ai/pwa') && 
+                       cellophane.url !== '';
+    
+    if (DOM.btnAddToPage) {
+        if (hasRealUrl) {
+            DOM.btnAddToPage.classList.remove('hidden');
+            DOM.btnAddToPage.dataset.url = cellophane.url;
+        } else {
+            DOM.btnAddToPage.classList.add('hidden');
+        }
+    }
+    
     DOM.commentsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
     DOM.modalDetail.classList.add('active');
     
@@ -820,7 +839,24 @@ function escapeHtml(text) {
 // CREATE CELLOPHANE
 // ===========================================
 
-function openCreateModal() {
+// ===========================================
+// CREATE CELLOPHANE
+// ===========================================
+
+function handleAddToPage() {
+    const url = DOM.btnAddToPage.dataset.url;
+    console.log('📝 Add to page:', url);
+    
+    // Close detail modal
+    closeAllModals();
+    
+    // Open create modal with URL pre-filled
+    setTimeout(() => {
+        openCreateModal(url);
+    }, 200);
+}
+
+function openCreateModal(prefillUrl = null) {
     console.log('📝 Opening create modal');
     console.log('📝 DOM.modalCreate:', DOM.modalCreate);
     
@@ -843,6 +879,11 @@ function openCreateModal() {
     const publicOption = document.querySelector('.visibility-option input[value="public"]');
     if (publicOption) {
         publicOption.checked = true;
+    }
+    
+    // Pre-fill URL if provided (from "Add to this page")
+    if (prefillUrl && DOM.createUrl) {
+        DOM.createUrl.value = prefillUrl;
     }
     
     DOM.modalCreate.classList.add('active');

@@ -314,13 +314,14 @@
                         
                         <!-- URL Input (Optional) -->
                         <div class="form-group">
-                            <label for="create-url">Link (optional)</label>
+                            <label for="create-url">Page URL to comment on (optional)</label>
                             <input 
                                 type="url" 
                                 id="create-url" 
                                 class="form-input" 
-                                placeholder="https://example.com"
+                                placeholder="https://example.com/article"
                             >
+                            <p class="form-hint">Leave empty for a general post visible to your followers</p>
                         </div>
                         
                         <!-- Submit Button -->
@@ -348,6 +349,13 @@
                     <div id="detail-cellophane" class="cellophane-detail">
                         <!-- Cellophane content loaded dynamically -->
                     </div>
+                    
+                    <!-- Add to this page button -->
+                    <button id="btn-add-to-page" class="btn btn-add-to-page hidden">
+                        <svg><use href="#icon-plus"/></svg>
+                        <span>Add your Cellophane to this page</span>
+                    </button>
+                    
                     <div id="detail-comments" class="comments-section">
                         <h4>Comments</h4>
                         <div id="comments-list" class="comments-list">

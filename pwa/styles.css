@@ -1593,42 +1593,104 @@ img {
     font-weight: 500;
 }
 
-/* Visibility Card Colors */
+/* Visibility Card Colors - filled background */
 .visibility-card.public {
-    color: var(--color-public);
+    color: white;
+    background: var(--color-public-gradient);
+    border-color: transparent;
 }
 
 .visibility-card.private {
-    color: var(--color-private);
+    color: white;
+    background: var(--color-private-gradient);
+    border-color: transparent;
 }
 
 .visibility-card.groups {
-    color: var(--color-groups);
+    color: white;
+    background: var(--color-groups-gradient);
+    border-color: transparent;
 }
 
 .visibility-card.influencer {
-    color: var(--color-influencer);
+    color: white;
+    background: var(--color-influencer-gradient);
+    border-color: transparent;
 }
 
-/* Selected State */
+/* Selected State - add glow */
 .visibility-option input:checked + .visibility-card.public {
     border-color: var(--color-public);
-    background: var(--color-public-light);
+    background: var(--color-public-gradient);
+    box-shadow: 0 0 0 3px var(--color-public-light), 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .visibility-option input:checked + .visibility-card.private {
     border-color: var(--color-private);
-    background: var(--color-private-light);
+    background: var(--color-private-gradient);
+    box-shadow: 0 0 0 3px var(--color-private-light), 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .visibility-option input:checked + .visibility-card.groups {
     border-color: var(--color-groups);
-    background: var(--color-groups-light);
+    background: var(--color-groups-gradient);
+    box-shadow: 0 0 0 3px var(--color-groups-light), 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .visibility-option input:checked + .visibility-card.influencer {
     border-color: var(--color-influencer);
-    background: var(--color-influencer-light);
+    background: var(--color-influencer-gradient);
+    box-shadow: 0 0 0 3px var(--color-influencer-light), 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Unselected State - faded */
+.visibility-option input:not(:checked) + .visibility-card {
+    opacity: 0.5;
+}
+
+/* Form hint text */
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Add to this page button */
+.btn-add-to-page {
+    width: 100%;
+    padding: 14px 20px;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-add-to-page svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-add-to-page:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-add-to-page:active {
+    transform: translateY(0);
+}
+
+.btn-add-to-page.hidden {
+    display: none;
 }
 
 /* Submit Button */
