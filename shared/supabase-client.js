@@ -411,6 +411,7 @@ const CelloComments = {
         const { data, error } = await client
             .from('cellophane_comments')
             .insert({
+                id: generateUUID(),
                 cellophane_id: cellophaneId,
                 user_id: user.id,
                 author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
@@ -745,4 +746,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.3.0 (with media upload!)');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.4.0 (comments UUID fix!)');
