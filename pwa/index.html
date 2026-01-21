@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cellophane">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Cellophane - שכבת התוכן החברתית של האינטרנט">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <title>Cellophane</title>
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app">
+        
+        <!-- Login Screen -->
+        <div id="screen-login" class="screen active">
+            <div class="login-container">
+                <div class="login-logo">
+                    <div class="logo-icon">🎬</div>
+                    <h1>Cellophane</h1>
+                    <p class="tagline">שכבת התוכן החברתית של האינטרנט</p>
+                </div>
+                
+                <div class="login-content">
+                    <p class="login-description">
+                        הצטרף לשיחה על כל אתר באינטרנט.<br>
+                        הוסף תגובות, הגב, ושתף את דעתך.
+                    </p>
+                    
+                    <button id="btn-google-login" class="btn btn-google">
+                        <svg class="google-icon" viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span>התחבר עם Google</span>
+                    </button>
+                </div>
+                
+                <div class="login-footer">
+                    <p>בהתחברות אתה מסכים ל<a href="#">תנאי השימוש</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main App Screen -->
+        <div id="screen-main" class="screen">
+            
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-content">
+                    <div class="header-logo">
+                        <span class="logo-emoji">🎬</span>
+                        <span class="logo-text">Cellophane</span>
+                    </div>
+                    <div class="header-actions">
+                        <button id="btn-profile" class="btn-icon">
+                            <img id="user-avatar" src="" alt="Profile" class="avatar">
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="my-feed">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-label">הצלופנים שלי</span>
+                </button>
+                <button class="tab-btn" data-tab="following">
+                    <span class="tab-icon">👥</span>
+                    <span class="tab-label">עוקב</span>
+                </button>
+            </nav>
+            
+            <!-- Feed Container -->
+            <main class="feed-container">
+                
+                <!-- My Feed -->
+                <div id="feed-my" class="feed active">
+                    <div class="feed-header">
+                        <h2>הצלופנים שלי</h2>
+                        <span id="my-feed-count" class="feed-count">0</span>
+                    </div>
+                    <div id="my-feed-list" class="feed-list">
+                        <!-- Cellophanes will be loaded here -->
+                    </div>
+                    <div id="my-feed-empty" class="empty-state hidden">
+                        <div class="empty-icon">📝</div>
+                        <h3>אין צלופנים עדיין</h3>
+                        <p>צור את הצלופן הראשון שלך מהתוסף לדפדפן</p>
+                    </div>
+                    <div id="my-feed-loading" class="loading-state hidden">
+                        <div class="spinner"></div>
+                        <p>טוען...</p>
+                    </div>
+                </div>
+                
+                <!-- Following Feed -->
+                <div id="feed-following" class="feed">
+                    <div class="feed-header">
+                        <h2>עוקב</h2>
+                        <span id="following-feed-count" class="feed-count">0</span>
+                    </div>
+                    <div id="following-feed-list" class="feed-list">
+                        <!-- Cellophanes will be loaded here -->
+                    </div>
+                    <div id="following-feed-empty" class="empty-state hidden">
+                        <div class="empty-icon">👥</div>
+                        <h3>אין צלופנים מעוקבים</h3>
+                        <p>עקוב אחרי אנשים כדי לראות את הצלופנים שלהם</p>
+                    </div>
+                    <div id="following-feed-loading" class="loading-state hidden">
+                        <div class="spinner"></div>
+                        <p>טוען...</p>
+                    </div>
+                </div>
+                
+            </main>
+            
+        </div>
+        
+        <!-- Cellophane Detail Modal -->
+        <div id="modal-detail" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="btn-back">
+                        <span>→</span>
+                    </button>
+                    <h3>צלופן</h3>
+                    <button class="btn-close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div id="detail-cellophane" class="cellophane-detail">
+                        <!-- Cellophane content loaded dynamically -->
+                    </div>
+                    <div id="detail-comments" class="comments-section">
+                        <h4>תגובות</h4>
+                        <div id="comments-list" class="comments-list">
+                            <!-- Comments loaded dynamically -->
+                        </div>
+                        <div class="comment-input">
+                            <input type="text" id="comment-text" placeholder="הוסף תגובה...">
+                            <button id="btn-send-comment" class="btn-icon">📤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Modal -->
+        <div id="modal-profile" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content modal-small">
+                <div class="modal-header">
+                    <h3>הפרופיל שלי</h3>
+                    <button class="btn-close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="profile-info">
+                        <img id="profile-avatar" src="" alt="Avatar" class="profile-avatar">
+                        <h3 id="profile-name">שם משתמש</h3>
+                        <p id="profile-email">email@example.com</p>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="stat-cellophanes">0</span>
+                            <span class="stat-label">צלופנים</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-followers">0</span>
+                            <span class="stat-label">עוקבים</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-following">0</span>
+                            <span class="stat-label">עוקב</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button id="btn-logout" class="btn btn-outline btn-danger">
+                            התנתק
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="../shared/supabase-client.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
