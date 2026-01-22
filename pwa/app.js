@@ -122,7 +122,7 @@ const VisibilityConfig = {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.6.0...');
+    console.log('🎬 Initializing Cellophane PWA v1.6.1...');
     
     setupEventListeners();
     
