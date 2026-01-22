@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.6.1
+ * Version: 1.6.2
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.6.2: URL canonicalization (no www injection, strip fragments, remove default ports)
  * UPDATE v1.6.1: Fixed URL normalization - preserve path case (only hostname lowercase)
  * UPDATE v1.6.0: Security fixes (XSS, URL sanitization) + SW caching fix
  * UPDATE v1.5.1: Fixed comments - match Extension columns (text, author, author_id, etc.)
@@ -133,7 +134,7 @@ function generateUUID() {
 }
 
 // ===========================================
-// HELPER: Normalize URL for consistency
+// HELPER: Normalize URL for consistency (Canonical)
 // ===========================================
 
 function normalizeUrl(url) {
@@ -154,17 +155,24 @@ function normalizeUrl(url) {
         // Path should preserve case (can be case-sensitive on some servers)
         urlObj.hostname = urlObj.hostname.toLowerCase();
         
-        // Ensure www. is present for common sites (consistency)
-        // If the domain doesn't have www. and it's not a subdomain, add it
-        const parts = urlObj.hostname.split('.');
-        if (parts.length === 2 && !urlObj.hostname.startsWith('www.')) {
-            urlObj.hostname = 'www.' + urlObj.hostname;
+        // Strip fragment (hash) - not relevant for page identity
+        urlObj.hash = '';
+        
+        // Remove default ports
+        if (urlObj.protocol === 'https:' && urlObj.port === '443') {
+            urlObj.port = '';
+        }
+        if (urlObj.protocol === 'http:' && urlObj.port === '80') {
+            urlObj.port = '';
         }
         
         // Remove trailing slash from path (but keep if it's just /)
         if (urlObj.pathname.length > 1 && urlObj.pathname.endsWith('/')) {
             urlObj.pathname = urlObj.pathname.slice(0, -1);
         }
+        
+        // NOTE: Do NOT add www. automatically - this would split threads
+        // between www.example.com and example.com
         
         return urlObj.toString();
     } catch (e) {
@@ -802,4 +810,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.1');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.2');
