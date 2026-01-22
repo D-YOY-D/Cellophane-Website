@@ -122,7 +122,7 @@ const VisibilityConfig = {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.3...');
+    console.log('🎬 Initializing Cellophane PWA v1.6.0...');
     
     setupEventListeners();
     
@@ -220,6 +220,34 @@ function setupEventListeners() {
     if (DOM.btnStopRecording) {
         DOM.btnStopRecording.addEventListener('click', stopAudioRecording);
     }
+    
+    // =============================================
+    // DELEGATED MEDIA EVENT HANDLERS (Security: no inline JS)
+    // =============================================
+    
+    // Fullscreen image click (delegated)
+    document.addEventListener('click', (e) => {
+        const mediaEl = e.target.closest('.media-clickable');
+        if (mediaEl) {
+            e.stopPropagation();
+            const url = mediaEl.dataset.fullscreenUrl;
+            if (url) openImageFullscreen(url);
+        }
+    });
+    
+    // Stop propagation for video/audio controls
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.media-stop-propagation')) {
+            e.stopPropagation();
+        }
+    });
+    
+    // Image error handling (delegated, no inline onerror)
+    document.addEventListener('error', (e) => {
+        if (e.target.tagName === 'IMG' && e.target.closest('.cellophane-media')) {
+            e.target.closest('.cellophane-media').style.display = 'none';
+        }
+    }, true); // Use capture phase
 }
 
 // ===========================================
@@ -538,23 +566,44 @@ function createCellophaneCard(cellophane) {
 }
 
 // ===========================================
+// URL SANITIZATION (Security)
+// ===========================================
+
+function sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return null;
+    
+    const trimmed = url.trim();
+    
+    // Only allow http and https protocols
+    try {
+        const parsed = new URL(trimmed);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+            return trimmed;
+        }
+    } catch (e) {
+        // Invalid URL
+    }
+    
+    return null;
+}
+
+// ===========================================
 // MEDIA RENDERING (IMAGE/VIDEO/AUDIO)
 // ===========================================
 
 function renderMedia(cellophane) {
-    const mediaUrl = cellophane.media_url;
+    const mediaUrl = sanitizeUrl(cellophane.media_url);
     const mediaType = cellophane.media_type;
     
     if (!mediaUrl) return '';
     
     console.log('🖼️ Media:', mediaType, mediaUrl);
     
-    // IMAGE
+    // IMAGE - use data attribute instead of inline onclick
     if (mediaType === 'image' || isImageUrl(mediaUrl)) {
         return `
-            <div class="cellophane-media" onclick="event.stopPropagation(); openImageFullscreen('${escapeHtml(mediaUrl)}')">
-                <img src="${mediaUrl}" alt="Media" class="media-image" loading="lazy" 
-                     onerror="this.parentElement.style.display='none'">
+            <div class="cellophane-media media-clickable" data-fullscreen-url="${escapeHtml(mediaUrl)}">
+                <img src="${escapeHtml(mediaUrl)}" alt="Media" class="media-image" loading="lazy">
             </div>
         `;
     }
@@ -562,8 +611,8 @@ function renderMedia(cellophane) {
     // VIDEO
     if (mediaType === 'video' || isVideoUrl(mediaUrl)) {
         return `
-            <div class="cellophane-media" onclick="event.stopPropagation()">
-                <video src="${mediaUrl}" class="media-video" controls preload="metadata" playsinline>
+            <div class="cellophane-media media-stop-propagation">
+                <video src="${escapeHtml(mediaUrl)}" class="media-video" controls preload="metadata" playsinline>
                     Your browser does not support video playback.
                 </video>
             </div>
@@ -573,10 +622,10 @@ function renderMedia(cellophane) {
     // AUDIO
     if (mediaType === 'audio' || isAudioUrl(mediaUrl)) {
         return `
-            <div class="cellophane-media cellophane-audio" onclick="event.stopPropagation()">
+            <div class="cellophane-media cellophane-audio media-stop-propagation">
                 <div class="audio-wrapper">
                     <div class="audio-icon">🎵</div>
-                    <audio src="${mediaUrl}" class="media-audio" controls preload="metadata">
+                    <audio src="${escapeHtml(mediaUrl)}" class="media-audio" controls preload="metadata">
                         Your browser does not support audio playback.
                     </audio>
                 </div>
@@ -585,10 +634,11 @@ function renderMedia(cellophane) {
     }
     
     // Unknown - show as downloadable link
+    const safeName = escapeHtml(cellophane.media_name || 'Download attachment');
     return `
-        <div class="cellophane-media">
-            <a href="${mediaUrl}" target="_blank" class="media-download" onclick="event.stopPropagation()">
-                📎 ${cellophane.media_name || 'Download attachment'}
+        <div class="cellophane-media media-stop-propagation">
+            <a href="${escapeHtml(mediaUrl)}" target="_blank" rel="noopener noreferrer" class="media-download">
+                📎 ${safeName}
             </a>
         </div>
     `;
@@ -606,15 +656,31 @@ function isAudioUrl(url) {
     return /\.(mp3|wav|ogg|m4a|aac|flac)(\?.*)?$/i.test(url);
 }
 
-// Open image in fullscreen
+// Open image in fullscreen - no inline handlers
 function openImageFullscreen(url) {
+    const safeUrl = sanitizeUrl(url);
+    if (!safeUrl) return;
+    
     const modal = document.createElement('div');
     modal.className = 'image-fullscreen-modal';
-    modal.innerHTML = `
-        <div class="image-fullscreen-backdrop" onclick="this.parentElement.remove()"></div>
-        <img src="${url}" class="image-fullscreen-img" onclick="event.stopPropagation()">
-        <button class="image-fullscreen-close" onclick="this.parentElement.remove()">✕</button>
-    `;
+    
+    const backdrop = document.createElement('div');
+    backdrop.className = 'image-fullscreen-backdrop';
+    backdrop.addEventListener('click', () => modal.remove());
+    
+    const img = document.createElement('img');
+    img.className = 'image-fullscreen-img';
+    img.src = safeUrl;
+    img.addEventListener('click', (e) => e.stopPropagation());
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'image-fullscreen-close';
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('click', () => modal.remove());
+    
+    modal.appendChild(backdrop);
+    modal.appendChild(img);
+    modal.appendChild(closeBtn);
     document.body.appendChild(modal);
 }
 
@@ -715,8 +781,8 @@ async function openCellophaneDetail(cellophane) {
         </div>
         <div class="cellophane-content" style="font-size:1.1rem;margin:16px 0;">${escapeHtml(cellophane.text || '')}</div>
         ${mediaHtml}
-        ${cellophane.url ? `
-            <a href="${cellophane.url}" target="_blank" class="cellophane-source" style="margin-top:12px;">
+        ${cellophane.url && sanitizeUrl(cellophane.url) ? `
+            <a href="${escapeHtml(sanitizeUrl(cellophane.url))}" target="_blank" rel="noopener noreferrer" class="cellophane-source" style="margin-top:12px;">
                 ${Icons.link}
                 <span>View Source</span>
             </a>
