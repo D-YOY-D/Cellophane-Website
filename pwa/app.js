@@ -1,7 +1,16 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.4.0
- * Fixed: No placeholder URLs, Full media support, Create cellophane
+ * Version: 1.6.2
+ * 
+ * CHANGELOG:
+ * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
+ * v1.6.1 - Fixed URL normalization - preserve path case (only hostname lowercase)
+ * v1.6.0 - Security fixes (XSS via escapeHtml, URL sanitization)
+ * v1.5.1 - Fixed comments - match Extension columns (text, author, author_id, etc.)
+ * v1.4.0 - Media upload support (image/video/audio), Create cellophane
+ * v1.3.0 - Media display support
+ * v1.2.0 - Fixed create cellophane with UUID + timestamp
+ * v1.1.0 - Added avatar support via public_user_profiles join
  */
 
 // ===========================================
