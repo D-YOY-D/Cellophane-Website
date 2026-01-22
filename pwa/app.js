@@ -122,7 +122,7 @@ const VisibilityConfig = {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.6.1...');
+    console.log('🎬 Initializing Cellophane PWA v1.6.2...');
     
     setupEventListeners();
     
@@ -244,8 +244,19 @@ function setupEventListeners() {
     
     // Image error handling (delegated, no inline onerror)
     document.addEventListener('error', (e) => {
-        if (e.target.tagName === 'IMG' && e.target.closest('.cellophane-media')) {
-            e.target.closest('.cellophane-media').style.display = 'none';
+        if (e.target.tagName === 'IMG') {
+            // Media images - hide container
+            if (e.target.closest('.cellophane-media')) {
+                e.target.closest('.cellophane-media').style.display = 'none';
+            }
+            // Avatar images - show fallback
+            if (e.target.classList.contains('avatar-with-fallback')) {
+                e.target.style.display = 'none';
+                const fallback = e.target.nextElementSibling;
+                if (fallback && fallback.classList.contains('avatar-fallback')) {
+                    fallback.style.display = 'flex';
+                }
+            }
         }
     }, true); // Use capture phase
 }
@@ -484,7 +495,9 @@ function createCellophaneCard(cellophane) {
     
     const authorName = cellophane.author || 'Anonymous';
     // Support both camelCase (authorAvatar) and snake_case (author_avatar) from DB
-    const authorAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
+    // Sanitize avatar URL for security
+    const rawAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
+    const authorAvatar = rawAvatar ? sanitizeUrl(rawAvatar) : '';
     const timestamp = formatTimestamp(cellophane.created_at);
     const visibilityConfig = VisibilityConfig[visibility] || VisibilityConfig.public;
     const sourceUrl = cellophane.url || '';
@@ -494,9 +507,9 @@ function createCellophaneCard(cellophane) {
     // Media HTML - IMPORTANT!
     const mediaHtml = renderMedia(cellophane);
     
-    // Avatar HTML - only fallback with initials, NO placeholder URLs!
+    // Avatar HTML - sanitized URL, delegated error handling (no inline onerror)
     const avatarHtml = authorAvatar 
-        ? `<img src="${authorAvatar}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        ? `<img src="${escapeHtml(authorAvatar)}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar avatar-with-fallback">
            <div class="avatar-fallback" style="display:none;">${initials}</div>`
         : `<div class="avatar-fallback">${initials}</div>`;
     
@@ -758,14 +771,16 @@ async function openCellophaneDetail(cellophane) {
     AppState.currentCellophane = cellophane;
     
     const authorName = cellophane.author || 'Anonymous';
-    // Support both camelCase and snake_case from DB
-    const authorAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
+    // Support both camelCase and snake_case from DB - sanitize URL
+    const rawAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
+    const authorAvatar = rawAvatar ? sanitizeUrl(rawAvatar) : '';
     const timestamp = formatTimestamp(cellophane.created_at);
     const initials = getInitials(authorName);
     const mediaHtml = renderMedia(cellophane);
     
+    // Avatar HTML - sanitized URL, delegated error handling (no inline onerror)
     const avatarHtml = authorAvatar 
-        ? `<img src="${authorAvatar}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar" style="width:48px;height:48px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        ? `<img src="${escapeHtml(authorAvatar)}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar avatar-with-fallback" style="width:48px;height:48px;">
            <div class="avatar-fallback" style="display:none;width:48px;height:48px;font-size:1.2rem;">${initials}</div>`
         : `<div class="avatar-fallback" style="width:48px;height:48px;font-size:1.2rem;">${initials}</div>`;
     
