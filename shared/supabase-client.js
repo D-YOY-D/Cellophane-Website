@@ -1,10 +1,12 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.5.0
+ * Version: 1.6.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.6.0: Security fixes (XSS, URL sanitization) + SW caching fix
+ * UPDATE v1.5.1: Fixed comments - match Extension columns (text, author, author_id, etc.)
  * UPDATE v1.5.0: Fixed comments column names (user_name, content) + URL normalization
  * UPDATE v1.4.0: Fixed comments with UUID generation
  * UPDATE v1.3.0: Added media upload support
@@ -454,16 +456,18 @@ const CelloComments = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: null, error: new Error('Not authenticated') };
         
-        // Column names must match DB schema:
-        // user_name (not author), content (not text)
+        // Column names MUST match what Extension uses (cellophane-api.js):
+        // text (not content), author (not user_name), author_id, author_email, author_avatar
         const { data, error } = await client
             .from('cellophane_comments')
             .insert({
-                id: generateUUID(),
                 cellophane_id: cellophaneId,
-                user_id: user.id,
-                user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-                content: text
+                text: text,
+                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+                author_id: user.id,
+                author_email: user.email || null,
+                author_avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+                created_at: new Date().toISOString()
             })
             .select()
             .single();
@@ -793,4 +797,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.5.0 (comments fix + URL normalization!)');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.0');
