@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.4.0
+ * Version: 1.5.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.5.0: Fixed comments column names (user_name, content) + URL normalization
  * UPDATE v1.4.0: Fixed comments with UUID generation
  * UPDATE v1.3.0: Added media upload support
  * UPDATE v1.2.0: Fixed create cellophane with UUID + timestamp
@@ -126,6 +127,43 @@ function generateUUID() {
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+
+// ===========================================
+// HELPER: Normalize URL for consistency
+// ===========================================
+
+function normalizeUrl(url) {
+    if (!url) return url;
+    
+    let normalized = url.trim().toLowerCase();
+    
+    // Add https:// if no protocol
+    if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+        normalized = 'https://' + normalized;
+    }
+    
+    // Parse URL to work with it
+    try {
+        const urlObj = new URL(normalized);
+        
+        // Ensure www. is present for common sites (consistency)
+        // If the domain doesn't have www. and it's not a subdomain, add it
+        const parts = urlObj.hostname.split('.');
+        if (parts.length === 2 && !urlObj.hostname.startsWith('www.')) {
+            urlObj.hostname = 'www.' + urlObj.hostname;
+        }
+        
+        // Remove trailing slash from path (but keep if it's just /)
+        if (urlObj.pathname.length > 1 && urlObj.pathname.endsWith('/')) {
+            urlObj.pathname = urlObj.pathname.slice(0, -1);
+        }
+        
+        return urlObj.toString();
+    } catch (e) {
+        // If URL parsing fails, return original with https
+        return normalized;
+    }
 }
 
 // ===========================================
@@ -280,11 +318,17 @@ const CelloCellophanes = {
         
         const now = new Date().toISOString();
         
+        // Normalize URL for consistency
+        let normalizedUrl = cellophane.url || 'https://cellophane.ai/pwa';
+        if (normalizedUrl !== 'https://cellophane.ai/pwa') {
+            normalizedUrl = normalizeUrl(normalizedUrl);
+        }
+        
         // Build insert object
         const insertData = {
             id: generateUUID(),
             text: cellophane.text,
-            url: cellophane.url || 'https://cellophane.ai/pwa',
+            url: normalizedUrl,
             visibility: cellophane.visibility || 'public',
             position_x: cellophane.position_x || 50,
             position_y: cellophane.position_y || 50,
@@ -410,15 +454,16 @@ const CelloComments = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: null, error: new Error('Not authenticated') };
         
+        // Column names must match DB schema:
+        // user_name (not author), content (not text)
         const { data, error } = await client
             .from('cellophane_comments')
             .insert({
                 id: generateUUID(),
                 cellophane_id: cellophaneId,
                 user_id: user.id,
-                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-                text: text,
-                parent_id: parentId
+                user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+                content: text
             })
             .select()
             .single();
@@ -748,4 +793,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.4.0 (comments UUID fix!)');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.5.0 (comments fix + URL normalization!)');
