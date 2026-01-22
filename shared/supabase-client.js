@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.6.0
+ * Version: 1.6.1
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.6.1: Fixed URL normalization - preserve path case (only hostname lowercase)
  * UPDATE v1.6.0: Security fixes (XSS, URL sanitization) + SW caching fix
  * UPDATE v1.5.1: Fixed comments - match Extension columns (text, author, author_id, etc.)
  * UPDATE v1.5.0: Fixed comments column names (user_name, content) + URL normalization
@@ -138,16 +139,20 @@ function generateUUID() {
 function normalizeUrl(url) {
     if (!url) return url;
     
-    let normalized = url.trim().toLowerCase();
+    let normalized = url.trim();
     
     // Add https:// if no protocol
-    if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+    if (!normalized.match(/^https?:\/\//i)) {
         normalized = 'https://' + normalized;
     }
     
     // Parse URL to work with it
     try {
         const urlObj = new URL(normalized);
+        
+        // Only hostname should be lowercase (case-insensitive by spec)
+        // Path should preserve case (can be case-sensitive on some servers)
+        urlObj.hostname = urlObj.hostname.toLowerCase();
         
         // Ensure www. is present for common sites (consistency)
         // If the domain doesn't have www. and it's not a subdomain, add it
@@ -797,4 +802,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.0');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.1');
