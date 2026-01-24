@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.6.2
+ * Version: 1.7.0
  * 
  * CHANGELOG:
+ * v1.7.0 - Profile sync fix: Read from DB first, don't overwrite custom profile with Google data
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
  * v1.6.1 - Fixed URL normalization - preserve path case (only hostname lowercase)
  * v1.6.0 - Security fixes (XSS via escapeHtml, URL sanitization)
@@ -297,8 +298,30 @@ async function handleAuthSuccess(session) {
     
     console.log('👤 User:', user.email);
     
-    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
-    const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+    // v1.7.0 FIX: Read profile from DB first, not just Google metadata
+    // This preserves custom name/avatar set by user
+    let profile = null;
+    try {
+        const { data, error } = await CelloAPI.profile.getById(user.id);
+        if (!error && data) {
+            profile = data;
+            console.log('📋 Profile from DB:', profile.display_name || profile.username);
+        }
+    } catch (e) {
+        console.warn('Could not fetch profile from DB:', e);
+    }
+    
+    // Priority: DB profile > Google metadata > defaults
+    const avatarUrl = profile?.avatar_url || 
+                      user.user_metadata?.avatar_url || 
+                      user.user_metadata?.picture || 
+                      '';
+    const displayName = profile?.display_name || 
+                        profile?.username ||
+                        user.user_metadata?.full_name || 
+                        user.user_metadata?.name || 
+                        user.email?.split('@')[0] || 
+                        'User';
     const initials = displayName.charAt(0).toUpperCase();
     
     // Update header avatar with fallback

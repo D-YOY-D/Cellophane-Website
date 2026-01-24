@@ -1,12 +1,12 @@
 /**
  * Cellophane PWA Service Worker
- * Version: 1.6.2
+ * Version: 1.7.0
  * 
  * Strategy: Network-first with selective caching
  * Only cache same-origin static assets (js/css/html/images)
  */
 
-const CACHE_NAME = 'cellophane-static-v1.6.2';
+const CACHE_NAME = 'cellophane-static-v1.7.0';
 
 // Static assets to precache on install
 const STATIC_ASSETS = [
