@@ -1274,8 +1274,12 @@ function renderProfileCellophanes(cellophanes, tabName) {
     DOM.profileContentEmpty?.classList.add('hidden');
     DOM.profileCellophanesList.classList.remove('hidden');
     
-    // Render cards (reuse existing createCellophaneCard function)
-    DOM.profileCellophanesList.innerHTML = cellophanes.map(c => createCellophaneCard(c).outerHTML).join('');
+    // Clear and append cards (v1.8.0 fix: use appendChild, not outerHTML)
+    DOM.profileCellophanesList.innerHTML = '';
+    cellophanes.forEach(c => {
+        const card = createCellophaneCard(c);
+        DOM.profileCellophanesList.appendChild(card);
+    });
 }
 
 /**
