@@ -654,11 +654,9 @@ const CelloFollows = {
             .single();
         
         if (existing) {
-            // Already following - return success (idempotent)
             return { data: existing, error: null };
         }
         
-        // Insert new follow
         const { data, error } = await client
             .from('follows')
             .insert({
@@ -723,13 +721,11 @@ const CelloFollows = {
         
         if (!userId) return { followers: 0, following: 0, error: new Error('User ID required') };
         
-        // Get followers count (people following this user)
         const { count: followers, error: e1 } = await client
             .from('follows')
             .select('*', { count: 'exact', head: true })
             .eq('following_id', userId);
         
-        // Get following count (people this user follows)
         const { count: following, error: e2 } = await client
             .from('follows')
             .select('*', { count: 'exact', head: true })
