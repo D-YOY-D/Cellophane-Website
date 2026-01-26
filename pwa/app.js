@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.0
+ * Version: 1.8.1
  * 
  * CHANGELOG:
+ * v1.8.1 - Fixed null reference to profileEmail
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
  * v1.6.1 - Fixed URL normalization - preserve path case (only hostname lowercase)
@@ -83,7 +84,7 @@ const DOM = {
     btnSendComment: document.getElementById('btn-send-comment'),
     profileAvatar: document.getElementById('profile-avatar'),
     profileName: document.getElementById('profile-name'),
-    profileEmail: document.getElementById('profile-email'),
+    // v1.8.0: profileEmail removed from new modal design
     statCellophanes: document.getElementById('stat-cellophanes'),
     statFollowers: document.getElementById('stat-followers'),
     statFollowing: document.getElementById('stat-following'),
@@ -350,7 +351,7 @@ async function handleAuthSuccess(session) {
     }
     
     DOM.profileName.textContent = displayName;
-    DOM.profileEmail.textContent = user.email;
+    // v1.8.0: profileEmail removed from new modal design
     
     showScreen('main');
     await loadMyFeed(true);
