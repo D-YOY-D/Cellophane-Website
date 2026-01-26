@@ -1,9 +1,8 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.1
+ * Version: 1.8.0
  * 
  * CHANGELOG:
- * v1.8.1 - Fixed null reference to profileEmail
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
  * v1.6.1 - Fixed URL normalization - preserve path case (only hostname lowercase)
@@ -84,7 +83,7 @@ const DOM = {
     btnSendComment: document.getElementById('btn-send-comment'),
     profileAvatar: document.getElementById('profile-avatar'),
     profileName: document.getElementById('profile-name'),
-    // v1.8.0: profileEmail removed from new modal design
+    profileEmail: document.getElementById('profile-email'),
     statCellophanes: document.getElementById('stat-cellophanes'),
     statFollowers: document.getElementById('stat-followers'),
     statFollowing: document.getElementById('stat-following'),
@@ -196,7 +195,7 @@ function setupEventListeners() {
         btn.addEventListener('click', () => handleTabChange(btn.dataset.tab));
     });
     
-    // v1.8.0: Profile button handler moved to setupProfileEventListeners
+    DOM.btnProfile.addEventListener('click', openProfileModal);
     DOM.btnLogout.addEventListener('click', handleLogout);
     
     document.querySelectorAll('.modal .btn-close, .modal .btn-back').forEach(btn => {
@@ -351,7 +350,7 @@ async function handleAuthSuccess(session) {
     }
     
     DOM.profileName.textContent = displayName;
-    // v1.8.0: profileEmail removed from new modal design
+    DOM.profileEmail.textContent = user.email;
     
     showScreen('main');
     await loadMyFeed(true);
@@ -544,13 +543,14 @@ function createCellophaneCard(cellophane) {
     const sourceUrl = cellophane.url || '';
     const sourceDomain = sourceUrl ? extractDomain(sourceUrl) : '';
     const initials = getInitials(authorName);
+    // v1.8.0: Author ID for profile click
+    const authorId = cellophane.author_id || '';
     
     // Media HTML - IMPORTANT!
     const mediaHtml = renderMedia(cellophane);
     
     // Avatar HTML - sanitized URL, delegated error handling (no inline onerror)
     // v1.8.0: Added data-author-id for profile click delegation
-    const authorId = cellophane.author_id || '';
     const avatarHtml = authorAvatar 
         ? `<img src="${escapeHtml(authorAvatar)}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar avatar-with-fallback" data-author-id="${escapeHtml(authorId)}">
            <div class="avatar-fallback" style="display:none;" data-author-id="${escapeHtml(authorId)}">${initials}</div>`
@@ -927,17 +927,417 @@ async function handleSendComment() {
 }
 
 // ===========================================
-// PROFILE MODAL
+// PROFILE MODAL - v1.8.0
 // ===========================================
 
-async function openProfileModal() {
-    const { data: followers } = await CelloAPI.follows.getFollowers();
-    const { data: following } = await CelloAPI.follows.getFollowing();
+/**
+ * Open profile modal for a user
+ * v1.8.0: Enhanced to support viewing any user's profile
+ * @param {string} userId - User ID to view (optional, defaults to current user)
+ */
+async function openProfileModal(userId) {
+    // If no userId provided, use current user (clicking on own profile)
+    if (!userId) {
+        userId = AppState.user?.id;
+    }
     
-    DOM.statFollowers.textContent = followers?.length || 0;
-    DOM.statFollowing.textContent = following?.length || 0;
+    if (!userId) {
+        console.warn('⚠️ openProfileModal: No user ID');
+        return;
+    }
     
+    console.log('👤 Opening profile for:', userId);
+    
+    // Determine if viewing self
+    const isSelf = AppState.user && AppState.user.id === userId;
+    
+    // Reset profile state
+    AppState.profile = {
+        userId,
+        isSelf,
+        isFollowing: false,
+        currentTab: 'my',
+        tabs: {
+            my: { data: [], page: 0, hasMore: true, loading: false },
+            liked: { data: [], page: 0, hasMore: true, loading: false }
+        }
+    };
+    
+    // Show modal with loading state
     DOM.modalProfile.classList.add('active');
+    showProfileLoading(true);
+    hideProfileContent();
+    
+    try {
+        // Load profile data
+        const [profileResult, followCountsResult] = await Promise.all([
+            CelloAPI.profile.getById(userId),
+            CelloAPI.follows.getFollowCounts(userId)
+        ]);
+        
+        if (profileResult.error) {
+            console.error('❌ Failed to load profile:', profileResult.error);
+            showProfileError('Failed to load profile');
+            return;
+        }
+        
+        const profile = profileResult.data;
+        
+        // Check if current user is following this user (only if not self)
+        if (!isSelf && AppState.user) {
+            const { data: isFollowing } = await CelloAPI.follows.isFollowing(userId);
+            AppState.profile.isFollowing = isFollowing;
+        }
+        
+        // Update UI
+        renderProfileHeader(profile, followCountsResult, isSelf);
+        showProfileLoading(false);
+        
+        // Load initial tab (My)
+        await loadProfileTab('my');
+        
+    } catch (error) {
+        console.error('❌ Profile modal error:', error);
+        showProfileError('Something went wrong');
+    }
+}
+
+/**
+ * Show/hide profile loading skeleton
+ */
+function showProfileLoading(show) {
+    if (DOM.profileHeaderLoading) {
+        DOM.profileHeaderLoading.classList.toggle('hidden', !show);
+    }
+    if (DOM.profileHeaderContent) {
+        DOM.profileHeaderContent.classList.toggle('hidden', show);
+    }
+}
+
+/**
+ * Render profile header with user data
+ */
+function renderProfileHeader(profile, followCounts, isSelf) {
+    if (!profile) return;
+    
+    // Avatar
+    const avatarUrl = profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.display_name || profile.username || 'User')}`;
+    if (DOM.profileAvatar) {
+        DOM.profileAvatar.src = avatarUrl;
+        DOM.profileAvatar.onerror = () => {
+            DOM.profileAvatar.src = `https://api.dicebear.com/7.x/initials/svg?seed=User`;
+        };
+    }
+    
+    // Name
+    const displayName = profile.display_name || profile.username || 'User';
+    if (DOM.profileName) DOM.profileName.textContent = displayName;
+    if (DOM.profileModalTitle) DOM.profileModalTitle.textContent = isSelf ? 'My Profile' : displayName;
+    
+    // Email (only for self, if element exists)
+    if (DOM.profileEmail && isSelf && AppState.user?.email) {
+        DOM.profileEmail.textContent = AppState.user.email;
+        DOM.profileEmail.classList.remove('hidden');
+    } else if (DOM.profileEmail) {
+        DOM.profileEmail.classList.add('hidden');
+    }
+    
+    // Bio
+    if (DOM.profileBio) {
+        DOM.profileBio.textContent = profile.bio || '';
+        DOM.profileBio.classList.toggle('hidden', !profile.bio);
+    }
+    
+    // Stats
+    if (DOM.statCellophanes) DOM.statCellophanes.textContent = '-';
+    if (DOM.statFollowers) DOM.statFollowers.textContent = followCounts.followers || 0;
+    if (DOM.statFollowing) DOM.statFollowing.textContent = followCounts.following || 0;
+    
+    // Follow button (hide for self)
+    if (DOM.btnFollow) {
+        DOM.btnFollow.classList.toggle('hidden', isSelf);
+        DOM.btnFollow.dataset.userId = profile.id;
+        updateFollowButton(AppState.profile.isFollowing);
+    }
+    
+    // Actions (show Sign Out only for self)
+    if (DOM.profileActionsSelf) {
+        DOM.profileActionsSelf.classList.toggle('hidden', !isSelf);
+    }
+}
+
+/**
+ * Update follow button state
+ */
+function updateFollowButton(isFollowing) {
+    if (!DOM.btnFollow) return;
+    
+    if (isFollowing) {
+        DOM.btnFollow.textContent = 'Following';
+        DOM.btnFollow.classList.remove('btn-primary');
+        DOM.btnFollow.classList.add('btn-outline');
+    } else {
+        DOM.btnFollow.textContent = 'Follow';
+        DOM.btnFollow.classList.add('btn-primary');
+        DOM.btnFollow.classList.remove('btn-outline');
+    }
+}
+
+/**
+ * Toggle follow/unfollow
+ */
+async function toggleFollow() {
+    const userId = AppState.profile.userId;
+    if (!userId || AppState.profile.isSelf) return;
+    
+    const wasFollowing = AppState.profile.isFollowing;
+    
+    // Optimistic update
+    AppState.profile.isFollowing = !wasFollowing;
+    updateFollowButton(!wasFollowing);
+    
+    // Update count optimistically
+    const currentCount = parseInt(DOM.statFollowers?.textContent || '0');
+    if (DOM.statFollowers) {
+        DOM.statFollowers.textContent = wasFollowing ? currentCount - 1 : currentCount + 1;
+    }
+    
+    try {
+        let error;
+        if (wasFollowing) {
+            const result = await CelloAPI.follows.unfollow(userId);
+            error = result.error;
+        } else {
+            const result = await CelloAPI.follows.follow(userId);
+            error = result.error;
+        }
+        
+        if (error) {
+            console.error('❌ Follow toggle failed:', error);
+            AppState.profile.isFollowing = wasFollowing;
+            updateFollowButton(wasFollowing);
+            if (DOM.statFollowers) DOM.statFollowers.textContent = currentCount;
+            showToast('Failed to update follow status', 'error');
+        } else {
+            showToast(wasFollowing ? 'Unfollowed' : 'Following!', 'success');
+        }
+    } catch (error) {
+        console.error('❌ Follow toggle error:', error);
+        AppState.profile.isFollowing = wasFollowing;
+        updateFollowButton(wasFollowing);
+        if (DOM.statFollowers) DOM.statFollowers.textContent = currentCount;
+    }
+}
+
+/**
+ * Load profile tab content
+ * @param {string} tabName - 'my' or 'liked'
+ * @param {boolean} refresh - Force refresh
+ */
+async function loadProfileTab(tabName, refresh = false) {
+    const tab = AppState.profile.tabs[tabName];
+    if (!tab) return;
+    
+    if (tab.loading) return;
+    
+    if (refresh) {
+        tab.data = [];
+        tab.page = 0;
+        tab.hasMore = true;
+    }
+    
+    if (!tab.hasMore && !refresh) return;
+    
+    tab.loading = true;
+    AppState.profile.currentTab = tabName;
+    
+    // Update tab UI
+    DOM.profileTabs?.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    
+    // Show loading
+    showProfileContentLoading(true);
+    hideProfileContentStates();
+    
+    try {
+        let result;
+        const userId = AppState.profile.userId;
+        
+        if (tabName === 'my') {
+            result = await CelloAPI.cellophanes.getByAuthorId(userId, tab.page, 20);
+        } else {
+            result = await CelloAPI.cellophanes.getReactedByUser(userId, tab.page, 20);
+        }
+        
+        if (result.error) {
+            console.error(`❌ Failed to load ${tabName} tab:`, result.error);
+            showProfileContentError();
+            tab.loading = false;
+            return;
+        }
+        
+        const newData = result.data || [];
+        tab.data = refresh ? newData : [...tab.data, ...newData];
+        tab.hasMore = newData.length >= 20;
+        tab.page++;
+        
+        // Update cellophanes count for "My" tab
+        if (tabName === 'my' && DOM.statCellophanes) {
+            DOM.statCellophanes.textContent = tab.data.length + (tab.hasMore ? '+' : '');
+        }
+        
+        // Render
+        showProfileContentLoading(false);
+        renderProfileCellophanes(tab.data, tabName);
+        
+        // Show/hide load more button
+        if (DOM.btnProfileLoadMore) {
+            DOM.btnProfileLoadMore.classList.toggle('hidden', !tab.hasMore);
+        }
+        
+    } catch (error) {
+        console.error(`❌ Error loading ${tabName} tab:`, error);
+        showProfileContentError();
+    }
+    
+    tab.loading = false;
+}
+
+/**
+ * Show/hide profile content loading spinner
+ */
+function showProfileContentLoading(show) {
+    if (DOM.profileContentLoading) {
+        DOM.profileContentLoading.classList.toggle('hidden', !show);
+    }
+}
+
+/**
+ * Hide all profile content states
+ */
+function hideProfileContentStates() {
+    DOM.profileContentEmpty?.classList.add('hidden');
+    DOM.profileContentError?.classList.add('hidden');
+    DOM.profileCellophanesList?.classList.add('hidden');
+    DOM.btnProfileLoadMore?.classList.add('hidden');
+}
+
+/**
+ * Hide profile content
+ */
+function hideProfileContent() {
+    hideProfileContentStates();
+    showProfileContentLoading(true);
+}
+
+/**
+ * Show profile error state
+ */
+function showProfileError(message) {
+    showProfileLoading(false);
+    if (DOM.profileContentError) {
+        DOM.profileContentError.classList.remove('hidden');
+    }
+}
+
+/**
+ * Show profile content error state
+ */
+function showProfileContentError() {
+    showProfileContentLoading(false);
+    hideProfileContentStates();
+    if (DOM.profileContentError) {
+        DOM.profileContentError.classList.remove('hidden');
+    }
+}
+
+/**
+ * Render cellophanes in profile
+ */
+function renderProfileCellophanes(cellophanes, tabName) {
+    if (!DOM.profileCellophanesList) return;
+    
+    if (!cellophanes || cellophanes.length === 0) {
+        DOM.profileCellophanesList.classList.add('hidden');
+        if (DOM.profileContentEmpty) {
+            DOM.profileContentEmpty.classList.remove('hidden');
+            if (DOM.profileEmptyText) {
+                DOM.profileEmptyText.textContent = tabName === 'my' 
+                    ? 'No cellophanes yet' 
+                    : 'No liked cellophanes';
+            }
+        }
+        return;
+    }
+    
+    DOM.profileContentEmpty?.classList.add('hidden');
+    DOM.profileCellophanesList.classList.remove('hidden');
+    
+    // Render cards (reuse existing createCellophaneCard function)
+    DOM.profileCellophanesList.innerHTML = cellophanes.map(c => createCellophaneCard(c).outerHTML).join('');
+}
+
+/**
+ * Handle click on user avatar/name in feed (event delegation)
+ */
+function handleFeedUserClick(e) {
+    const authorElement = e.target.closest('[data-author-id]');
+    if (authorElement) {
+        const authorId = authorElement.dataset.authorId;
+        if (authorId) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProfileModal(authorId);
+        }
+    }
+}
+
+/**
+ * Setup profile event listeners
+ */
+function setupProfileEventListeners() {
+    // Profile tabs
+    DOM.profileTabs?.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            if (tabName && tabName !== AppState.profile.currentTab) {
+                loadProfileTab(tabName, true);
+            }
+        });
+    });
+    
+    // Follow button
+    if (DOM.btnFollow) {
+        DOM.btnFollow.addEventListener('click', toggleFollow);
+    }
+    
+    // Load more button
+    if (DOM.btnProfileLoadMore) {
+        DOM.btnProfileLoadMore.addEventListener('click', () => {
+            loadProfileTab(AppState.profile.currentTab);
+        });
+    }
+    
+    // Retry button
+    if (DOM.btnProfileRetry) {
+        DOM.btnProfileRetry.addEventListener('click', () => {
+            loadProfileTab(AppState.profile.currentTab, true);
+        });
+    }
+    
+    // Event delegation for avatar/name clicks in feeds
+    if (DOM.myFeedList) {
+        DOM.myFeedList.addEventListener('click', handleFeedUserClick);
+    }
+    if (DOM.followingFeedList) {
+        DOM.followingFeedList.addEventListener('click', handleFeedUserClick);
+    }
+    
+    // Profile cellophanes list - also needs delegation for nested profile views
+    if (DOM.profileCellophanesList) {
+        DOM.profileCellophanesList.addEventListener('click', handleFeedUserClick);
+    }
 }
 
 // ===========================================
@@ -1338,430 +1738,6 @@ async function handleCreateSubmit(e) {
 
 // ===========================================
 // SERVICE WORKER
-// ===========================================
-
-// ===========================================
-// PROFILE MODAL - v1.8.0
-// ===========================================
-
-/**
- * Open profile modal for a user
- * @param {string} userId - User ID to view
- */
-async function openProfileModal(userId) {
-    if (!userId) {
-        console.warn('⚠️ openProfileModal: No user ID provided');
-        return;
-    }
-    
-    console.log('👤 Opening profile for:', userId);
-    
-    // Determine if viewing self
-    const isSelf = AppState.user && AppState.user.id === userId;
-    
-    // Reset profile state
-    AppState.profile = {
-        userId,
-        isSelf,
-        isFollowing: false,
-        currentTab: 'my',
-        tabs: {
-            my: { data: [], page: 0, hasMore: true, loading: false },
-            liked: { data: [], page: 0, hasMore: true, loading: false }
-        }
-    };
-    
-    // Show modal with loading state
-    DOM.modalProfile.classList.add('active');
-    showProfileLoading(true);
-    hideProfileContent();
-    
-    try {
-        // Load profile data
-        const [profileResult, followCountsResult] = await Promise.all([
-            CelloAPI.profile.getById(userId),
-            CelloAPI.follows.getFollowCounts(userId)
-        ]);
-        
-        if (profileResult.error) {
-            console.error('❌ Failed to load profile:', profileResult.error);
-            showProfileError('Failed to load profile');
-            return;
-        }
-        
-        const profile = profileResult.data;
-        
-        // Check if current user is following this user (only if not self)
-        if (!isSelf && AppState.user) {
-            const { data: isFollowing } = await CelloAPI.follows.isFollowing(userId);
-            AppState.profile.isFollowing = isFollowing;
-        }
-        
-        // Update UI
-        renderProfileHeader(profile, followCountsResult, isSelf);
-        showProfileLoading(false);
-        
-        // Load initial tab (My)
-        await loadProfileTab('my');
-        
-    } catch (error) {
-        console.error('❌ Profile modal error:', error);
-        showProfileError('Something went wrong');
-    }
-}
-
-/**
- * Show/hide profile loading skeleton
- */
-function showProfileLoading(show) {
-    if (DOM.profileHeaderLoading) {
-        DOM.profileHeaderLoading.classList.toggle('hidden', !show);
-    }
-    if (DOM.profileHeaderContent) {
-        DOM.profileHeaderContent.classList.toggle('hidden', show);
-    }
-}
-
-/**
- * Render profile header with user data
- */
-function renderProfileHeader(profile, followCounts, isSelf) {
-    if (!profile) return;
-    
-    // Avatar
-    const avatarUrl = profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.display_name || profile.username || 'User')}`;
-    if (DOM.profileAvatar) {
-        DOM.profileAvatar.src = avatarUrl;
-        DOM.profileAvatar.onerror = () => {
-            DOM.profileAvatar.src = `https://api.dicebear.com/7.x/initials/svg?seed=User`;
-        };
-    }
-    
-    // Name
-    const displayName = profile.display_name || profile.username || 'User';
-    if (DOM.profileName) DOM.profileName.textContent = displayName;
-    if (DOM.profileModalTitle) DOM.profileModalTitle.textContent = isSelf ? 'My Profile' : displayName;
-    
-    // Bio
-    if (DOM.profileBio) {
-        DOM.profileBio.textContent = profile.bio || '';
-        DOM.profileBio.classList.toggle('hidden', !profile.bio);
-    }
-    
-    // Stats
-    if (DOM.statCellophanes) DOM.statCellophanes.textContent = '-'; // Will update after loading tab
-    if (DOM.statFollowers) DOM.statFollowers.textContent = followCounts.followers || 0;
-    if (DOM.statFollowing) DOM.statFollowing.textContent = followCounts.following || 0;
-    
-    // Follow button (hide for self)
-    if (DOM.btnFollow) {
-        DOM.btnFollow.classList.toggle('hidden', isSelf);
-        DOM.btnFollow.dataset.userId = profile.id;
-        updateFollowButton(AppState.profile.isFollowing);
-    }
-    
-    // Actions (show Sign Out only for self)
-    if (DOM.profileActionsSelf) {
-        DOM.profileActionsSelf.classList.toggle('hidden', !isSelf);
-    }
-}
-
-/**
- * Update follow button state
- */
-function updateFollowButton(isFollowing) {
-    if (!DOM.btnFollow) return;
-    
-    if (isFollowing) {
-        DOM.btnFollow.textContent = 'Following';
-        DOM.btnFollow.classList.remove('btn-primary');
-        DOM.btnFollow.classList.add('btn-outline');
-    } else {
-        DOM.btnFollow.textContent = 'Follow';
-        DOM.btnFollow.classList.add('btn-primary');
-        DOM.btnFollow.classList.remove('btn-outline');
-    }
-}
-
-/**
- * Toggle follow/unfollow
- */
-async function toggleFollow() {
-    const userId = AppState.profile.userId;
-    if (!userId || AppState.profile.isSelf) return;
-    
-    const wasFollowing = AppState.profile.isFollowing;
-    
-    // Optimistic update
-    AppState.profile.isFollowing = !wasFollowing;
-    updateFollowButton(!wasFollowing);
-    
-    // Update count optimistically
-    const currentCount = parseInt(DOM.statFollowers?.textContent || '0');
-    if (DOM.statFollowers) {
-        DOM.statFollowers.textContent = wasFollowing ? currentCount - 1 : currentCount + 1;
-    }
-    
-    try {
-        let error;
-        if (wasFollowing) {
-            const result = await CelloAPI.follows.unfollow(userId);
-            error = result.error;
-        } else {
-            const result = await CelloAPI.follows.follow(userId);
-            error = result.error;
-        }
-        
-        if (error) {
-            // Revert on error
-            console.error('❌ Follow toggle failed:', error);
-            AppState.profile.isFollowing = wasFollowing;
-            updateFollowButton(wasFollowing);
-            if (DOM.statFollowers) DOM.statFollowers.textContent = currentCount;
-            showToast('Failed to update follow status', 'error');
-        } else {
-            showToast(wasFollowing ? 'Unfollowed' : 'Following!', 'success');
-        }
-    } catch (error) {
-        console.error('❌ Follow toggle error:', error);
-        AppState.profile.isFollowing = wasFollowing;
-        updateFollowButton(wasFollowing);
-        if (DOM.statFollowers) DOM.statFollowers.textContent = currentCount;
-    }
-}
-
-/**
- * Load profile tab content
- * @param {string} tabName - 'my' or 'liked'
- * @param {boolean} refresh - Force refresh
- */
-async function loadProfileTab(tabName, refresh = false) {
-    const tab = AppState.profile.tabs[tabName];
-    if (!tab) return;
-    
-    if (tab.loading) return;
-    
-    if (refresh) {
-        tab.data = [];
-        tab.page = 0;
-        tab.hasMore = true;
-    }
-    
-    if (!tab.hasMore && !refresh) return;
-    
-    tab.loading = true;
-    AppState.profile.currentTab = tabName;
-    
-    // Update tab UI
-    DOM.profileTabs?.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
-    });
-    
-    // Show loading
-    showProfileContentLoading(true);
-    hideProfileContentStates();
-    
-    try {
-        let result;
-        const userId = AppState.profile.userId;
-        
-        if (tabName === 'my') {
-            result = await CelloAPI.cellophanes.getByAuthorId(userId, tab.page, 20);
-        } else {
-            result = await CelloAPI.cellophanes.getReactedByUser(userId, tab.page, 20);
-        }
-        
-        if (result.error) {
-            console.error(`❌ Failed to load ${tabName} tab:`, result.error);
-            showProfileContentError();
-            tab.loading = false;
-            return;
-        }
-        
-        const newData = result.data || [];
-        tab.data = refresh ? newData : [...tab.data, ...newData];
-        tab.hasMore = newData.length >= 20;
-        tab.page++;
-        
-        // Update cellophanes count for "My" tab
-        if (tabName === 'my' && DOM.statCellophanes) {
-            DOM.statCellophanes.textContent = tab.data.length + (tab.hasMore ? '+' : '');
-        }
-        
-        // Render
-        showProfileContentLoading(false);
-        renderProfileCellophanes(tab.data, tabName);
-        
-        // Show/hide load more button
-        if (DOM.btnProfileLoadMore) {
-            DOM.btnProfileLoadMore.classList.toggle('hidden', !tab.hasMore);
-        }
-        
-    } catch (error) {
-        console.error(`❌ Error loading ${tabName} tab:`, error);
-        showProfileContentError();
-    }
-    
-    tab.loading = false;
-}
-
-/**
- * Show/hide profile content loading spinner
- */
-function showProfileContentLoading(show) {
-    if (DOM.profileContentLoading) {
-        DOM.profileContentLoading.classList.toggle('hidden', !show);
-    }
-}
-
-/**
- * Hide all profile content states
- */
-function hideProfileContentStates() {
-    DOM.profileContentEmpty?.classList.add('hidden');
-    DOM.profileContentError?.classList.add('hidden');
-    DOM.profileCellophanesList?.classList.add('hidden');
-    DOM.btnProfileLoadMore?.classList.add('hidden');
-}
-
-/**
- * Hide profile content
- */
-function hideProfileContent() {
-    hideProfileContentStates();
-    showProfileContentLoading(true);
-}
-
-/**
- * Show profile error state
- */
-function showProfileError(message) {
-    showProfileLoading(false);
-    if (DOM.profileContentError) {
-        DOM.profileContentError.classList.remove('hidden');
-    }
-}
-
-/**
- * Show profile content error state
- */
-function showProfileContentError() {
-    showProfileContentLoading(false);
-    hideProfileContentStates();
-    if (DOM.profileContentError) {
-        DOM.profileContentError.classList.remove('hidden');
-    }
-}
-
-/**
- * Render cellophanes in profile
- */
-function renderProfileCellophanes(cellophanes, tabName) {
-    if (!DOM.profileCellophanesList) return;
-    
-    if (!cellophanes || cellophanes.length === 0) {
-        DOM.profileCellophanesList.classList.add('hidden');
-        if (DOM.profileContentEmpty) {
-            DOM.profileContentEmpty.classList.remove('hidden');
-            if (DOM.profileEmptyText) {
-                DOM.profileEmptyText.textContent = tabName === 'my' 
-                    ? 'No cellophanes yet' 
-                    : 'No liked cellophanes';
-            }
-        }
-        return;
-    }
-    
-    DOM.profileContentEmpty?.classList.add('hidden');
-    DOM.profileCellophanesList.classList.remove('hidden');
-    
-    // Render cards (reuse existing createCellophaneCard function)
-    DOM.profileCellophanesList.innerHTML = cellophanes.map(c => createCellophaneCard(c)).join('');
-}
-
-/**
- * Handle click on user avatar/name in feed (event delegation)
- * @param {Event} e 
- */
-function handleFeedUserClick(e) {
-    // Find closest element with data-author-id
-    const authorElement = e.target.closest('[data-author-id]');
-    if (authorElement) {
-        const authorId = authorElement.dataset.authorId;
-        if (authorId) {
-            e.preventDefault();
-            e.stopPropagation();
-            openProfileModal(authorId);
-        }
-    }
-}
-
-/**
- * Setup profile event listeners
- */
-function setupProfileEventListeners() {
-    // Profile tabs
-    DOM.profileTabs?.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
-            if (tabName && tabName !== AppState.profile.currentTab) {
-                loadProfileTab(tabName, true);
-            }
-        });
-    });
-    
-    // Follow button
-    if (DOM.btnFollow) {
-        DOM.btnFollow.addEventListener('click', toggleFollow);
-    }
-    
-    // Load more button
-    if (DOM.btnProfileLoadMore) {
-        DOM.btnProfileLoadMore.addEventListener('click', () => {
-            loadProfileTab(AppState.profile.currentTab);
-        });
-    }
-    
-    // Retry button
-    if (DOM.btnProfileRetry) {
-        DOM.btnProfileRetry.addEventListener('click', () => {
-            loadProfileTab(AppState.profile.currentTab, true);
-        });
-    }
-    
-    // Event delegation for avatar/name clicks in feeds
-    if (DOM.myFeedList) {
-        DOM.myFeedList.addEventListener('click', handleFeedUserClick);
-    }
-    if (DOM.followingFeedList) {
-        DOM.followingFeedList.addEventListener('click', handleFeedUserClick);
-    }
-    
-    // Profile cellophanes list - also needs delegation for nested profile views
-    if (DOM.profileCellophanesList) {
-        DOM.profileCellophanesList.addEventListener('click', handleFeedUserClick);
-    }
-    
-    // Header avatar click -> open own profile
-    if (DOM.btnProfile) {
-        // Remove old listener if any, add new one
-        DOM.btnProfile.removeEventListener('click', handleOwnProfileClick);
-        DOM.btnProfile.addEventListener('click', handleOwnProfileClick);
-    }
-}
-
-/**
- * Handle click on own profile in header
- */
-function handleOwnProfileClick(e) {
-    e.preventDefault();
-    if (AppState.user?.id) {
-        openProfileModal(AppState.user.id);
-    }
-}
-
-// ===========================================
-// END PROFILE MODAL
 // ===========================================
 
 if ('serviceWorker' in navigator) {

@@ -2052,6 +2052,12 @@ img {
     color: var(--color-text);
 }
 
+.profile-email {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
 .profile-bio {
     margin: 0;
     font-size: 0.9rem;
