@@ -439,35 +439,91 @@
             </div>
         </div>
         
-        <!-- Profile Modal -->
-        <div id="modal-profile" class="modal">
+        <!-- Profile Modal - v1.8.0: Enhanced with Tabs + Follow -->
+        <div id="modal-profile" class="modal modal-profile-full">
             <div class="modal-overlay"></div>
-            <div class="modal-content modal-small">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h3>My Profile</h3>
-                    <button class="btn-close">✕</button>
+                    <h3 id="profile-modal-title">Profile</h3>
+                    <button class="btn-close" aria-label="Close">✕</button>
                 </div>
                 <div class="modal-body">
-                    <div class="profile-info">
-                        <img id="profile-avatar" src="" alt="Avatar" class="profile-avatar">
-                        <h3 id="profile-name">Username</h3>
-                        <p id="profile-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2a222e26230f2a372e223f232a612c2022">[email&#160;protected]</a></p>
+                    <!-- Profile Header - Loading State -->
+                    <div id="profile-header-loading" class="profile-header-skeleton">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text skeleton-name"></div>
+                        <div class="skeleton-text skeleton-bio"></div>
                     </div>
+                    
+                    <!-- Profile Header - Content -->
+                    <div id="profile-header-content" class="profile-header hidden">
+                        <img id="profile-avatar" src="" alt="Avatar" class="profile-avatar-large">
+                        <h3 id="profile-name">Username</h3>
+                        <p id="profile-bio" class="profile-bio hidden"></p>
+                        <!-- Follow Button - hidden when viewing self -->
+                        <button id="btn-follow" class="btn btn-primary btn-follow hidden" data-user-id="">
+                            Follow
+                        </button>
+                    </div>
+                    
+                    <!-- Stats -->
                     <div class="profile-stats">
                         <div class="stat">
-                            <span class="stat-value" id="stat-cellophanes">0</span>
+                            <span class="stat-value" id="stat-cellophanes">-</span>
                             <span class="stat-label">Cellophanes</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-value" id="stat-followers">0</span>
+                            <span class="stat-value" id="stat-followers">-</span>
                             <span class="stat-label">Followers</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-value" id="stat-following">0</span>
+                            <span class="stat-value" id="stat-following">-</span>
                             <span class="stat-label">Following</span>
                         </div>
                     </div>
-                    <div class="profile-actions">
+                    
+                    <!-- Tabs -->
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" data-tab="my">
+                            <svg class="tab-icon" width="18" height="18"><use href="#icon-user"></use></svg>
+                            My
+                        </button>
+                        <button class="profile-tab" data-tab="liked">
+                            <svg class="tab-icon" width="18" height="18"><use href="#icon-heart"></use></svg>
+                            Liked
+                        </button>
+                    </div>
+                    
+                    <!-- Tab Content -->
+                    <div id="profile-tab-content" class="profile-tab-content">
+                        <!-- Loading State -->
+                        <div id="profile-content-loading" class="profile-content-loading">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="profile-content-empty" class="profile-content-empty hidden">
+                            <svg class="empty-icon" width="48" height="48"><use href="#icon-message"></use></svg>
+                            <p id="profile-empty-text">No cellophanes yet</p>
+                        </div>
+                        
+                        <!-- Error State -->
+                        <div id="profile-content-error" class="profile-content-error hidden">
+                            <p>Failed to load. <button id="btn-profile-retry" class="btn-link">Retry</button></p>
+                        </div>
+                        
+                        <!-- Cellophanes List -->
+                        <div id="profile-cellophanes-list" class="profile-cellophanes-list hidden"></div>
+                        
+                        <!-- Load More Button -->
+                        <button id="btn-profile-load-more" class="btn btn-outline btn-load-more hidden">
+                            Load More
+                        </button>
+                    </div>
+                    
+                    <!-- Actions (Sign Out - only for self) -->
+                    <div id="profile-actions-self" class="profile-actions hidden">
                         <button id="btn-logout" class="btn btn-outline btn-danger">
                             Sign Out
                         </button>
