@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.6.2
+ * Version: 1.8.0
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.8.0: Profile page APIs - getByAuthorId, getReactedByUser, getFollowCounts, idempotent follow
  * UPDATE v1.6.2: URL canonicalization (no www injection, strip fragments, remove default ports)
  * UPDATE v1.6.1: Fixed URL normalization - preserve path case (only hostname lowercase)
  * UPDATE v1.6.0: Security fixes (XSS, URL sanitization) + SW caching fix
@@ -366,6 +367,87 @@ const CelloCellophanes = {
             .single();
         
         return { data, error };
+    },
+    
+    /**
+     * Get cellophanes by a specific author (for Profile page - My tab)
+     * v1.8.0
+     * @param {string} userId - Author ID
+     * @param {number} page - Page number (0-indexed)
+     * @param {number} pageSize - Items per page
+     */
+    async getByAuthorId(userId, page = 0, pageSize = 20) {
+        const client = getClient();
+        if (!client) return { data: [], error: new Error('Client not initialized') };
+        
+        if (!userId) return { data: [], error: new Error('User ID required') };
+        
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+        
+        const { data, error } = await client
+            .from('cellophanes')
+            .select('*')
+            .eq('author_id', userId)
+            .eq('visibility', 'public')
+            .order('created_at', { ascending: false })
+            .range(from, to);
+        
+        if (error) return { data: [], error };
+        
+        const withAvatars = await addAvatarsToCellophanes(data || []);
+        return { data: withAvatars, error: null };
+    },
+    
+    /**
+     * Get cellophanes that a user has reacted to (for Profile page - Liked tab)
+     * v1.8.0
+     * @param {string} userId - User ID
+     * @param {number} page - Page number (0-indexed)
+     * @param {number} pageSize - Items per page
+     */
+    async getReactedByUser(userId, page = 0, pageSize = 20) {
+        const client = getClient();
+        if (!client) return { data: [], error: new Error('Client not initialized') };
+        
+        if (!userId) return { data: [], error: new Error('User ID required') };
+        
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+        
+        // Step 1: Get cellophane IDs this user has reacted to
+        const { data: reactions, error: reactionsError } = await client
+            .from('reactions')
+            .select('cellophane_id')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .range(from, to);
+        
+        if (reactionsError || !reactions || reactions.length === 0) {
+            return { data: [], error: reactionsError };
+        }
+        
+        // Get unique cellophane IDs (preserve order)
+        const cellophaneIds = [...new Set(reactions.map(r => r.cellophane_id))];
+        
+        // Step 2: Fetch the actual cellophanes
+        const { data: cellophanes, error: cellophaneError } = await client
+            .from('cellophanes')
+            .select('*')
+            .in('id', cellophaneIds)
+            .eq('visibility', 'public');
+        
+        if (cellophaneError) return { data: [], error: cellophaneError };
+        
+        // Preserve order from reactions (most recently liked first)
+        const cellophaneMap = {};
+        (cellophanes || []).forEach(c => { cellophaneMap[c.id] = c; });
+        const orderedCellophanes = cellophaneIds
+            .map(id => cellophaneMap[id])
+            .filter(Boolean);
+        
+        const withAvatars = await addAvatarsToCellophanes(orderedCellophanes);
+        return { data: withAvatars, error: null };
     }
 };
 
@@ -547,7 +629,8 @@ const CelloFollows = {
     },
     
     /**
-     * Follow a user
+     * Follow a user (idempotent - safe to call multiple times)
+     * v1.8.0: Made idempotent with check-then-insert
      * @param {string} userId - User to follow
      */
     async follow(userId) {
@@ -557,6 +640,25 @@ const CelloFollows = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: null, error: new Error('Not authenticated') };
         
+        // Prevent following self
+        if (user.id === userId) {
+            return { data: null, error: new Error('Cannot follow yourself') };
+        }
+        
+        // Check if already following (idempotent)
+        const { data: existing } = await client
+            .from('follows')
+            .select('id')
+            .eq('follower_id', user.id)
+            .eq('following_id', userId)
+            .single();
+        
+        if (existing) {
+            // Already following - return success (idempotent)
+            return { data: existing, error: null };
+        }
+        
+        // Insert new follow
         const { data, error } = await client
             .from('follows')
             .insert({
@@ -608,6 +710,36 @@ const CelloFollows = {
             .single();
         
         return { data: !!data, error };
+    },
+    
+    /**
+     * Get follower/following counts for a user
+     * v1.8.0
+     * @param {string} userId
+     */
+    async getFollowCounts(userId) {
+        const client = getClient();
+        if (!client) return { followers: 0, following: 0, error: new Error('Client not initialized') };
+        
+        if (!userId) return { followers: 0, following: 0, error: new Error('User ID required') };
+        
+        // Get followers count (people following this user)
+        const { count: followers, error: e1 } = await client
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('following_id', userId);
+        
+        // Get following count (people this user follows)
+        const { count: following, error: e2 } = await client
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', userId);
+        
+        return { 
+            followers: followers || 0, 
+            following: following || 0, 
+            error: e1 || e2 
+        };
     }
 };
 
@@ -810,4 +942,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.6.2');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.0');
