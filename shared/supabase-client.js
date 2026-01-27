@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.8.1
+ * Version: 1.8.2
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.8.2: Fix parent_id in comments.add() for replies
  * UPDATE v1.8.1: Fix author name - always use latest display_name from profile
  * UPDATE v1.8.0: Profile page APIs - getByAuthorId, getReactedByUser, getFollowCounts, idempotent follow
  * UPDATE v1.6.2: URL canonicalization (no www injection, strip fragments, remove default ports)
@@ -562,17 +563,24 @@ const CelloComments = {
         
         // Column names MUST match what Extension uses (cellophane-api.js):
         // text (not content), author (not user_name), author_id, author_email, author_avatar
+        const insertData = {
+            cellophane_id: cellophaneId,
+            text: text,
+            author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+            author_id: user.id,
+            author_email: user.email || null,
+            author_avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+            created_at: new Date().toISOString()
+        };
+        
+        // v1.8.2: Add parent_id for replies
+        if (parentId) {
+            insertData.parent_id = parentId;
+        }
+        
         const { data, error } = await client
             .from('cellophane_comments')
-            .insert({
-                cellophane_id: cellophaneId,
-                text: text,
-                author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-                author_id: user.id,
-                author_email: user.email || null,
-                author_avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
-                created_at: new Date().toISOString()
-            })
+            .insert(insertData)
             .select()
             .single();
         
@@ -947,4 +955,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.1');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.2');
