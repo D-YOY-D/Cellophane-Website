@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.1
+ * Version: 1.8.2
  * 
  * CHANGELOG:
+ * v1.8.2 - Reply to comment + Delete own comment (threaded comments)
  * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
@@ -28,6 +29,11 @@ const AppState = {
         following: { data: [], page: 0, hasMore: true, loading: false }
     },
     currentCellophane: null,
+    // v1.8.2: Comments state
+    comments: {
+        data: [],
+        replyingTo: null  // comment ID being replied to
+    },
     // v1.8.0: Profile modal state
     profile: {
         userId: null,
@@ -876,6 +882,9 @@ async function openCellophaneDetail(cellophane) {
     DOM.commentsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
     DOM.modalDetail.classList.add('active');
     
+    // v1.8.2: Reset comments state
+    AppState.comments = { data: [], replyingTo: null };
+    
     const { data: comments, error } = await CelloAPI.comments.getForCellophane(cellophane.id);
     
     if (error) {
@@ -883,23 +892,163 @@ async function openCellophaneDetail(cellophane) {
         return;
     }
     
+    // Store comments in state
+    AppState.comments.data = comments || [];
+    
+    // Render threaded comments
+    renderComments();
+}
+
+/**
+ * Render comments with threading support
+ * v1.8.2
+ */
+function renderComments() {
+    const comments = AppState.comments.data;
+    
     if (comments.length === 0) {
-        DOM.commentsList.innerHTML = '<p style="text-align:center;color:var(--color-text-secondary);">No comments yet</p>';
-    } else {
-        DOM.commentsList.innerHTML = comments.map(comment => {
-            const commentInitials = getInitials(comment.author || 'A');
-            return `
-                <div class="comment-item">
-                    <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${commentInitials}</div>
-                    <div class="comment-body">
-                        <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
-                        <div class="comment-text">${escapeHtml(comment.text)}</div>
-                        <div class="comment-time">${formatTimestamp(comment.created_at)}</div>
+        DOM.commentsList.innerHTML = '<p class="comments-empty">No comments yet. Be the first!</p>';
+        updateReplyIndicator();
+        return;
+    }
+    
+    // Separate top-level comments from replies
+    const topLevel = comments.filter(c => !c.parent_id);
+    const replies = comments.filter(c => c.parent_id);
+    
+    // Build reply map for quick lookup
+    const replyMap = {};
+    replies.forEach(r => {
+        if (!replyMap[r.parent_id]) replyMap[r.parent_id] = [];
+        replyMap[r.parent_id].push(r);
+    });
+    
+    // Render HTML
+    let html = '';
+    topLevel.forEach(comment => {
+        html += renderCommentItem(comment, 0);
+        // Render replies
+        const commentReplies = replyMap[comment.id] || [];
+        commentReplies.forEach(reply => {
+            html += renderCommentItem(reply, 1);
+        });
+    });
+    
+    DOM.commentsList.innerHTML = html;
+    
+    // Attach event listeners
+    attachCommentEventListeners();
+    
+    // Update reply indicator
+    updateReplyIndicator();
+}
+
+/**
+ * Render a single comment item
+ * @param {Object} comment
+ * @param {number} depth - 0 for top-level, 1 for reply
+ */
+function renderCommentItem(comment, depth = 0) {
+    const initials = getInitials(comment.author || 'A');
+    const isOwn = AppState.user && comment.author_id === AppState.user.id;
+    const indentStyle = depth > 0 ? 'margin-left: 40px; border-left: 2px solid var(--color-border); padding-left: 12px;' : '';
+    
+    return `
+        <div class="comment-item" data-comment-id="${comment.id}" style="${indentStyle}">
+            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${initials}</div>
+            <div class="comment-body">
+                <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
+                <div class="comment-text">${escapeHtml(comment.text)}</div>
+                <div class="comment-meta">
+                    <span class="comment-time">${formatTimestamp(comment.created_at)}</span>
+                    <div class="comment-actions">
+                        ${depth === 0 ? `<button class="btn-comment-action btn-reply" data-comment-id="${comment.id}">Reply</button>` : ''}
+                        ${isOwn ? `<button class="btn-comment-action btn-delete" data-comment-id="${comment.id}">Delete</button>` : ''}
                     </div>
                 </div>
-            `;
-        }).join('');
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Attach event listeners to comment action buttons
+ */
+function attachCommentEventListeners() {
+    // Reply buttons
+    DOM.commentsList.querySelectorAll('.btn-reply').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const commentId = btn.dataset.commentId;
+            AppState.comments.replyingTo = commentId;
+            updateReplyIndicator();
+            DOM.commentText.focus();
+        });
+    });
+    
+    // Delete buttons
+    DOM.commentsList.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const commentId = btn.dataset.commentId;
+            if (confirm('Delete this comment?')) {
+                await handleDeleteComment(commentId);
+            }
+        });
+    });
+}
+
+/**
+ * Update the reply indicator above the input
+ */
+function updateReplyIndicator() {
+    let indicator = document.getElementById('reply-indicator');
+    
+    if (AppState.comments.replyingTo) {
+        const replyingToComment = AppState.comments.data.find(c => c.id === AppState.comments.replyingTo);
+        const replyingToName = replyingToComment?.author || 'someone';
+        
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'reply-indicator';
+            indicator.className = 'reply-indicator';
+            DOM.commentText.parentElement.insertBefore(indicator, DOM.commentText);
+        }
+        
+        indicator.innerHTML = `
+            <span>Replying to <strong>${escapeHtml(replyingToName)}</strong></span>
+            <button class="btn-cancel-reply" onclick="cancelReply()">✕</button>
+        `;
+        indicator.classList.remove('hidden');
+    } else if (indicator) {
+        indicator.classList.add('hidden');
     }
+}
+
+/**
+ * Cancel reply mode
+ */
+function cancelReply() {
+    AppState.comments.replyingTo = null;
+    updateReplyIndicator();
+}
+
+/**
+ * Delete a comment
+ */
+async function handleDeleteComment(commentId) {
+    const { error } = await CelloAPI.comments.delete(commentId);
+    
+    if (error) {
+        showToast('Failed to delete comment', 'error');
+        return;
+    }
+    
+    // Remove from state and re-render
+    AppState.comments.data = AppState.comments.data.filter(c => c.id !== commentId);
+    // Also remove any replies to this comment
+    AppState.comments.data = AppState.comments.data.filter(c => c.parent_id !== commentId);
+    
+    renderComments();
+    showToast('Comment deleted', 'success');
 }
 
 async function handleSendComment() {
@@ -908,7 +1057,9 @@ async function handleSendComment() {
     
     DOM.btnSendComment.disabled = true;
     
-    const { data, error } = await CelloAPI.comments.add(AppState.currentCellophane.id, text);
+    // v1.8.2: Pass parent_id for replies
+    const parentId = AppState.comments.replyingTo || null;
+    const { data, error } = await CelloAPI.comments.add(AppState.currentCellophane.id, text, parentId);
     
     DOM.btnSendComment.disabled = false;
     DOM.commentText.value = '';
@@ -918,24 +1069,12 @@ async function handleSendComment() {
         return;
     }
     
-    const initials = getInitials(data.author);
+    // v1.8.2: Add to state and re-render
+    AppState.comments.data.push(data);
+    AppState.comments.replyingTo = null;  // Reset reply mode
     
-    const commentHtml = `
-        <div class="comment-item">
-            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${initials}</div>
-            <div class="comment-body">
-                <div class="comment-author">${escapeHtml(data.author)}</div>
-                <div class="comment-text">${escapeHtml(data.text)}</div>
-                <div class="comment-time">Just now</div>
-            </div>
-        </div>
-    `;
-    
-    const noComments = DOM.commentsList.querySelector('p');
-    if (noComments) noComments.remove();
-    
-    DOM.commentsList.insertAdjacentHTML('beforeend', commentHtml);
-    showToast('Comment added! 💬', 'success');
+    renderComments();
+    showToast(parentId ? 'Reply added! 💬' : 'Comment added! 💬', 'success');
 }
 
 // ===========================================
