@@ -196,7 +196,8 @@ function setupEventListeners() {
         btn.addEventListener('click', () => handleTabChange(btn.dataset.tab));
     });
     
-    DOM.btnProfile.addEventListener('click', openProfileModal);
+    // v1.8.1: Use arrow function to not pass event as userId
+    DOM.btnProfile.addEventListener('click', () => openProfileModal());
     DOM.btnLogout.addEventListener('click', handleLogout);
     
     document.querySelectorAll('.modal .btn-close, .modal .btn-back').forEach(btn => {
@@ -938,17 +939,17 @@ async function handleSendComment() {
 }
 
 // ===========================================
-// PROFILE MODAL - v1.8.0
+// PROFILE MODAL - v1.8.1
 // ===========================================
 
 /**
  * Open profile modal for a user
- * v1.8.0: Enhanced to support viewing any user's profile
+ * v1.8.1: Added defensive check for Event objects
  * @param {string} userId - User ID to view (optional, defaults to current user)
  */
 async function openProfileModal(userId) {
-    // If no userId provided, use current user (clicking on own profile)
-    if (!userId) {
+    // v1.8.1: Defensive check - if passed an Event, treat as no userId
+    if (!userId || typeof userId !== 'string' || userId instanceof Event) {
         userId = AppState.user?.id;
     }
     
