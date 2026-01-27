@@ -2311,3 +2311,45 @@ img {
 .btn-cancel-reply:hover {
     color: var(--color-error);
 }
+
+/* ===========================================
+   COMMENT AVATARS - v1.8.4
+   =========================================== */
+
+.comment-avatar-wrapper {
+    flex-shrink: 0;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+}
+
+/* ===========================================
+   LIKE/DISLIKE BUTTONS - v1.8.4
+   =========================================== */
+
+.btn-dislike {
+    color: var(--color-text-secondary);
+}
+
+.btn-like.active {
+    color: var(--color-primary);
+}
+
+.btn-dislike.active {
+    color: var(--color-error);
+}
+
+.btn-like.active svg,
+.btn-dislike.active svg {
+    fill: currentColor;
+}

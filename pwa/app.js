@@ -1,10 +1,10 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.3
+ * Version: 1.8.4
  * 
  * CHANGELOG:
+ * v1.8.4 - Like + Dislike buttons, comment avatars + latest author names
  * v1.8.3 - Fix comment/reaction counts on cards (fetch actual counts)
- * v1.8.2 - Reply to comment + Delete own comment (threaded comments)
  * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
@@ -145,6 +145,7 @@ const Icons = {
     users: '<svg><use href="#icon-users"/></svg>',
     star: '<svg><use href="#icon-star"/></svg>',
     thumbsup: '<svg><use href="#icon-thumbsup"/></svg>',
+    thumbsdown: '<svg><use href="#icon-thumbsdown"/></svg>',
     message: '<svg><use href="#icon-message"/></svg>',
     share: '<svg><use href="#icon-share"/></svg>',
     link: '<svg><use href="#icon-link"/></svg>',
@@ -606,7 +607,11 @@ function createCellophaneCard(cellophane) {
             <div class="cellophane-actions">
                 <button class="action-btn btn-like" data-id="${cellophane.id}">
                     ${Icons.thumbsup}
-                    <span class="like-count">${cellophane.reactions_count || 0}</span>
+                    <span class="like-count">${cellophane.likes_count || 0}</span>
+                </button>
+                <button class="action-btn btn-dislike" data-id="${cellophane.id}">
+                    ${Icons.thumbsdown}
+                    <span class="dislike-count">${cellophane.dislikes_count || 0}</span>
                 </button>
                 <button class="action-btn btn-comment" data-id="${cellophane.id}">
                     ${Icons.message}
@@ -622,7 +627,12 @@ function createCellophaneCard(cellophane) {
     // Event listeners
     card.querySelector('.btn-like').addEventListener('click', (e) => {
         e.stopPropagation();
-        handleLike(cellophane.id);
+        handleReaction(cellophane.id, '👍', 'like');
+    });
+    
+    card.querySelector('.btn-dislike').addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleReaction(cellophane.id, '👎', 'dislike');
     });
     
     card.querySelector('.btn-comment').addEventListener('click', (e) => {
@@ -766,35 +776,45 @@ window.openImageFullscreen = openImageFullscreen;
 // CELLOPHANE ACTIONS
 // ===========================================
 
-async function handleLike(cellophaneId) {
-    console.log('❤️ Toggling like for:', cellophaneId);
+/**
+ * Handle like or dislike reaction
+ * v1.8.4: Unified reaction handler for 👍 and 👎
+ */
+async function handleReaction(cellophaneId, emoji, type) {
+    console.log(`${emoji} Toggling ${type} for:`, cellophaneId);
     
-    const { data, error } = await CelloAPI.reactions.toggle(cellophaneId, '❤️');
+    const { data, error } = await CelloAPI.reactions.toggle(cellophaneId, emoji);
     
     if (error) {
-        console.error('❌ Like error:', error);
-        showToast('Failed to add like', 'error');
+        console.error(`❌ ${type} error:`, error);
+        showToast(`Failed to ${type}`, 'error');
         return;
     }
     
-    console.log('❤️ Like result:', data);
+    console.log(`${emoji} ${type} result:`, data);
     
     // Update button state
-    const btn = document.querySelector(`.btn-like[data-id="${cellophaneId}"]`);
+    const btnClass = type === 'like' ? '.btn-like' : '.btn-dislike';
+    const countClass = type === 'like' ? '.like-count' : '.dislike-count';
+    const btn = document.querySelector(`${btnClass}[data-id="${cellophaneId}"]`);
+    
     if (btn) {
-        const isLiked = data.action === 'added';
-        btn.classList.toggle('liked', isLiked);
+        const isActive = data.action === 'added';
+        btn.classList.toggle('active', isActive);
         
         // Update count
-        const countEl = btn.querySelector('.like-count');
+        const countEl = btn.querySelector(countClass);
         if (countEl) {
             let count = parseInt(countEl.textContent) || 0;
-            count = isLiked ? count + 1 : Math.max(0, count - 1);
+            count = isActive ? count + 1 : Math.max(0, count - 1);
             countEl.textContent = count;
         }
     }
     
-    showToast(data.action === 'added' ? '❤️ Liked!' : 'Like removed', 'success');
+    const message = data.action === 'added' 
+        ? (type === 'like' ? '👍 Liked!' : '👎 Disliked!')
+        : `${type === 'like' ? 'Like' : 'Dislike'} removed`;
+    showToast(message, 'success');
 }
 
 async function handleShare(cellophane) {
@@ -954,9 +974,17 @@ function renderCommentItem(comment, depth = 0) {
     const isOwn = AppState.user && comment.author_id === AppState.user.id;
     const indentStyle = depth > 0 ? 'margin-left: 40px; border-left: 2px solid var(--color-border); padding-left: 12px;' : '';
     
+    // v1.8.4: Show avatar image if available, fallback to initials
+    const avatarHtml = comment.author_avatar 
+        ? `<img src="${escapeHtml(comment.author_avatar)}" class="comment-avatar" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+           <div class="avatar-fallback comment-avatar-fallback" style="display:none;">${initials}</div>`
+        : `<div class="avatar-fallback comment-avatar-fallback">${initials}</div>`;
+    
     return `
         <div class="comment-item" data-comment-id="${comment.id}" style="${indentStyle}">
-            <div class="avatar-fallback" style="width:32px;height:32px;font-size:0.8rem;">${initials}</div>
+            <div class="comment-avatar-wrapper">
+                ${avatarHtml}
+            </div>
             <div class="comment-body">
                 <div class="comment-author">${escapeHtml(comment.author || 'Anonymous')}</div>
                 <div class="comment-text">${escapeHtml(comment.text)}</div>
