@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.8.0
+ * Version: 1.8.1
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.8.1: Fix author name - always use latest display_name from profile
  * UPDATE v1.8.0: Profile page APIs - getByAuthorId, getReactedByUser, getFollowCounts, idempotent follow
  * UPDATE v1.6.2: URL canonicalization (no www injection, strip fragments, remove default ports)
  * UPDATE v1.6.1: Fixed URL normalization - preserve path case (only hostname lowercase)
@@ -183,7 +184,7 @@ function normalizeUrl(url) {
 }
 
 // ===========================================
-// HELPER: Add avatar to cellophanes
+// HELPER: Add avatar and latest display name to cellophanes
 // ===========================================
 
 async function addAvatarsToCellophanes(cellophanes) {
@@ -197,7 +198,7 @@ async function addAvatarsToCellophanes(cellophanes) {
     
     if (authorIds.length === 0) return cellophanes;
     
-    // Fetch avatars from public_user_profiles
+    // Fetch avatars and display names from public_user_profiles
     const { data: profiles, error } = await client
         .from('public_user_profiles')
         .select('id, avatar_url, display_name')
@@ -208,17 +209,25 @@ async function addAvatarsToCellophanes(cellophanes) {
         return cellophanes;
     }
     
-    // Create a lookup map
-    const avatarMap = {};
+    // Create lookup map for profiles
+    const profileMap = {};
     profiles.forEach(p => {
-        avatarMap[p.id] = p.avatar_url;
+        profileMap[p.id] = {
+            avatar_url: p.avatar_url,
+            display_name: p.display_name
+        };
     });
     
-    // Add avatar to each cellophane
-    return cellophanes.map(c => ({
-        ...c,
-        author_avatar: avatarMap[c.author_id] || null
-    }));
+    // Add avatar and update author name to latest from profile
+    // v1.8.1: Also update author name from latest profile
+    return cellophanes.map(c => {
+        const profile = profileMap[c.author_id];
+        return {
+            ...c,
+            author_avatar: profile?.avatar_url || null,
+            author: profile?.display_name || c.author
+        };
+    });
 }
 
 // ===========================================
@@ -938,4 +947,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.0');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.1');
