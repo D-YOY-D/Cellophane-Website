@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.2
+ * Version: 1.8.3
  * 
  * CHANGELOG:
+ * v1.8.3 - Fix comment/reaction counts on cards (fetch actual counts)
  * v1.8.2 - Reply to comment + Delete own comment (threaded comments)
  * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
