@@ -1,10 +1,11 @@
 /**
  * Cellophane - Shared Supabase Client
- * Version: 1.8.2
+ * Version: 1.8.3
  * 
  * Clean client for PWA (and future React Native).
  * Uses official Supabase JS library.
  * 
+ * UPDATE v1.8.3: Fetch comments_count and reactions_count with cellophanes
  * UPDATE v1.8.2: Fix parent_id in comments.add() for replies
  * UPDATE v1.8.1: Fix author name - always use latest display_name from profile
  * UPDATE v1.8.0: Profile page APIs - getByAuthorId, getReactedByUser, getFollowCounts, idempotent follow
@@ -185,7 +186,7 @@ function normalizeUrl(url) {
 }
 
 // ===========================================
-// HELPER: Add avatar and latest display name to cellophanes
+// HELPER: Add avatar, display name, and counts to cellophanes
 // ===========================================
 
 async function addAvatarsToCellophanes(cellophanes) {
@@ -194,39 +195,58 @@ async function addAvatarsToCellophanes(cellophanes) {
     const client = getClient();
     if (!client) return cellophanes;
     
-    // Get unique author IDs
+    // Get unique author IDs and cellophane IDs
     const authorIds = [...new Set(cellophanes.map(c => c.author_id).filter(Boolean))];
+    const cellophaneIds = cellophanes.map(c => c.id);
     
-    if (authorIds.length === 0) return cellophanes;
+    // Fetch profiles, comment counts, and reaction counts in parallel
+    const [profilesResult, commentsResult, reactionsResult] = await Promise.all([
+        // Profiles
+        authorIds.length > 0 
+            ? client.from('public_user_profiles').select('id, avatar_url, display_name').in('id', authorIds)
+            : { data: [], error: null },
+        // Comment counts - group by cellophane_id
+        client.from('cellophane_comments').select('cellophane_id').in('cellophane_id', cellophaneIds),
+        // Reaction counts - group by cellophane_id  
+        client.from('reactions').select('cellophane_id').in('cellophane_id', cellophaneIds)
+    ]);
     
-    // Fetch avatars and display names from public_user_profiles
-    const { data: profiles, error } = await client
-        .from('public_user_profiles')
-        .select('id, avatar_url, display_name')
-        .in('id', authorIds);
-    
-    if (error || !profiles) {
-        console.warn('⚠️ Could not fetch user profiles:', error);
-        return cellophanes;
+    // Create profile lookup map
+    const profileMap = {};
+    if (profilesResult.data) {
+        profilesResult.data.forEach(p => {
+            profileMap[p.id] = {
+                avatar_url: p.avatar_url,
+                display_name: p.display_name
+            };
+        });
     }
     
-    // Create lookup map for profiles
-    const profileMap = {};
-    profiles.forEach(p => {
-        profileMap[p.id] = {
-            avatar_url: p.avatar_url,
-            display_name: p.display_name
-        };
-    });
+    // v1.8.3: Count comments per cellophane
+    const commentsCountMap = {};
+    if (commentsResult.data) {
+        commentsResult.data.forEach(c => {
+            commentsCountMap[c.cellophane_id] = (commentsCountMap[c.cellophane_id] || 0) + 1;
+        });
+    }
     
-    // Add avatar and update author name to latest from profile
-    // v1.8.1: Also update author name from latest profile
+    // v1.8.3: Count reactions per cellophane
+    const reactionsCountMap = {};
+    if (reactionsResult.data) {
+        reactionsResult.data.forEach(r => {
+            reactionsCountMap[r.cellophane_id] = (reactionsCountMap[r.cellophane_id] || 0) + 1;
+        });
+    }
+    
+    // Add all data to each cellophane
     return cellophanes.map(c => {
         const profile = profileMap[c.author_id];
         return {
             ...c,
             author_avatar: profile?.avatar_url || null,
-            author: profile?.display_name || c.author
+            author: profile?.display_name || c.author,
+            comments_count: commentsCountMap[c.id] || 0,
+            reactions_count: reactionsCountMap[c.id] || 0
         };
     });
 }
@@ -955,4 +975,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.2');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.3');
