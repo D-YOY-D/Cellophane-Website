@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.0
+ * Version: 1.8.1
  * 
  * CHANGELOG:
+ * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
  * v1.6.1 - Fixed URL normalization - preserve path case (only hostname lowercase)
@@ -328,7 +329,20 @@ async function handleAuthSuccess(session) {
     
     console.log('👤 User:', user.email);
     
-    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+    // v1.8.1: Also fetch profile from DB to get avatar
+    let dbAvatarUrl = null;
+    try {
+        const { data: profile } = await CelloAPI.profile.getById(user.id);
+        if (profile?.avatar_url) {
+            dbAvatarUrl = profile.avatar_url;
+            console.log('📷 Got avatar from DB:', dbAvatarUrl);
+        }
+    } catch (e) {
+        console.warn('⚠️ Could not fetch profile for avatar');
+    }
+    
+    // Prefer DB avatar, then OAuth metadata
+    const avatarUrl = dbAvatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
     const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
     const initials = displayName.charAt(0).toUpperCase();
     
@@ -338,15 +352,12 @@ async function handleAuthSuccess(session) {
         DOM.userAvatar.src = avatarUrl;
         DOM.userAvatar.style.display = 'block';
         if (avatarFallback) avatarFallback.style.display = 'none';
-        DOM.profileAvatar.src = avatarUrl;
-        DOM.profileAvatar.style.display = 'block';
     } else {
         DOM.userAvatar.style.display = 'none';
         if (avatarFallback) {
             avatarFallback.textContent = initials;
             avatarFallback.style.display = 'flex';
         }
-        DOM.profileAvatar.style.display = 'none';
     }
     
     DOM.profileName.textContent = displayName;
@@ -1020,10 +1031,11 @@ function showProfileLoading(show) {
 function renderProfileHeader(profile, followCounts, isSelf) {
     if (!profile) return;
     
-    // Avatar
+    // Avatar - always show (use fallback if no URL)
     const avatarUrl = profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profile.display_name || profile.username || 'User')}`;
     if (DOM.profileAvatar) {
         DOM.profileAvatar.src = avatarUrl;
+        DOM.profileAvatar.style.display = 'block'; // v1.8.1: ensure visible
         DOM.profileAvatar.onerror = () => {
             DOM.profileAvatar.src = `https://api.dicebear.com/7.x/initials/svg?seed=User`;
         };
