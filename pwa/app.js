@@ -30,6 +30,8 @@ const AppState = {
         following: { data: [], page: 0, hasMore: true, loading: false }
     },
     currentCellophane: null,
+    // v1.8.5: Deep link support
+    pendingDeepLink: null,  // Cellophane ID to open after login
     // v1.8.2: Comments state
     comments: {
         data: [],
@@ -220,6 +222,9 @@ async function initApp() {
     
     setupEventListeners();
     
+    // v1.8.5: Check for deep link (/c/{id})
+    checkForDeepLink();
+    
     const { data: { session } } = await CelloAPI.auth.getSession();
     
     if (session) {
@@ -239,6 +244,61 @@ async function initApp() {
             handleAuthLogout();
         }
     });
+}
+
+// ===========================================
+// DEEP LINK HANDLING - v1.8.5
+// ===========================================
+
+/**
+ * Check URL for deep link pattern /c/{id}
+ */
+function checkForDeepLink() {
+    const path = window.location.pathname;
+    const match = path.match(/^\/(?:pwa\/)?c\/([a-zA-Z0-9_-]+)$/);
+    
+    if (match) {
+        const cellophaneId = match[1];
+        console.log('🔗 Deep link detected:', cellophaneId);
+        AppState.pendingDeepLink = cellophaneId;
+    }
+}
+
+/**
+ * Handle pending deep link after auth
+ */
+async function handlePendingDeepLink() {
+    if (!AppState.pendingDeepLink) return;
+    
+    const cellophaneId = AppState.pendingDeepLink;
+    AppState.pendingDeepLink = null;
+    
+    console.log('🔗 Processing deep link:', cellophaneId);
+    
+    // Fetch the cellophane
+    const { data, error } = await CelloAPI.cellophanes.getById(cellophaneId);
+    
+    if (error || !data) {
+        console.error('❌ Deep link cellophane not found:', cellophaneId);
+        showToast('Cellophane not found', 'error');
+        // Clean URL and go to feed
+        clearDeepLinkUrl();
+        return;
+    }
+    
+    // Open the cellophane detail
+    openCellophaneDetail(data);
+    
+    // Clean URL without reload
+    clearDeepLinkUrl();
+}
+
+/**
+ * Clear deep link from URL without page reload
+ */
+function clearDeepLinkUrl() {
+    const baseUrl = window.location.origin + '/pwa/';
+    window.history.replaceState({}, '', baseUrl);
 }
 
 // ===========================================
@@ -422,6 +482,9 @@ async function handleAuthSuccess(session) {
     
     showScreen('main');
     await loadMyFeed(true);
+    
+    // v1.8.5: Handle pending deep link after auth
+    await handlePendingDeepLink();
     
     showToast(`Welcome, ${displayName}! 👋`, 'success');
 }
@@ -611,7 +674,8 @@ function createCellophaneCard(cellophane) {
     const authorAvatar = rawAvatar ? sanitizeUrl(rawAvatar) : '';
     const timestamp = formatTimestamp(cellophane.created_at);
     const visibilityConfig = VisibilityConfig[visibility] || VisibilityConfig.public;
-    const sourceUrl = cellophane.url || '';
+    // v1.8.5: Sanitize source URL for security
+    const sourceUrl = sanitizeUrl(cellophane.url);
     const sourceDomain = sourceUrl ? extractDomain(sourceUrl) : '';
     const initials = getInitials(authorName);
     // v1.8.0: Author ID for profile click
@@ -654,7 +718,7 @@ function createCellophaneCard(cellophane) {
             ${mediaHtml}
             
             ${sourceUrl ? `
-                <a href="${sourceUrl}" target="_blank" class="cellophane-source">
+                <a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="cellophane-source">
                     ${Icons.link}
                     <span class="cellophane-source-url">${sourceDomain}</span>
                 </a>
