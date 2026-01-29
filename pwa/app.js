@@ -1,10 +1,10 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.4
+ * Version: 1.8.5
  * 
  * CHANGELOG:
+ * v1.8.5 - Hide/Dismiss cellophane (X button + localStorage + undo)
  * v1.8.4 - Like + Dislike buttons, comment avatars + latest author names
- * v1.8.3 - Fix comment/reaction counts on cards (fetch actual counts)
  * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
  * v1.6.2 - URL canonicalization (no www injection, strip fragments, remove default ports)
@@ -149,7 +149,8 @@ const Icons = {
     message: '<svg><use href="#icon-message"/></svg>',
     share: '<svg><use href="#icon-share"/></svg>',
     link: '<svg><use href="#icon-link"/></svg>',
-    heart: '<svg><use href="#icon-heart"/></svg>'
+    heart: '<svg><use href="#icon-heart"/></svg>',
+    x: '<svg><use href="#icon-x"/></svg>'
 };
 
 // ===========================================
@@ -164,11 +165,47 @@ const VisibilityConfig = {
 };
 
 // ===========================================
+// HIDDEN CELLOPHANES (localStorage) - v1.8.5
+// ===========================================
+
+const HIDDEN_STORAGE_KEY = 'cellophane_hidden_ids';
+
+function getHiddenCellophanes() {
+    try {
+        const stored = localStorage.getItem(HIDDEN_STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        console.warn('⚠️ Could not read hidden cellophanes:', e);
+        return [];
+    }
+}
+
+function hideCellophane(id) {
+    const hidden = getHiddenCellophanes();
+    if (!hidden.includes(id)) {
+        hidden.push(id);
+        localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify(hidden));
+    }
+}
+
+function unhideCellophane(id) {
+    const hidden = getHiddenCellophanes();
+    const filtered = hidden.filter(h => h !== id);
+    localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify(filtered));
+}
+
+function filterHiddenCellophanes(cellophanes) {
+    const hidden = getHiddenCellophanes();
+    if (hidden.length === 0) return cellophanes;
+    return cellophanes.filter(c => !hidden.includes(c.id));
+}
+
+// ===========================================
 // INITIALIZATION
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.6.2...');
+    console.log('🎬 Initializing Cellophane PWA v1.8.5...');
     
     setupEventListeners();
     
@@ -541,7 +578,10 @@ async function loadFollowingFeed(reset = false) {
 // ===========================================
 
 function renderCellophanes(cellophanes, container) {
-    cellophanes.forEach(cellophane => {
+    // v1.8.5: Filter out hidden cellophanes
+    const visibleCellophanes = filterHiddenCellophanes(cellophanes);
+    
+    visibleCellophanes.forEach(cellophane => {
         const card = createCellophaneCard(cellophane);
         container.appendChild(card);
     });
@@ -587,10 +627,15 @@ function createCellophaneCard(cellophane) {
                         <div class="cellophane-time">${timestamp}</div>
                     </div>
                 </div>
-                <span class="visibility-badge ${visibility}">
-                    ${Icons[visibilityConfig.icon]}
-                    ${visibilityConfig.label}
-                </span>
+                <div class="cellophane-header-actions">
+                    <span class="visibility-badge ${visibility}">
+                        ${Icons[visibilityConfig.icon]}
+                        ${visibilityConfig.label}
+                    </span>
+                    <button class="btn-dismiss" data-id="${cellophane.id}" title="Hide this cellophane">
+                        ${Icons.x}
+                    </button>
+                </div>
             </div>
             
             <div class="cellophane-content">${escapeHtml(cellophane.text || '')}</div>
@@ -643,6 +688,12 @@ function createCellophaneCard(cellophane) {
     card.querySelector('.btn-share').addEventListener('click', (e) => {
         e.stopPropagation();
         handleShare(cellophane);
+    });
+    
+    // v1.8.5: Dismiss/hide button
+    card.querySelector('.btn-dismiss').addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleDismiss(cellophane.id, card);
     });
     
     card.addEventListener('click', () => openCellophaneDetail(cellophane));
@@ -843,6 +894,72 @@ function copyToClipboard(text) {
     }).catch(() => {
         showToast('Failed to copy', 'error');
     });
+}
+
+/**
+ * Handle dismiss/hide cellophane
+ * v1.8.5: Hides cellophane with undo option
+ */
+function handleDismiss(cellophaneId, cardElement) {
+    // Animate out
+    cardElement.style.transition = 'all 0.3s ease';
+    cardElement.style.opacity = '0';
+    cardElement.style.transform = 'translateX(-100%)';
+    
+    setTimeout(() => {
+        // Remove from DOM
+        cardElement.remove();
+        
+        // Save to localStorage
+        hideCellophane(cellophaneId);
+        
+        // Show toast with undo
+        showToastWithUndo('Cellophane hidden', () => {
+            unhideCellophane(cellophaneId);
+            // Reload current feed to show it again
+            if (AppState.currentTab === 'my-feed') {
+                loadMyFeed(true);
+            } else {
+                loadFollowingFeed(true);
+            }
+        });
+    }, 300);
+}
+
+/**
+ * Show toast with undo button
+ */
+function showToastWithUndo(message, undoCallback) {
+    // Remove existing toast
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-with-undo';
+    toast.innerHTML = `
+        <span>${escapeHtml(message)}</span>
+        <button class="btn-undo">Undo</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Show
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+    
+    // Undo handler
+    const undoBtn = toast.querySelector('.btn-undo');
+    undoBtn.addEventListener('click', () => {
+        toast.remove();
+        undoCallback();
+    });
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
 }
 
 // ===========================================

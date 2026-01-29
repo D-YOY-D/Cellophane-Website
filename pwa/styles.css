@@ -2353,3 +2353,61 @@ img {
 .btn-dislike.active svg {
     fill: currentColor;
 }
+
+/* ===========================================
+   DISMISS/HIDE CELLOPHANE - v1.8.5
+   =========================================== */
+
+.cellophane-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-dismiss {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    opacity: 0.5;
+    transition: all 0.2s;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-dismiss:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-error);
+}
+
+.btn-dismiss svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Toast with Undo */
+.toast-with-undo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-undo {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.btn-undo:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
