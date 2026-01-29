@@ -168,11 +168,18 @@ const VisibilityConfig = {
 // HIDDEN CELLOPHANES (localStorage) - v1.8.5
 // ===========================================
 
-const HIDDEN_STORAGE_KEY = 'cellophane_hidden_ids';
+const HIDDEN_STORAGE_PREFIX = 'cellophane_hidden_ids';
+const HIDDEN_MAX_COUNT = 500; // Cap to prevent localStorage bloat
+
+function getHiddenStorageKey() {
+    // Per-user storage key
+    const userId = AppState.user?.id || 'guest';
+    return `${HIDDEN_STORAGE_PREFIX}:${userId}`;
+}
 
 function getHiddenCellophanes() {
     try {
-        const stored = localStorage.getItem(HIDDEN_STORAGE_KEY);
+        const stored = localStorage.getItem(getHiddenStorageKey());
         return stored ? JSON.parse(stored) : [];
     } catch (e) {
         console.warn('⚠️ Could not read hidden cellophanes:', e);
@@ -184,14 +191,18 @@ function hideCellophane(id) {
     const hidden = getHiddenCellophanes();
     if (!hidden.includes(id)) {
         hidden.push(id);
-        localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify(hidden));
+        // Cap the list to prevent localStorage bloat
+        if (hidden.length > HIDDEN_MAX_COUNT) {
+            hidden.shift(); // Remove oldest
+        }
+        localStorage.setItem(getHiddenStorageKey(), JSON.stringify(hidden));
     }
 }
 
 function unhideCellophane(id) {
     const hidden = getHiddenCellophanes();
     const filtered = hidden.filter(h => h !== id);
-    localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify(filtered));
+    localStorage.setItem(getHiddenStorageKey(), JSON.stringify(filtered));
 }
 
 function filterHiddenCellophanes(cellophanes) {
@@ -941,12 +952,8 @@ function showToastWithUndo(message, undoCallback) {
         <button class="btn-undo">Undo</button>
     `;
     
-    document.body.appendChild(toast);
-    
-    // Show
-    requestAnimationFrame(() => {
-        toast.classList.add('show');
-    });
+    // Use the toast container like showToast does
+    DOM.toastContainer.appendChild(toast);
     
     // Undo handler
     const undoBtn = toast.querySelector('.btn-undo');
@@ -957,7 +964,7 @@ function showToastWithUndo(message, undoCallback) {
     
     // Auto hide after 5 seconds
     setTimeout(() => {
-        toast.classList.remove('show');
+        toast.style.animation = 'fadeIn 0.3s ease reverse';
         setTimeout(() => toast.remove(), 300);
     }, 5000);
 }
@@ -1091,9 +1098,9 @@ function renderCommentItem(comment, depth = 0) {
     const isOwn = AppState.user && comment.author_id === AppState.user.id;
     const indentStyle = depth > 0 ? 'margin-left: 40px; border-left: 2px solid var(--color-border); padding-left: 12px;' : '';
     
-    // v1.8.4: Show avatar image if available, fallback to initials
+    // v1.8.5: Use delegated error handler (no inline onerror)
     const avatarHtml = comment.author_avatar 
-        ? `<img src="${escapeHtml(comment.author_avatar)}" class="comment-avatar" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        ? `<img src="${escapeHtml(comment.author_avatar)}" class="comment-avatar avatar-with-fallback" alt="">
            <div class="avatar-fallback comment-avatar-fallback" style="display:none;">${initials}</div>`
         : `<div class="avatar-fallback comment-avatar-fallback">${initials}</div>`;
     
@@ -1159,11 +1166,15 @@ function updateReplyIndicator() {
             DOM.commentText.parentElement.insertBefore(indicator, DOM.commentText);
         }
         
+        // v1.8.5: No inline onclick - use delegation
         indicator.innerHTML = `
             <span>Replying to <strong>${escapeHtml(replyingToName)}</strong></span>
-            <button class="btn-cancel-reply" onclick="cancelReply()">✕</button>
+            <button class="btn-cancel-reply">✕</button>
         `;
         indicator.classList.remove('hidden');
+        
+        // Attach event listener directly (indicator is recreated each time)
+        indicator.querySelector('.btn-cancel-reply').addEventListener('click', cancelReply);
     } else if (indicator) {
         indicator.classList.add('hidden');
     }
