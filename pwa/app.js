@@ -32,6 +32,7 @@ const AppState = {
     currentCellophane: null,
     // v1.8.5: Deep link support
     pendingDeepLink: null,  // Cellophane ID to open after login
+    openedFromDeepLink: false,  // Track if detail was opened via deep link
     // v1.8.2: Comments state
     comments: {
         data: [],
@@ -251,14 +252,15 @@ async function initApp() {
 // ===========================================
 
 /**
- * Check URL for deep link pattern /c/{id}
+ * Check URL for deep link pattern /c/{id} or /c/{id}/
  */
 function checkForDeepLink() {
     const path = window.location.pathname;
-    const match = path.match(/^\/(?:pwa\/)?c\/([a-zA-Z0-9_-]+)$/);
+    // Handle: /c/{id}, /c/{id}/, /pwa/c/{id}, /pwa/c/{id}/
+    const match = path.match(/^\/(?:pwa\/)?c\/([a-zA-Z0-9_-]+)\/?$/);
     
     if (match) {
-        const cellophaneId = match[1];
+        const cellophaneId = decodeURIComponent(match[1]);
         console.log('🔗 Deep link detected:', cellophaneId);
         AppState.pendingDeepLink = cellophaneId;
     }
@@ -286,19 +288,28 @@ async function handlePendingDeepLink() {
         return;
     }
     
-    // Open the cellophane detail
-    openCellophaneDetail(data);
+    // Mark that we opened from deep link (URL stays until modal closes)
+    AppState.openedFromDeepLink = true;
     
-    // Clean URL without reload
-    clearDeepLinkUrl();
+    // Open the cellophane detail (URL stays as /c/{id})
+    openCellophaneDetail(data);
 }
 
 /**
  * Clear deep link from URL without page reload
+ * v1.8.5: Dynamic base path detection
  */
 function clearDeepLinkUrl() {
-    const baseUrl = window.location.origin + '/pwa/';
-    window.history.replaceState({}, '', baseUrl);
+    // Detect base path dynamically
+    const path = window.location.pathname;
+    let basePath = '/';
+    
+    if (path.startsWith('/pwa')) {
+        basePath = '/pwa/';
+    }
+    
+    window.history.replaceState({}, '', window.location.origin + basePath);
+    AppState.openedFromDeepLink = false;
 }
 
 // ===========================================
@@ -944,7 +955,8 @@ async function handleReaction(cellophaneId, emoji, type) {
 }
 
 async function handleShare(cellophane) {
-    const shareUrl = `${window.location.origin}/c/${cellophane.id}`;
+    // v1.8.5: Use /pwa/c/{id} for static hosting compatibility
+    const shareUrl = `${window.location.origin}/pwa/c/${cellophane.id}`;
     
     if (navigator.share) {
         try {
@@ -1728,6 +1740,11 @@ function closeAllModals() {
         DOM.modalCreate.classList.remove('active');
     }
     AppState.currentCellophane = null;
+    
+    // v1.8.5: Clear deep link URL when closing modal
+    if (AppState.openedFromDeepLink) {
+        clearDeepLinkUrl();
+    }
 }
 
 // ===========================================
