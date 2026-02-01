@@ -1,9 +1,10 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.5
+ * Version: 1.8.6
  * 
  * CHANGELOG:
- * v1.8.5 - Hide/Dismiss cellophane (X button + localStorage + undo)
+ * v1.8.6 - "More from this site" in detail modal, Browse by URL API
+ * v1.8.5 - Hide/Dismiss cellophane, Deep Link /c/{id}, security fixes
  * v1.8.4 - Like + Dislike buttons, comment avatars + latest author names
  * v1.8.1 - Fixed avatar display (fetch from DB, ensure visible in profile modal)
  * v1.8.0 - Profile page with Tabs (My/Liked), Follow/Unfollow, event delegation
@@ -90,6 +91,9 @@ const DOM = {
     modalCreate: document.getElementById('modal-create'),
     detailCellophane: document.getElementById('detail-cellophane'),
     commentsList: document.getElementById('comments-list'),
+    // v1.8.6: More from this site
+    moreFromSite: document.getElementById('more-from-site'),
+    moreFromSiteList: document.getElementById('more-from-site-list'),
     commentText: document.getElementById('comment-text'),
     btnSendComment: document.getElementById('btn-send-comment'),
     profileAvatar: document.getElementById('profile-avatar'),
@@ -219,7 +223,7 @@ function filterHiddenCellophanes(cellophanes) {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.8.5...');
+    console.log('🎬 Initializing Cellophane PWA v1.8.6...');
     
     setupEventListeners();
     
@@ -1118,6 +1122,84 @@ async function openCellophaneDetail(cellophane) {
     
     // Render threaded comments
     renderComments();
+    
+    // v1.8.6: Load "More from this site" if cellophane has a real URL
+    loadMoreFromSite(cellophane);
+}
+
+/**
+ * Load and display "More from this site"
+ * v1.8.6
+ */
+async function loadMoreFromSite(cellophane) {
+    // Only show for cellophanes with real URLs (not PWA default)
+    const hasRealUrl = cellophane.url && 
+                       !cellophane.url.includes('cellophane.ai/pwa') && 
+                       cellophane.url !== '';
+    
+    if (!hasRealUrl) {
+        DOM.moreFromSite.classList.add('hidden');
+        return;
+    }
+    
+    // Show loading state
+    DOM.moreFromSite.classList.remove('hidden');
+    DOM.moreFromSiteList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+    
+    // Fetch related cellophanes
+    const { data: related, error } = await CelloAPI.cellophanes.getByUrl(cellophane.url, cellophane.id, 5);
+    
+    if (error || !related || related.length === 0) {
+        DOM.moreFromSite.classList.add('hidden');
+        return;
+    }
+    
+    // Render related cellophanes
+    renderMoreFromSite(related);
+}
+
+/**
+ * Render "More from this site" cards
+ * v1.8.6
+ */
+function renderMoreFromSite(cellophanes) {
+    DOM.moreFromSiteList.innerHTML = cellophanes.map(c => {
+        const authorName = c.author || 'Anonymous';
+        const initials = getInitials(authorName);
+        const rawAvatar = c.authorAvatar || c.author_avatar || '';
+        const avatarUrl = rawAvatar ? sanitizeUrl(rawAvatar) : '';
+        const timestamp = formatTimestamp(c.created_at);
+        const text = (c.text || '').length > 100 ? c.text.substring(0, 100) + '...' : (c.text || '');
+        
+        const avatarHtml = avatarUrl 
+            ? `<img src="${escapeHtml(avatarUrl)}" class="avatar-small avatar-with-fallback" alt="">
+               <div class="avatar-fallback avatar-small" style="display:none;">${initials}</div>`
+            : `<div class="avatar-fallback avatar-small">${initials}</div>`;
+        
+        return `
+            <div class="related-cellophane-card" data-cellophane-id="${c.id}">
+                <div class="related-cellophane-header">
+                    ${avatarHtml}
+                    <div class="related-cellophane-info">
+                        <span class="related-author">${escapeHtml(authorName)}</span>
+                        <span class="related-time">${timestamp}</span>
+                    </div>
+                </div>
+                <div class="related-cellophane-text">${escapeHtml(text)}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Add click handlers to open the cellophane
+    DOM.moreFromSiteList.querySelectorAll('.related-cellophane-card').forEach(card => {
+        card.addEventListener('click', async () => {
+            const id = card.dataset.cellophaneId;
+            const { data, error } = await CelloAPI.cellophanes.getById(id);
+            if (data && !error) {
+                openCellophaneDetail(data);
+            }
+        });
+    });
 }
 
 /**

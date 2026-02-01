@@ -2411,3 +2411,86 @@ img {
 .btn-undo:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+
+/* ===========================================
+   MORE FROM THIS SITE - v1.8.6
+   =========================================== */
+
+.more-from-site-section {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.more-from-site-section h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+}
+
+.more-from-site-section h4 svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+}
+
+.more-from-site-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.related-cellophane-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.related-cellophane-card:hover {
+    border-color: var(--color-primary);
+    background: var(--color-surface-hover);
+}
+
+.related-cellophane-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.avatar-small {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+}
+
+.related-cellophane-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.related-author {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.related-time {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.related-cellophane-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}

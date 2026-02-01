@@ -359,6 +359,51 @@ const CelloCellophanes = {
     },
     
     /**
+     * Get cellophanes by URL (for "More from this site")
+     * v1.8.6: Browse by URL feature
+     * @param {string} url - The URL to search for
+     * @param {string} excludeId - Cellophane ID to exclude (current one)
+     * @param {number} limit - Max results (default 10)
+     */
+    async getByUrl(url, excludeId = null, limit = 10) {
+        const client = getClient();
+        if (!client) return { data: [], error: new Error('Client not initialized') };
+        
+        if (!url) return { data: [], error: null };
+        
+        // Extract domain for broader matching
+        let domain = url;
+        try {
+            const parsed = new URL(url);
+            domain = parsed.hostname.replace('www.', '');
+        } catch (e) {
+            // Use as-is if not a valid URL
+        }
+        
+        let query = client
+            .from('cellophanes')
+            .select('*')
+            .ilike('url', `%${domain}%`)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+        
+        // Exclude current cellophane if specified
+        if (excludeId) {
+            query = query.neq('id', excludeId);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) return { data: [], error };
+        if (!data || data.length === 0) return { data: [], error: null };
+        
+        // Add avatars
+        const withAvatars = await addAvatarsToCellophanes(data);
+        
+        return { data: withAvatars, error: null };
+    },
+    
+    /**
      * Create a new cellophane
      * @param {Object} cellophane - { text, url, visibility, position_x, position_y, media_url, media_type }
      */
