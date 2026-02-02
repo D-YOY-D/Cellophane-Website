@@ -236,6 +236,10 @@
                     <svg><use href="#icon-users"/></svg>
                     <span>Following</span>
                 </button>
+                <button class="tab-btn" data-tab="browse-site">
+                    <svg><use href="#icon-globe"/></svg>
+                    <span>Browse Site</span>
+                </button>
             </nav>
             
             <!-- Feed Container -->
@@ -278,6 +282,50 @@
                     <div id="following-feed-loading" class="loading-state hidden">
                         <div class="spinner"></div>
                         <p>Loading...</p>
+                    </div>
+                </div>
+                
+                <!-- Browse Site Feed - v1.8.7 -->
+                <div id="feed-browse-site" class="feed">
+                    <div class="feed-header">
+                        <h2>Browse Site</h2>
+                    </div>
+                    
+                    <!-- URL Input -->
+                    <div class="browse-url-input">
+                        <div class="url-input-wrapper">
+                            <svg><use href="#icon-globe"/></svg>
+                            <input type="url" id="browse-url" placeholder="Enter website URL (e.g. ynet.co.il)" autocomplete="off">
+                            <button id="btn-browse-go" class="btn btn-primary btn-go">Go</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Sites -->
+                    <div id="browse-history" class="browse-history hidden">
+                        <h4>Recent Sites</h4>
+                        <div id="browse-history-list" class="browse-history-list">
+                            <!-- History items loaded dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Site Timeline -->
+                    <div id="browse-timeline" class="browse-timeline hidden">
+                        <div class="timeline-header">
+                            <h4 id="browse-timeline-title">Timeline</h4>
+                            <span id="browse-timeline-count" class="feed-count">0</span>
+                        </div>
+                        <div id="browse-timeline-list" class="feed-list">
+                            <!-- Timeline cellophanes loaded dynamically -->
+                        </div>
+                        <div id="browse-timeline-empty" class="empty-state hidden">
+                            <div class="empty-icon">🔍</div>
+                            <h3>No cellophanes found</h3>
+                            <p>No one has posted on this site yet</p>
+                        </div>
+                        <div id="browse-timeline-loading" class="loading-state hidden">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
                 

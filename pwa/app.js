@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.6
+ * Version: 1.8.7
  * 
  * CHANGELOG:
+ * v1.8.7 - Browse Site tab with URL input, history, timeline + highlighted deep links
  * v1.8.6 - "More from this site" in detail modal, Browse by URL API
  * v1.8.5 - Hide/Dismiss cellophane, Deep Link /c/{id}, security fixes
  * v1.8.4 - Like + Dislike buttons, comment avatars + latest author names
@@ -34,6 +35,12 @@ const AppState = {
     // v1.8.5: Deep link support
     pendingDeepLink: null,  // Cellophane ID to open after login
     openedFromDeepLink: false,  // Track if detail was opened via deep link
+    // v1.8.7: Browse Site state
+    browseSite: {
+        currentUrl: null,
+        data: [],
+        highlightedId: null  // Cellophane to highlight (from deep link)
+    },
     // v1.8.2: Comments state
     comments: {
         data: [],
@@ -86,6 +93,18 @@ const DOM = {
     followingFeedCount: document.getElementById('following-feed-count'),
     followingFeedEmpty: document.getElementById('following-feed-empty'),
     followingFeedLoading: document.getElementById('following-feed-loading'),
+    // v1.8.7: Browse Site
+    feedBrowseSite: document.getElementById('feed-browse-site'),
+    browseUrl: document.getElementById('browse-url'),
+    btnBrowseGo: document.getElementById('btn-browse-go'),
+    browseHistory: document.getElementById('browse-history'),
+    browseHistoryList: document.getElementById('browse-history-list'),
+    browseTimeline: document.getElementById('browse-timeline'),
+    browseTimelineTitle: document.getElementById('browse-timeline-title'),
+    browseTimelineCount: document.getElementById('browse-timeline-count'),
+    browseTimelineList: document.getElementById('browse-timeline-list'),
+    browseTimelineEmpty: document.getElementById('browse-timeline-empty'),
+    browseTimelineLoading: document.getElementById('browse-timeline-loading'),
     modalDetail: document.getElementById('modal-detail'),
     modalProfile: document.getElementById('modal-profile'),
     modalCreate: document.getElementById('modal-create'),
@@ -223,7 +242,7 @@ function filterHiddenCellophanes(cellophanes) {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.8.6...');
+    console.log('🎬 Initializing Cellophane PWA v1.8.7...');
     
     setupEventListeners();
     
@@ -272,6 +291,7 @@ function checkForDeepLink() {
 
 /**
  * Handle pending deep link after auth
+ * v1.8.7: Opens Browse Site tab with highlighted cellophane
  */
 async function handlePendingDeepLink() {
     if (!AppState.pendingDeepLink) return;
@@ -292,10 +312,26 @@ async function handlePendingDeepLink() {
         return;
     }
     
+    // Check if cellophane has a real URL (not PWA default)
+    const hasRealUrl = data.url && 
+                       !data.url.includes('cellophane.ai/pwa') && 
+                       data.url !== '';
+    
+    if (hasRealUrl) {
+        // Switch to Browse Site tab
+        handleTabChange('browse-site');
+        
+        // Set URL in input
+        DOM.browseUrl.value = data.url;
+        
+        // Load site timeline with this cellophane highlighted
+        await loadBrowseSite(data.url, cellophaneId);
+    }
+    
     // Mark that we opened from deep link (URL stays until modal closes)
     AppState.openedFromDeepLink = true;
     
-    // Open the cellophane detail (URL stays as /c/{id})
+    // Open the cellophane detail
     openCellophaneDetail(data);
 }
 
@@ -430,6 +466,22 @@ function setupEventListeners() {
         }
     }, true); // Use capture phase
     
+    // v1.8.7: Browse Site event listeners
+    if (DOM.btnBrowseGo) {
+        DOM.btnBrowseGo.addEventListener('click', () => {
+            const url = DOM.browseUrl.value.trim();
+            if (url) loadBrowseSite(url);
+        });
+    }
+    if (DOM.browseUrl) {
+        DOM.browseUrl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const url = DOM.browseUrl.value.trim();
+                if (url) loadBrowseSite(url);
+            }
+        });
+    }
+    
     // v1.8.0: Setup profile modal event listeners
     setupProfileEventListeners();
 }
@@ -552,11 +604,15 @@ function handleTabChange(tab) {
     
     DOM.feedMy.classList.toggle('active', tab === 'my-feed');
     DOM.feedFollowing.classList.toggle('active', tab === 'following');
+    DOM.feedBrowseSite.classList.toggle('active', tab === 'browse-site');
     
     if (tab === 'my-feed' && AppState.feeds.my.data.length === 0) {
         loadMyFeed(true);
     } else if (tab === 'following' && AppState.feeds.following.data.length === 0) {
         loadFollowingFeed(true);
+    } else if (tab === 'browse-site') {
+        // Load history on first visit
+        renderBrowseHistory();
     }
 }
 
@@ -1199,6 +1255,165 @@ function renderMoreFromSite(cellophanes) {
                 openCellophaneDetail(data);
             }
         });
+    });
+}
+
+// ===========================================
+// BROWSE SITE - v1.8.7
+// ===========================================
+
+const BROWSE_HISTORY_KEY = 'cellophane_browse_history';
+const BROWSE_HISTORY_MAX = 10;
+
+/**
+ * Get browse history from localStorage
+ */
+function getBrowseHistory() {
+    try {
+        const userId = AppState.user?.id || 'guest';
+        const stored = localStorage.getItem(`${BROWSE_HISTORY_KEY}:${userId}`);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+/**
+ * Add URL to browse history
+ */
+function addToBrowseHistory(url, count) {
+    const userId = AppState.user?.id || 'guest';
+    const history = getBrowseHistory();
+    
+    // Extract domain for display
+    let domain = url;
+    try {
+        const parsed = new URL(url.startsWith('http') ? url : 'https://' + url);
+        domain = parsed.hostname.replace('www.', '');
+    } catch (e) {}
+    
+    // Remove if already exists
+    const filtered = history.filter(h => h.domain !== domain);
+    
+    // Add to front
+    filtered.unshift({ domain, url, count, timestamp: Date.now() });
+    
+    // Keep only last N
+    const trimmed = filtered.slice(0, BROWSE_HISTORY_MAX);
+    
+    localStorage.setItem(`${BROWSE_HISTORY_KEY}:${userId}`, JSON.stringify(trimmed));
+}
+
+/**
+ * Render browse history
+ */
+function renderBrowseHistory() {
+    const history = getBrowseHistory();
+    
+    if (history.length === 0) {
+        DOM.browseHistory.classList.add('hidden');
+        return;
+    }
+    
+    DOM.browseHistory.classList.remove('hidden');
+    DOM.browseHistoryList.innerHTML = history.map(h => `
+        <div class="browse-history-item" data-url="${escapeHtml(h.domain)}">
+            <svg><use href="#icon-globe"/></svg>
+            <span class="history-domain">${escapeHtml(h.domain)}</span>
+            ${h.count ? `<span class="history-count">${h.count}</span>` : ''}
+        </div>
+    `).join('');
+    
+    // Click handlers
+    DOM.browseHistoryList.querySelectorAll('.browse-history-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const url = item.dataset.url;
+            DOM.browseUrl.value = url;
+            loadBrowseSite(url);
+        });
+    });
+}
+
+/**
+ * Load cellophanes for a site URL
+ */
+async function loadBrowseSite(url, highlightId = null) {
+    if (!url) return;
+    
+    // Normalize URL
+    let normalizedUrl = url.trim();
+    if (!normalizedUrl.startsWith('http')) {
+        normalizedUrl = 'https://' + normalizedUrl;
+    }
+    
+    // Extract domain for display
+    let domain = normalizedUrl;
+    try {
+        const parsed = new URL(normalizedUrl);
+        domain = parsed.hostname.replace('www.', '');
+    } catch (e) {
+        showToast('Invalid URL', 'error');
+        return;
+    }
+    
+    AppState.browseSite.currentUrl = normalizedUrl;
+    AppState.browseSite.highlightedId = highlightId;
+    
+    // Show loading
+    DOM.browseTimeline.classList.remove('hidden');
+    DOM.browseTimelineLoading.classList.remove('hidden');
+    DOM.browseTimelineEmpty.classList.add('hidden');
+    DOM.browseTimelineList.innerHTML = '';
+    DOM.browseTimelineTitle.textContent = domain;
+    
+    // Fetch cellophanes
+    const { data, error } = await CelloAPI.cellophanes.getByUrl(normalizedUrl, null, 50);
+    
+    DOM.browseTimelineLoading.classList.add('hidden');
+    
+    if (error) {
+        showToast('Failed to load site', 'error');
+        DOM.browseTimelineEmpty.classList.remove('hidden');
+        return;
+    }
+    
+    if (!data || data.length === 0) {
+        DOM.browseTimelineEmpty.classList.remove('hidden');
+        DOM.browseTimelineCount.textContent = '0';
+        return;
+    }
+    
+    // Store and render
+    AppState.browseSite.data = data;
+    DOM.browseTimelineCount.textContent = data.length;
+    
+    // Add to history
+    addToBrowseHistory(normalizedUrl, data.length);
+    renderBrowseHistory();
+    
+    // Render timeline
+    renderBrowseTimeline(data, highlightId);
+}
+
+/**
+ * Render browse site timeline
+ */
+function renderBrowseTimeline(cellophanes, highlightId = null) {
+    DOM.browseTimelineList.innerHTML = '';
+    
+    cellophanes.forEach(cellophane => {
+        const card = createCellophaneCard(cellophane);
+        
+        // Highlight specific cellophane
+        if (highlightId && cellophane.id === highlightId) {
+            card.classList.add('highlighted-cellophane');
+            // Scroll to it after render
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+        
+        DOM.browseTimelineList.appendChild(card);
     });
 }
 
