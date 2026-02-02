@@ -6,7 +6,7 @@
  * Only cache same-origin static assets (js/css/html/images)
  */
 
-const CACHE_NAME = 'cellophane-static-v1.8.7b';
+const CACHE_NAME = 'cellophane-static-v1.8.8';
 
 // Static assets to precache on install
 const STATIC_ASSETS = [

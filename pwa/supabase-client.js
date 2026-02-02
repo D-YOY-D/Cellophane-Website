@@ -1080,6 +1080,196 @@ const CelloMedia = {
 };
 
 // ===========================================
+// GAMIFICATION API - v1.8.8
+// ===========================================
+
+const ACHIEVEMENTS = [
+    { id: 'first_cellophane', icon: '🎯', name: 'First Steps', description: 'Create your first cellophane', check: (s) => s.cellophanes >= 1 },
+    { id: 'ten_cellophanes', icon: '💫', name: 'Rising Star', description: 'Create 10 cellophanes', check: (s) => s.cellophanes >= 10 },
+    { id: 'fifty_cellophanes', icon: '🔥', name: 'On Fire', description: 'Create 50 cellophanes', check: (s) => s.cellophanes >= 50 },
+    { id: 'first_follower', icon: '👤', name: 'First Fan', description: 'Get your first follower', check: (s) => s.followers >= 1 },
+    { id: 'ten_followers', icon: '👥', name: 'Social Butterfly', description: 'Get 10 followers', check: (s) => s.followers >= 10 },
+    { id: 'first_comment', icon: '💬', name: 'Conversation Starter', description: 'Leave your first comment', check: (s) => s.comments >= 1 },
+    { id: 'first_like', icon: '❤️', name: 'Spread the Love', description: 'Like your first cellophane', check: (s) => s.likes >= 1 }
+];
+
+const CelloGamification = {
+    ACHIEVEMENTS,
+    
+    /**
+     * Calculate level from XP
+     */
+    calculateLevel(xp) {
+        if (xp < 100) return 1;
+        if (xp < 300) return 2;
+        if (xp < 600) return 3;
+        if (xp < 1000) return 4;
+        if (xp < 1500) return 5;
+        if (xp < 2200) return 6;
+        if (xp < 3000) return 7;
+        if (xp < 4000) return 8;
+        if (xp < 5200) return 9;
+        return 10;
+    },
+    
+    /**
+     * Get XP thresholds for each level
+     */
+    getLevelThresholds() {
+        return [0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5200, 9999];
+    },
+    
+    /**
+     * Get user stats (cellophanes, followers, comments, likes)
+     */
+    async getUserStats(userId) {
+        const client = getClient();
+        if (!client || !userId) return { data: null, error: new Error('Not initialized') };
+        
+        try {
+            // Get cellophane count
+            const { count: cellophanes } = await client
+                .from('cellophanes')
+                .select('*', { count: 'exact', head: true })
+                .eq('author_id', userId);
+            
+            // Get followers count
+            const { count: followers } = await client
+                .from('follows')
+                .select('*', { count: 'exact', head: true })
+                .eq('following_id', userId);
+            
+            // Get comments count
+            const { count: comments } = await client
+                .from('cellophane_comments')
+                .select('*', { count: 'exact', head: true })
+                .eq('author_id', userId);
+            
+            // Get likes given count
+            const { count: likes } = await client
+                .from('reactions')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .eq('emoji', '👍');
+            
+            // Calculate XP (simple formula: cellophanes*10 + followers*5 + comments*3 + likes*1)
+            const xp = (cellophanes || 0) * 10 + (followers || 0) * 5 + (comments || 0) * 3 + (likes || 0);
+            const level = this.calculateLevel(xp);
+            const thresholds = this.getLevelThresholds();
+            const currentLevelXp = thresholds[level - 1];
+            const nextLevelXp = thresholds[level];
+            const progress = Math.round(((xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100);
+            
+            return {
+                data: {
+                    cellophanes: cellophanes || 0,
+                    followers: followers || 0,
+                    comments: comments || 0,
+                    likes: likes || 0,
+                    xp,
+                    level,
+                    progress: Math.min(progress, 100),
+                    nextLevelXp
+                },
+                error: null
+            };
+        } catch (error) {
+            console.error('❌ Error getting user stats:', error);
+            return { data: null, error };
+        }
+    },
+    
+    /**
+     * Get earned achievements for user
+     */
+    async getEarnedAchievements(userId) {
+        const { data: stats } = await this.getUserStats(userId);
+        if (!stats) return [];
+        
+        return ACHIEVEMENTS.filter(a => a.check(stats));
+    }
+};
+
+// ===========================================
+// NOTIFICATIONS API - v1.8.8
+// ===========================================
+
+const CelloNotifications = {
+    /**
+     * Get notifications for current user
+     */
+    async getNotifications(limit = 20) {
+        const client = getClient();
+        if (!client) return { data: [], error: new Error('Client not initialized') };
+        
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return { data: [], error: new Error('Not authenticated') };
+        
+        const { data, error } = await client
+            .from('notifications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(limit);
+        
+        return { data: data || [], error };
+    },
+    
+    /**
+     * Get unread notification count
+     */
+    async getUnreadCount() {
+        const client = getClient();
+        if (!client) return { count: 0, error: null };
+        
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return { count: 0, error: null };
+        
+        const { count, error } = await client
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('read', false);
+        
+        return { count: count || 0, error };
+    },
+    
+    /**
+     * Mark notification as read
+     */
+    async markAsRead(notificationId) {
+        const client = getClient();
+        if (!client) return { error: new Error('Client not initialized') };
+        
+        const { error } = await client
+            .from('notifications')
+            .update({ read: true })
+            .eq('id', notificationId);
+        
+        return { error };
+    },
+    
+    /**
+     * Mark all notifications as read
+     */
+    async markAllAsRead() {
+        const client = getClient();
+        if (!client) return { error: new Error('Client not initialized') };
+        
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return { error: new Error('Not authenticated') };
+        
+        const { error } = await client
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', user.id)
+            .eq('read', false);
+        
+        return { error };
+    }
+};
+
+// ===========================================
 // EXPORT API
 // ===========================================
 
@@ -1095,10 +1285,13 @@ const CelloAPI = {
     comments: CelloComments,
     follows: CelloFollows,
     profile: CelloProfile,
-    media: CelloMedia
+    media: CelloMedia,
+    // v1.8.8: New modules
+    gamification: CelloGamification,
+    notifications: CelloNotifications
 };
 
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.4');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.8');

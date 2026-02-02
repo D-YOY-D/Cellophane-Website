@@ -215,8 +215,9 @@
                         <button class="btn-icon">
                             <svg><use href="#icon-search"/></svg>
                         </button>
-                        <button class="btn-icon">
+                        <button id="btn-notifications" class="btn-icon btn-notifications">
                             <svg><use href="#icon-bell"/></svg>
+                            <span id="notification-badge" class="notification-badge hidden">0</span>
                         </button>
                         <button id="btn-profile" class="btn-icon profile-btn">
                             <img id="user-avatar" src="" alt="Profile" class="avatar header-avatar">
@@ -560,6 +561,24 @@
                         </div>
                     </div>
                     
+                    <!-- Gamification - v1.8.8 -->
+                    <div id="profile-gamification" class="profile-gamification hidden">
+                        <div class="gamification-header">
+                            <div class="level-badge" id="level-badge">
+                                <span class="level-number" id="level-number">1</span>
+                            </div>
+                            <div class="xp-info">
+                                <span class="xp-text" id="xp-text">0 XP</span>
+                                <div class="xp-bar">
+                                    <div class="xp-progress" id="xp-progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievements-row" id="achievements-row">
+                            <!-- Achievements loaded dynamically -->
+                        </div>
+                    </div>
+                    
                     <!-- Tabs -->
                     <div class="profile-tabs">
                         <button class="profile-tab active" data-tab="my">
@@ -611,6 +630,21 @@
         </div>
         
         <!-- Toast Notifications -->
+        <!-- Notifications Panel - v1.8.8 -->
+        <div id="notifications-panel" class="notifications-panel hidden">
+            <div class="notifications-header">
+                <h3>Notifications</h3>
+                <button id="btn-mark-all-read" class="btn-text">Mark all read</button>
+            </div>
+            <div id="notifications-list" class="notifications-list">
+                <!-- Notifications loaded dynamically -->
+            </div>
+            <div id="notifications-empty" class="notifications-empty hidden">
+                <svg><use href="#icon-bell"/></svg>
+                <p>No notifications yet</p>
+            </div>
+        </div>
+        
         <div id="toast-container"></div>
         
     </div>

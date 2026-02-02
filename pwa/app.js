@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.7
+ * Version: 1.8.8
  * 
  * CHANGELOG:
+ * v1.8.8 - Pull-to-refresh, Notifications, Gamification in Profile
  * v1.8.7 - Browse Site tab with URL input, history, timeline + highlighted deep links
  * v1.8.6 - "More from this site" in detail modal, Browse by URL API
  * v1.8.5 - Hide/Dismiss cellophane, Deep Link /c/{id}, security fixes
@@ -125,6 +126,20 @@ const DOM = {
     statFollowing: document.getElementById('stat-following'),
     btnLogout: document.getElementById('btn-logout'),
     toastContainer: document.getElementById('toast-container'),
+    // v1.8.8: Gamification in profile
+    profileGamification: document.getElementById('profile-gamification'),
+    levelBadge: document.getElementById('level-badge'),
+    levelNumber: document.getElementById('level-number'),
+    xpText: document.getElementById('xp-text'),
+    xpProgress: document.getElementById('xp-progress'),
+    achievementsRow: document.getElementById('achievements-row'),
+    // v1.8.8: Notifications
+    btnNotifications: document.getElementById('btn-notifications'),
+    notificationBadge: document.getElementById('notification-badge'),
+    notificationsPanel: document.getElementById('notifications-panel'),
+    notificationsList: document.getElementById('notifications-list'),
+    notificationsEmpty: document.getElementById('notifications-empty'),
+    btnMarkAllRead: document.getElementById('btn-mark-all-read'),
     // Create form elements
     btnCreateFab: document.getElementById('btn-create-fab'),
     btnAddToPage: document.getElementById('btn-add-to-page'),
@@ -244,7 +259,7 @@ function filterHiddenCellophanes(cellophanes) {
 // ===========================================
 
 async function initApp() {
-    console.log('🎬 Initializing Cellophane PWA v1.8.7...');
+    console.log('🎬 Initializing Cellophane PWA v1.8.8...');
     
     setupEventListeners();
     
@@ -484,6 +499,17 @@ function setupEventListeners() {
         });
     }
     
+    // v1.8.8: Notifications
+    if (DOM.btnNotifications) {
+        DOM.btnNotifications.addEventListener('click', toggleNotificationsPanel);
+    }
+    if (DOM.btnMarkAllRead) {
+        DOM.btnMarkAllRead.addEventListener('click', markAllNotificationsRead);
+    }
+    
+    // v1.8.8: Pull-to-refresh
+    setupPullToRefresh();
+    
     // v1.8.0: Setup profile modal event listeners
     setupProfileEventListeners();
 }
@@ -551,6 +577,9 @@ async function handleAuthSuccess(session) {
     
     showScreen('main');
     await loadMyFeed(true);
+    
+    // v1.8.8: Load notification count
+    loadNotificationCount();
     
     // v1.8.5: Handle pending deep link after auth
     await handlePendingDeepLink();
@@ -1454,6 +1483,219 @@ function renderBrowseTimeline(cellophanes, highlightId = null) {
     });
 }
 
+// ===========================================
+// PULL-TO-REFRESH - v1.8.8
+// ===========================================
+
+let pullStartY = 0;
+let isPulling = false;
+let pullIndicator = null;
+
+function setupPullToRefresh() {
+    const feedContainer = document.querySelector('.feed-container');
+    if (!feedContainer) return;
+    
+    // Create pull indicator
+    pullIndicator = document.createElement('div');
+    pullIndicator.className = 'pull-indicator';
+    pullIndicator.innerHTML = '<div class="pull-spinner"></div><span>Pull to refresh</span>';
+    feedContainer.parentElement.insertBefore(pullIndicator, feedContainer);
+    
+    feedContainer.addEventListener('touchstart', (e) => {
+        if (feedContainer.scrollTop === 0) {
+            pullStartY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+    
+    feedContainer.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        
+        const pullDistance = e.touches[0].clientY - pullStartY;
+        
+        if (pullDistance > 0 && pullDistance < 150) {
+            pullIndicator.style.height = `${Math.min(pullDistance, 60)}px`;
+            pullIndicator.style.opacity = Math.min(pullDistance / 60, 1);
+            
+            if (pullDistance > 60) {
+                pullIndicator.querySelector('span').textContent = 'Release to refresh';
+                pullIndicator.classList.add('ready');
+            } else {
+                pullIndicator.querySelector('span').textContent = 'Pull to refresh';
+                pullIndicator.classList.remove('ready');
+            }
+        }
+    }, { passive: true });
+    
+    feedContainer.addEventListener('touchend', async () => {
+        if (!isPulling) return;
+        isPulling = false;
+        
+        const wasReady = pullIndicator.classList.contains('ready');
+        
+        if (wasReady) {
+            pullIndicator.querySelector('span').textContent = 'Refreshing...';
+            pullIndicator.classList.add('refreshing');
+            
+            // Refresh current tab
+            if (AppState.currentTab === 'my-feed') {
+                await loadMyFeed(true);
+            } else if (AppState.currentTab === 'following') {
+                await loadFollowingFeed(true);
+            }
+            
+            showToast('Refreshed!', 'success');
+        }
+        
+        // Reset indicator
+        pullIndicator.style.height = '0';
+        pullIndicator.style.opacity = '0';
+        pullIndicator.classList.remove('ready', 'refreshing');
+    });
+}
+
+// ===========================================
+// NOTIFICATIONS - v1.8.8
+// ===========================================
+
+let notificationsPanelOpen = false;
+
+async function loadNotificationCount() {
+    const { count } = await CelloAPI.notifications.getUnreadCount();
+    updateNotificationBadge(count);
+}
+
+function updateNotificationBadge(count) {
+    if (!DOM.notificationBadge) return;
+    
+    if (count > 0) {
+        DOM.notificationBadge.textContent = count > 99 ? '99+' : count;
+        DOM.notificationBadge.classList.remove('hidden');
+    } else {
+        DOM.notificationBadge.classList.add('hidden');
+    }
+}
+
+function toggleNotificationsPanel() {
+    notificationsPanelOpen = !notificationsPanelOpen;
+    
+    if (notificationsPanelOpen) {
+        DOM.notificationsPanel.classList.remove('hidden');
+        loadNotifications();
+    } else {
+        DOM.notificationsPanel.classList.add('hidden');
+    }
+}
+
+async function loadNotifications() {
+    DOM.notificationsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+    DOM.notificationsEmpty.classList.add('hidden');
+    
+    const { data: notifications, error } = await CelloAPI.notifications.getNotifications();
+    
+    if (error || !notifications || notifications.length === 0) {
+        DOM.notificationsList.innerHTML = '';
+        DOM.notificationsEmpty.classList.remove('hidden');
+        return;
+    }
+    
+    renderNotifications(notifications);
+}
+
+function renderNotifications(notifications) {
+    DOM.notificationsList.innerHTML = notifications.map(n => {
+        const isUnread = !n.read;
+        const timeAgo = formatTimestamp(n.created_at);
+        const icon = getNotificationIcon(n.type);
+        
+        return `
+            <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${n.id}">
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-content">
+                    <p class="notification-text">${escapeHtml(n.message || n.content || 'New notification')}</p>
+                    <span class="notification-time">${timeAgo}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // Click to mark as read
+    DOM.notificationsList.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', async () => {
+            const id = item.dataset.id;
+            await CelloAPI.notifications.markAsRead(id);
+            item.classList.remove('unread');
+            loadNotificationCount();
+        });
+    });
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        'follow': '👤',
+        'like': '❤️',
+        'comment': '💬',
+        'mention': '@',
+        'achievement': '🏆'
+    };
+    return icons[type] || '🔔';
+}
+
+async function markAllNotificationsRead() {
+    await CelloAPI.notifications.markAllAsRead();
+    DOM.notificationsList.querySelectorAll('.notification-item').forEach(item => {
+        item.classList.remove('unread');
+    });
+    updateNotificationBadge(0);
+    showToast('All notifications marked as read', 'success');
+}
+
+// ===========================================
+// GAMIFICATION - v1.8.8
+// ===========================================
+
+async function loadGamification(userId) {
+    if (!DOM.profileGamification) return;
+    
+    const { data: stats, error } = await CelloAPI.gamification.getUserStats(userId);
+    
+    if (error || !stats) {
+        DOM.profileGamification.classList.add('hidden');
+        return;
+    }
+    
+    // Update level badge
+    if (DOM.levelNumber) DOM.levelNumber.textContent = stats.level;
+    
+    // Update XP
+    if (DOM.xpText) DOM.xpText.textContent = `${stats.xp} XP`;
+    if (DOM.xpProgress) DOM.xpProgress.style.width = `${stats.progress}%`;
+    
+    // Update cellophanes stat (now we have real data)
+    if (DOM.statCellophanes) DOM.statCellophanes.textContent = stats.cellophanes;
+    
+    // Load achievements
+    const earned = await CelloAPI.gamification.getEarnedAchievements(userId);
+    renderAchievements(earned);
+    
+    DOM.profileGamification.classList.remove('hidden');
+}
+
+function renderAchievements(earned) {
+    if (!DOM.achievementsRow) return;
+    
+    const allAchievements = CelloAPI.gamification.ACHIEVEMENTS;
+    
+    DOM.achievementsRow.innerHTML = allAchievements.slice(0, 5).map(a => {
+        const isEarned = earned.some(e => e.id === a.id);
+        return `
+            <div class="achievement ${isEarned ? 'earned' : 'locked'}" title="${a.name}: ${a.description}">
+                <span class="achievement-icon">${a.icon}</span>
+            </div>
+        `;
+    }).join('');
+}
+
 /**
  * Render comments with threading support
  * v1.8.2
@@ -1713,6 +1955,9 @@ async function openProfileModal(userId) {
         
         // Load initial tab (My)
         await loadProfileTab('my');
+        
+        // v1.8.8: Load gamification stats
+        await loadGamification(userId);
         
     } catch (error) {
         console.error('❌ Profile modal error:', error);
