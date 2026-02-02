@@ -2656,10 +2656,92 @@ img {
 .tab-btn {
     flex: 1;
     min-width: 0;
+    padding: var(--spacing-sm) var(--spacing-xs);
 }
 
 .tab-btn span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 0.75rem;
+}
+
+.tab-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Top Sites Section */
+.browse-top-sites {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.browse-top-sites h4 {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.browse-top-sites-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.browse-top-site-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-surface));
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.browse-top-site-item:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.browse-top-site-item:hover svg,
+.browse-top-site-item:hover .top-site-count {
+    color: white;
+}
+
+.browse-top-site-item svg {
+    width: 14px;
+    height: 14px;
+    color: var(--color-primary);
+}
+
+.top-site-domain {
+    color: var(--color-text);
+}
+
+.top-site-count {
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* Recent Sites - Limited to 2 visible with scroll */
+.browse-history-list {
+    max-height: 90px; /* ~2 items */
+    overflow-y: auto;
+}
+
+.loading-state.small {
+    padding: var(--spacing-sm);
+}
+
+.loading-state.small .spinner {
+    width: 20px;
+    height: 20px;
 }

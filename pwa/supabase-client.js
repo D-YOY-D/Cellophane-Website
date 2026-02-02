@@ -404,6 +404,46 @@ const CelloCellophanes = {
     },
     
     /**
+     * Get top sites by cellophane count
+     * v1.8.7: Popular sites recommendations
+     * @param {number} limit - Max results (default 5)
+     */
+    async getTopSites(limit = 5) {
+        const client = getClient();
+        if (!client) return { data: [], error: new Error('Client not initialized') };
+        
+        // Get all public cellophanes with URLs
+        const { data, error } = await client
+            .from('cellophanes')
+            .select('url')
+            .eq('visibility', 'public')
+            .not('url', 'is', null)
+            .not('url', 'ilike', '%cellophane.ai/pwa%');
+        
+        if (error) return { data: [], error };
+        if (!data || data.length === 0) return { data: [], error: null };
+        
+        // Count by domain
+        const domainCounts = {};
+        data.forEach(row => {
+            if (!row.url) return;
+            try {
+                const parsed = new URL(row.url);
+                const domain = parsed.hostname.replace('www.', '');
+                domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+            } catch (e) {}
+        });
+        
+        // Sort by count and take top N
+        const sorted = Object.entries(domainCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, limit)
+            .map(([domain, count]) => ({ domain, count }));
+        
+        return { data: sorted, error: null };
+    },
+    
+    /**
      * Create a new cellophane
      * @param {Object} cellophane - { text, url, visibility, position_x, position_y, media_url, media_type }
      */

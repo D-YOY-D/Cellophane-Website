@@ -99,6 +99,8 @@ const DOM = {
     btnBrowseGo: document.getElementById('btn-browse-go'),
     browseHistory: document.getElementById('browse-history'),
     browseHistoryList: document.getElementById('browse-history-list'),
+    browseTopSites: document.getElementById('browse-top-sites'),
+    browseTopSitesList: document.getElementById('browse-top-sites-list'),
     browseTimeline: document.getElementById('browse-timeline'),
     browseTimelineTitle: document.getElementById('browse-timeline-title'),
     browseTimelineCount: document.getElementById('browse-timeline-count'),
@@ -611,8 +613,9 @@ function handleTabChange(tab) {
     } else if (tab === 'following' && AppState.feeds.following.data.length === 0) {
         loadFollowingFeed(true);
     } else if (tab === 'browse-site') {
-        // Load history on first visit
+        // Load history and top sites on first visit
         renderBrowseHistory();
+        loadTopSites();
     }
 }
 
@@ -1326,6 +1329,40 @@ function renderBrowseHistory() {
     
     // Click handlers
     DOM.browseHistoryList.querySelectorAll('.browse-history-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const url = item.dataset.url;
+            DOM.browseUrl.value = url;
+            loadBrowseSite(url);
+        });
+    });
+}
+
+/**
+ * Load and render top sites (most popular)
+ * v1.8.7
+ */
+async function loadTopSites() {
+    // Show loading
+    DOM.browseTopSitesList.innerHTML = '<div class="loading-state small"><div class="spinner"></div></div>';
+    
+    const { data, error } = await CelloAPI.cellophanes.getTopSites(5);
+    
+    if (error || !data || data.length === 0) {
+        DOM.browseTopSites.classList.add('hidden');
+        return;
+    }
+    
+    DOM.browseTopSites.classList.remove('hidden');
+    DOM.browseTopSitesList.innerHTML = data.map(site => `
+        <div class="browse-top-site-item" data-url="${escapeHtml(site.domain)}">
+            <svg><use href="#icon-globe"/></svg>
+            <span class="top-site-domain">${escapeHtml(site.domain)}</span>
+            <span class="top-site-count">${site.count}</span>
+        </div>
+    `).join('');
+    
+    // Click handlers
+    DOM.browseTopSitesList.querySelectorAll('.browse-top-site-item').forEach(item => {
         item.addEventListener('click', () => {
             const url = item.dataset.url;
             DOM.browseUrl.value = url;
