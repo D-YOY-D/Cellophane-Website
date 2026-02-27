@@ -344,11 +344,12 @@ const CelloCellophanes = {
         const client = getClient();
         if (!client) return { data: null, error: new Error('Client not initialized') };
         
+        // v1.8.9: Use maybeSingle to avoid 406 when cellophane not found
         const { data, error } = await client
             .from('cellophanes')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
         
         if (error || !data) return { data: null, error };
         
@@ -606,14 +607,14 @@ const CelloReactions = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: null, error: new Error('Not authenticated') };
         
-        // Check if reaction exists
+        // v1.8.9: Use maybeSingle to avoid 406 when no reaction exists
         const { data: existing } = await client
             .from('reactions')
             .select('id')
             .eq('cellophane_id', cellophaneId)
             .eq('user_id', user.id)
             .eq('emoji', emoji)
-            .single();
+            .maybeSingle();
         
         if (existing) {
             // Remove reaction
@@ -916,11 +917,26 @@ const CelloProfile = {
         const client = getClient();
         if (!client) return { data: null, error: new Error('Client not initialized') };
         
+        // v1.8.9: Use maybeSingle to avoid 406 when user not in public_user_profiles
         const { data, error } = await client
             .from('public_user_profiles')
             .select('*')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
+        
+        // If no profile found, return basic info
+        if (!data && !error) {
+            return { 
+                data: { 
+                    id: userId, 
+                    display_name: 'User', 
+                    username: null,
+                    avatar_url: null,
+                    bio: null
+                }, 
+                error: null 
+            };
+        }
         
         return { data, error };
     },
