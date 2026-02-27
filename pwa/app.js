@@ -1,8 +1,9 @@
 /**
  * Cellophane PWA - Main Application
- * Version: 1.8.8
+ * Version: 1.8.9
  * 
  * CHANGELOG:
+ * v1.8.9 - Follow button in Detail Modal, Avatar fallback fix
  * v1.8.8 - Pull-to-refresh, Notifications, Gamification in Profile
  * v1.8.7 - Browse Site tab with URL input, history, timeline + highlighted deep links
  * v1.8.6 - "More from this site" in detail modal, Browse by URL API
@@ -1195,6 +1196,25 @@ async function openCellophaneDetail(cellophane) {
     DOM.commentsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
     DOM.modalDetail.classList.add('active');
     
+    // v1.8.9: Show Follow button in Detail Modal (hide if viewing own cellophane)
+    const authorId = cellophane.author_id;
+    const isSelf = AppState.user && AppState.user.id === authorId;
+    const btnDetailFollow = document.getElementById('btn-detail-follow');
+    
+    if (btnDetailFollow) {
+        if (isSelf || !AppState.user) {
+            btnDetailFollow.classList.add('hidden');
+        } else {
+            btnDetailFollow.classList.remove('hidden');
+            btnDetailFollow.dataset.userId = authorId;
+            // Check if already following
+            const { data: isFollowing } = await CelloAPI.follows.isFollowing(authorId);
+            btnDetailFollow.textContent = isFollowing ? 'Following' : 'Follow';
+            btnDetailFollow.classList.toggle('btn-outline', isFollowing);
+            btnDetailFollow.classList.toggle('btn-primary', !isFollowing);
+        }
+    }
+    
     // v1.8.2: Reset comments state
     AppState.comments = { data: [], replyingTo: null };
     
@@ -2278,6 +2298,33 @@ function setupProfileEventListeners() {
     // Follow button
     if (DOM.btnFollow) {
         DOM.btnFollow.addEventListener('click', toggleFollow);
+    }
+    
+    // v1.8.9: Follow button in Detail Modal
+    const btnDetailFollow = document.getElementById('btn-detail-follow');
+    if (btnDetailFollow) {
+        btnDetailFollow.addEventListener('click', async () => {
+            const userId = btnDetailFollow.dataset.userId;
+            if (!userId || !AppState.user) return;
+            
+            const wasFollowing = btnDetailFollow.textContent === 'Following';
+            
+            // Optimistic update
+            btnDetailFollow.textContent = wasFollowing ? 'Follow' : 'Following';
+            btnDetailFollow.classList.toggle('btn-outline', !wasFollowing);
+            btnDetailFollow.classList.toggle('btn-primary', wasFollowing);
+            
+            // Call API
+            const { error } = await CelloAPI.follows.toggle(userId);
+            
+            if (error) {
+                // Revert on error
+                btnDetailFollow.textContent = wasFollowing ? 'Following' : 'Follow';
+                btnDetailFollow.classList.toggle('btn-outline', wasFollowing);
+                btnDetailFollow.classList.toggle('btn-primary', !wasFollowing);
+                showToast('Failed to update follow', 'error');
+            }
+        });
     }
     
     // Load more button

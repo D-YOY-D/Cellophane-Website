@@ -564,6 +564,8 @@ img {
     font-size: 1.1rem;
     border: 2px solid white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* v1.8.9: Default background for Detail Modal and other contexts */
+    background: var(--color-public-gradient);
 }
 
 .cellophane-card.public .avatar-fallback {
