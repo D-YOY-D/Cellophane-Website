@@ -1146,7 +1146,10 @@ async function openCellophaneDetail(cellophane) {
     AppState.currentCellophane = cellophane;
     
     const authorName = cellophane.author || 'Anonymous';
-    const authorId = cellophane.author_id;
+    // v1.8.9: Ensure authorId is a valid string
+    const authorId = cellophane.author_id || '';
+    console.log('📝 Detail opened for cellophane:', cellophane.id, 'authorId:', authorId);
+    
     // Support both camelCase and snake_case from DB - sanitize URL
     const rawAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
     const authorAvatar = rawAvatar ? sanitizeUrl(rawAvatar) : '';
@@ -1155,8 +1158,8 @@ async function openCellophaneDetail(cellophane) {
     const mediaHtml = renderMedia(cellophane);
     
     // v1.8.9: Check if self to hide Follow button
-    const isSelf = AppState.user && AppState.user.id === authorId;
-    const showFollowBtn = AppState.user && !isSelf;
+    const isSelf = AppState.user && authorId && AppState.user.id === authorId;
+    const showFollowBtn = AppState.user && authorId && !isSelf;
     
     // v1.8.9: Check follow status before rendering
     let isFollowing = false;
@@ -1248,15 +1251,22 @@ async function openCellophaneDetail(cellophane) {
 function setupDetailModalEvents() {
     // Click on avatar/name to open profile
     const clickables = DOM.detailCellophane.querySelectorAll('[data-author-id]');
+    console.log('🔍 Found clickable elements:', clickables.length);
+    
     clickables.forEach(el => {
         el.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const authorId = el.dataset.authorId;
-            if (authorId) {
+            console.log('👤 Avatar clicked, authorId:', authorId);
+            
+            // v1.8.9: Only open profile if authorId is valid
+            if (authorId && authorId !== 'undefined' && authorId !== 'null' && authorId.length > 0) {
                 // Close detail modal and open profile
                 DOM.modalDetail.classList.remove('active');
                 openProfileModal(authorId);
+            } else {
+                console.warn('⚠️ No valid authorId found');
             }
         });
     });

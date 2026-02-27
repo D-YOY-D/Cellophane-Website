@@ -808,13 +808,13 @@ const CelloFollows = {
             return { data: null, error: new Error('Cannot follow yourself') };
         }
         
-        // Check if already following (idempotent)
+        // v1.8.9: Use maybeSingle to avoid 406 error when not following yet
         const { data: existing } = await client
             .from('follows')
             .select('id')
             .eq('follower_id', user.id)
             .eq('following_id', userId)
-            .single();
+            .maybeSingle();
         
         if (existing) {
             return { data: existing, error: null };
@@ -863,14 +863,15 @@ const CelloFollows = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) return { data: false, error: null };
         
+        // v1.8.9: Use maybeSingle to avoid 406 error when no rows found
         const { data, error } = await client
             .from('follows')
             .select('id')
             .eq('follower_id', user.id)
             .eq('following_id', userId)
-            .single();
+            .maybeSingle();
         
-        return { data: !!data, error };
+        return { data: !!data, error: null };
     },
     
     /**
@@ -1294,4 +1295,4 @@ const CelloAPI = {
 // Make available globally
 window.CelloAPI = CelloAPI;
 
-console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.8');
+console.log('✅ CelloAPI loaded - Shared Supabase Client v1.8.9');
