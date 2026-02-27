@@ -1146,6 +1146,7 @@ async function openCellophaneDetail(cellophane) {
     AppState.currentCellophane = cellophane;
     
     const authorName = cellophane.author || 'Anonymous';
+    const authorId = cellophane.author_id;
     // Support both camelCase and snake_case from DB - sanitize URL
     const rawAvatar = cellophane.authorAvatar || cellophane.author_avatar || '';
     const authorAvatar = rawAvatar ? sanitizeUrl(rawAvatar) : '';
@@ -1153,20 +1154,41 @@ async function openCellophaneDetail(cellophane) {
     const initials = getInitials(authorName);
     const mediaHtml = renderMedia(cellophane);
     
-    // Avatar HTML - sanitized URL, delegated error handling (no inline onerror)
+    // v1.8.9: Check if self to hide Follow button
+    const isSelf = AppState.user && AppState.user.id === authorId;
+    const showFollowBtn = AppState.user && !isSelf;
+    
+    // v1.8.9: Check follow status before rendering
+    let isFollowing = false;
+    if (showFollowBtn) {
+        const { data } = await CelloAPI.follows.isFollowing(authorId);
+        isFollowing = data;
+    }
+    
+    // Avatar HTML - with data-author-id for click to open profile
     const avatarHtml = authorAvatar 
-        ? `<img src="${escapeHtml(authorAvatar)}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar avatar-with-fallback" style="width:48px;height:48px;">
-           <div class="avatar-fallback" style="display:none;width:48px;height:48px;font-size:1.2rem;">${initials}</div>`
-        : `<div class="avatar-fallback" style="width:48px;height:48px;font-size:1.2rem;">${initials}</div>`;
+        ? `<img src="${escapeHtml(authorAvatar)}" alt="${escapeHtml(authorName)}" class="cellophane-author-avatar avatar-with-fallback detail-avatar-clickable" data-author-id="${escapeHtml(authorId)}" style="width:48px;height:48px;cursor:pointer;">
+           <div class="avatar-fallback detail-avatar-clickable" data-author-id="${escapeHtml(authorId)}" style="display:none;width:48px;height:48px;font-size:1.2rem;cursor:pointer;">${initials}</div>`
+        : `<div class="avatar-fallback detail-avatar-clickable" data-author-id="${escapeHtml(authorId)}" style="width:48px;height:48px;font-size:1.2rem;cursor:pointer;">${initials}</div>`;
+    
+    // v1.8.9: Follow button HTML - next to author name on the right
+    const followBtnHtml = showFollowBtn 
+        ? `<button id="btn-detail-follow" class="btn ${isFollowing ? 'btn-outline' : 'btn-primary'} btn-follow-small" data-user-id="${escapeHtml(authorId)}" data-following="${isFollowing}">
+               ${isFollowing ? 'Following' : 'Follow'}
+           </button>`
+        : '';
     
     DOM.detailCellophane.innerHTML = `
         <div class="cellophane-header" style="margin-bottom:16px;">
-            <div class="cellophane-user">
-                ${avatarHtml}
-                <div class="cellophane-author-info">
-                    <div class="cellophane-author-name">${escapeHtml(authorName)}</div>
-                    <div class="cellophane-time">${timestamp}</div>
+            <div class="cellophane-user" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    ${avatarHtml}
+                    <div class="cellophane-author-info">
+                        <div class="cellophane-author-name detail-author-clickable" data-author-id="${escapeHtml(authorId)}" style="cursor:pointer;">${escapeHtml(authorName)}</div>
+                        <div class="cellophane-time">${timestamp}</div>
+                    </div>
                 </div>
+                ${followBtnHtml}
             </div>
         </div>
         <div class="cellophane-content" style="font-size:1.1rem;margin:16px 0;">${escapeHtml(cellophane.text || '')}</div>
@@ -1178,6 +1200,9 @@ async function openCellophaneDetail(cellophane) {
             </a>
         ` : ''}
     `;
+    
+    // v1.8.9: Setup event listeners for dynamically created elements
+    setupDetailModalEvents();
     
     // Show "Add to this page" button if cellophane has a real URL (not PWA default)
     const hasRealUrl = cellophane.url && 
@@ -1195,25 +1220,6 @@ async function openCellophaneDetail(cellophane) {
     
     DOM.commentsList.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
     DOM.modalDetail.classList.add('active');
-    
-    // v1.8.9: Show Follow button in Detail Modal (hide if viewing own cellophane)
-    const authorId = cellophane.author_id;
-    const isSelf = AppState.user && AppState.user.id === authorId;
-    const btnDetailFollow = document.getElementById('btn-detail-follow');
-    
-    if (btnDetailFollow) {
-        if (isSelf || !AppState.user) {
-            btnDetailFollow.classList.add('hidden');
-        } else {
-            btnDetailFollow.classList.remove('hidden');
-            btnDetailFollow.dataset.userId = authorId;
-            // Check if already following
-            const { data: isFollowing } = await CelloAPI.follows.isFollowing(authorId);
-            btnDetailFollow.textContent = isFollowing ? 'Following' : 'Follow';
-            btnDetailFollow.classList.toggle('btn-outline', isFollowing);
-            btnDetailFollow.classList.toggle('btn-primary', !isFollowing);
-        }
-    }
     
     // v1.8.2: Reset comments state
     AppState.comments = { data: [], replyingTo: null };
@@ -1233,6 +1239,63 @@ async function openCellophaneDetail(cellophane) {
     
     // v1.8.6: Load "More from this site" if cellophane has a real URL
     loadMoreFromSite(cellophane);
+}
+
+/**
+ * Setup event listeners for Detail Modal dynamic elements
+ * v1.8.9
+ */
+function setupDetailModalEvents() {
+    // Click on avatar/name to open profile
+    const clickables = DOM.detailCellophane.querySelectorAll('[data-author-id]');
+    clickables.forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const authorId = el.dataset.authorId;
+            if (authorId) {
+                // Close detail modal and open profile
+                DOM.modalDetail.classList.remove('active');
+                openProfileModal(authorId);
+            }
+        });
+    });
+    
+    // Follow button click
+    const btnFollow = document.getElementById('btn-detail-follow');
+    if (btnFollow) {
+        btnFollow.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const userId = btnFollow.dataset.userId;
+            if (!userId || !AppState.user) return;
+            
+            const wasFollowing = btnFollow.dataset.following === 'true';
+            
+            // Optimistic update
+            btnFollow.textContent = wasFollowing ? 'Follow' : 'Following';
+            btnFollow.classList.toggle('btn-outline', !wasFollowing);
+            btnFollow.classList.toggle('btn-primary', wasFollowing);
+            btnFollow.dataset.following = (!wasFollowing).toString();
+            
+            // Call correct API
+            const { error } = wasFollowing 
+                ? await CelloAPI.follows.unfollow(userId)
+                : await CelloAPI.follows.follow(userId);
+            
+            if (error) {
+                // Revert on error
+                btnFollow.textContent = wasFollowing ? 'Following' : 'Follow';
+                btnFollow.classList.toggle('btn-outline', wasFollowing);
+                btnFollow.classList.toggle('btn-primary', !wasFollowing);
+                btnFollow.dataset.following = wasFollowing.toString();
+                showToast('Failed to update follow', 'error');
+            } else {
+                showToast(wasFollowing ? 'Unfollowed' : 'Following!', 'success');
+            }
+        });
+    }
 }
 
 /**
@@ -2298,33 +2361,6 @@ function setupProfileEventListeners() {
     // Follow button
     if (DOM.btnFollow) {
         DOM.btnFollow.addEventListener('click', toggleFollow);
-    }
-    
-    // v1.8.9: Follow button in Detail Modal
-    const btnDetailFollow = document.getElementById('btn-detail-follow');
-    if (btnDetailFollow) {
-        btnDetailFollow.addEventListener('click', async () => {
-            const userId = btnDetailFollow.dataset.userId;
-            if (!userId || !AppState.user) return;
-            
-            const wasFollowing = btnDetailFollow.textContent === 'Following';
-            
-            // Optimistic update
-            btnDetailFollow.textContent = wasFollowing ? 'Follow' : 'Following';
-            btnDetailFollow.classList.toggle('btn-outline', !wasFollowing);
-            btnDetailFollow.classList.toggle('btn-primary', wasFollowing);
-            
-            // Call API
-            const { error } = await CelloAPI.follows.toggle(userId);
-            
-            if (error) {
-                // Revert on error
-                btnDetailFollow.textContent = wasFollowing ? 'Following' : 'Follow';
-                btnDetailFollow.classList.toggle('btn-outline', wasFollowing);
-                btnDetailFollow.classList.toggle('btn-primary', !wasFollowing);
-                showToast('Failed to update follow', 'error');
-            }
-        });
     }
     
     // Load more button
